@@ -4,12 +4,13 @@ import zeroconf
 import time
 from uuid import UUID
 
-def show_status(status):
+def show_status(listener,status):
 #Todo esto deberia ir a una base de datos... sqlite? 
 #Despues ver como sacar los datos por separado de cada chromecast
 #Ver como levantar en vivo a una pagina
 #Agregar botones de control para cada chromecast, play, pausa, stop, volumen (slider)
     print("-------------------------------------")
+    print("Cast: " + str(listener.cast.device.friendly_name))
     if(hasattr(status,'player_state')):
        print("Estado: " + status.player_state)
     if(hasattr(status,'volume_level')):
@@ -49,7 +50,7 @@ class StatusListener:
         self.cast = cast
 
     def new_cast_status(self, status):
-        show_status(status)
+        show_status(self, status)
 
 class StatusMediaListener:
     def __init__(self, name, cast):
@@ -57,7 +58,7 @@ class StatusMediaListener:
         self.cast = cast
 
     def new_media_status(self, status):
-        show_status(status)
+        show_status(self, status)
 
 dispositivos=[]
 ips=[]
