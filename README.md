@@ -1,5 +1,6 @@
 # CastStatus
 
-WebApp con actualiacion automatica del estado de los chromecast disponibles en la red local
+WebApp con actualizacion automatica del estado de los chromecast disponibles en la red local
 
-Desarrollado sobre Raspberri Pi
+#raspberry-pi #python #rethinkDB 
+
