@@ -57,7 +57,8 @@ def write_status(listener,status):
        if(len(status.images)>=1):
           if(hasattr(status.images[0],'url')):
              imagen=status.images[0].url
-
+    
+    print("tipo     : " + listener.__class__.__name__)
     print("cast     : " + str(cast      ))
     print("estado   : " + str(estado    ))
     print("volumen  : " + str(volumen   ))
