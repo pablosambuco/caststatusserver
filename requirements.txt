@@ -1,0 +1,2 @@
+pychromecast>=7.5.1
+motor>=2.3.0
