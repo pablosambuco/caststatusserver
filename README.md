@@ -4,3 +4,4 @@ WebApp con actualizacion automatica del estado de los chromecast disponibles en 
 
 #raspberry-pi #python #mongoDB 
 
+Para instalar los paquetes necesarios: pip install -r requirements.txt
