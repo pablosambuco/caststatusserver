@@ -1,0 +1,13 @@
+[Unit]
+Description=CastStatus
+After=multi-user.target
+Conflicts=getty@tty1.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/pi/CastStatus/chromecast.py
+StandardInput=tty-force
+
+[Install]
+WantedBy=multi-user.target
+
