@@ -2,6 +2,7 @@
 import pychromecast
 import zeroconf
 import time
+import datetime
 import db_functions as db
 from uuid import UUID
 
@@ -14,41 +15,40 @@ def write_status(listener,status):
     dict['listener']=listener.__class__.__name__
     dict['cast']=str(listener.cast.device.friendly_name)
 
-    if(hasattr(status,'player_state')):
+    if(hasattr(status,'player_state') and status.player_state):
        dict['estado']=status.player_state
-    if(hasattr(status,'volume_level')):
-       dict['volumen']=status.volume_level
-    if(hasattr(status,'volume_muted')):
+    if(hasattr(status,'volume_level') and status.volume_level):
+       dict['volumen']='{:.2f}'.format(status.volume_level)
+    if(hasattr(status,'volume_muted') and status.volume_muted):
        dict['mute']=status.volume_muted
-    if(hasattr(status,'title')):
+    if(hasattr(status,'title') and status.title):
        dict['titulo']=status.title
-    if(hasattr(status,'media_metadata')):
+    if(hasattr(status,'media_metadata') and status.media_metadata):
        if('subtitle' in status.media_metadata):
           dict['subtitulo']=status.media_metadata['subtitle']
-    if(hasattr(status,'series_title')):
+    if(hasattr(status,'series_title') and status.series_title):
        dict['serie']=status.series_title
-    if(hasattr(status,'season')):
+    if(hasattr(status,'season') and status.season):
        dict['temporada']=status.season
-    if(hasattr(status,'episode')):
+    if(hasattr(status,'episode') and status.episode):
        dict['episodio']=status.episode
-    if(hasattr(status,'artist')):
+    if(hasattr(status,'artist') and status.artist):
        dict['artista']=status.artist
-    if(hasattr(status,'album_name')):
+    if(hasattr(status,'album_name') and status.album_name):
        dict['album']=status.album_name
-    if(hasattr(status,'track')):
+    if(hasattr(status,'track') and status.track):
        dict['pista']=status.track
-    if(hasattr(status,'status_text')):
+    if(hasattr(status,'status_text') and status.status_text):
        dict['texto']=status.status_text
-    if(hasattr(status,'icon_url')):
+    if(hasattr(status,'icon_url') and status.icon_url):
        dict['icono']=status.icon_url
     if(hasattr(status,'images')):
        if(len(status.images)>=1):
           if(hasattr(status.images[0],'url')):
              dict['imagen']=status.images[0].url
     
-    print(dict)
-    result = db.col.delete_many({'listener': listener.__class__.__name__})
-    db.col.insert_one(dict)
+    dict['timestamp']=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    db.write(dict,'listener')
 
 class StatusListener:
     def __init__(self, name, cast):
