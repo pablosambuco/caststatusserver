@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 from bottle import run, get
-import db_functions as db
+import modules.db_functions as db
 
 play="/images/play.png"
 base="/images/base.png"
