@@ -1,12 +1,23 @@
 # -*- coding: utf-8 -*-
-import pymongo
+from pymongo import MongoClient, errors
 import pychromecast
 
-
-
 def write(dict,clave):
-    client = pymongo.MongoClient("mongodb://localhost/")
-    db = client["cast"]
-    col = db["events"]
-    col.delete_many({clave: dict[clave]})
-    col.insert_one(dict)
+    try:
+        client = MongoClient("mongodb://localhost/")
+        db = client["cast"]
+        col = db["events"]
+        col.delete_many({clave: dict[clave]})
+        col.insert_one(dict)
+    except errors.ServerSelectionTimeoutError as err:
+        client = None
+
+def read():
+    try:
+        client = MongoClient("mongodb://localhost/")
+        db = client["cast"]
+        col = db["events"]
+        col.delete_many({clave: dict[clave]})
+        col.insert_one(dict)
+    except errors.ServerSelectionTimeoutError as err:
+        client = None

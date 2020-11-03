@@ -11,10 +11,13 @@ def write_status(listener,status):
 #Ver como levantar en vivo a una pagina
 #Agregar botones de control para cada chromecast, play, pausa, stop, volumen (slider)
     dict={}
+    clave={}
 
-    dict['listener']=listener.__class__.__name__
-    dict['cast']=str(listener.cast.device.friendly_name)
+    clave['listener']=listener.__class__.__name__
+    clave['cast']=str(listener.cast.device.friendly_name)
 
+    dict['clave']=clave
+    
     if(hasattr(status,'player_state') and status.player_state):
        dict['estado']=status.player_state
     if(hasattr(status,'volume_level') and status.volume_level):
@@ -48,7 +51,7 @@ def write_status(listener,status):
              dict['imagen']=status.images[0].url
     
     dict['timestamp']=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    db.write(dict,'listener')
+    db.write(dict,'clave')
 
 class StatusListener:
     def __init__(self, name, cast):
