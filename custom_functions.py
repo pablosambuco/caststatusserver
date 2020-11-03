@@ -74,7 +74,7 @@ ips=[]
 uuids=[]
 chromecasts=[]
 
-def buscar():
+def create_listeners():
     listener = pychromecast.CastListener()
     zconf = zeroconf.Zeroconf()
     browser = pychromecast.discovery.start_discovery(listener, zconf)

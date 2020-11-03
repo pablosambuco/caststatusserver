@@ -17,7 +17,6 @@ def read():
         client = MongoClient("mongodb://localhost/")
         db = client["cast"]
         col = db["events"]
-        col.delete_many({clave: dict[clave]})
-        col.insert_one(dict)
+        return col.find()
     except errors.ServerSelectionTimeoutError as err:
-        client = None
+        return None
