@@ -1,15 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-from bottle import run, get
-import modules.db_functions as db
 
-play="/images/play.png"
-base="/images/base.png"
-pause="/images/pause.png"
-
-def html_from_mongo():
-    events=db.read()
-
+def html_from_dict(events):
+    
     html = "<!DOCTYPE html>"
     html += "<html>"
     html += "<body>"
@@ -49,9 +42,4 @@ def html_from_mongo():
     html += "</html>"
 
     return html
-   
-@get('/')
-def home():
-    return html_from_mongo()
-
-run(host='0.0.0.0', port=8083, debug=True)   
+    
