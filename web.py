@@ -3,6 +3,7 @@
 from bottle import Bottle, run, template, get, static_file
 import modules.db_functions as db
 import modules.web_functions as web
+import modules.custom_functions as f
 import os, sys
 
 play="/images/play.png"
@@ -25,7 +26,7 @@ def send_css(filename):
 
 @app.route('/')
 def index():
-    data = web.html_from_dict(db.read())
-    return template('index',data = db.read() )
+    data = f.parse(db.read())
+    return template('index',data = data)
 
 run(app, host='0.0.0.0', port = 8083)

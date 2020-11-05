@@ -94,3 +94,48 @@ def create_listeners():
                 chromecasts.append(cast)
 
     pychromecast.stop_discovery(browser)
+
+def parse(data):
+    resultados = {}
+    
+    for fila in list(data):
+        cast=fila['clave']['cast']
+        listener=fila['clave']['listener']
+ 
+        #si no existe la clave la creo como un diccionario vacio
+        if(cast not in resultados):
+           resultados[cast]={}
+           
+        if(listener == "StatusMediaListener"):
+           if('titulo' in fila):
+             resultados[cast]['titulo']       = fila['titulo']
+           if('subtitulo' in fila):
+             resultados[cast]['subtitulo']    = fila['subtitulo']
+           if('serie' in fila):
+             resultados[cast]['serie']        = fila['serie']
+           if('temporada' in fila):
+             resultados[cast]['temporada']    = fila['temporada']       
+           if('episodio' in fila):
+             resultados[cast]['episodio']     = fila['episodio']       
+           if('artista' in fila):
+             resultados[cast]['artista']      = fila['artista']       
+           if('album' in fila):
+             resultados[cast]['album']        = fila['album']       
+           if('pista' in fila):
+             resultados[cast]['pista']        = fila['pista']       
+           if('imagen' in fila):
+             resultados[cast]['imagen']       = fila['imagen']             
+
+        if(listener == "StatusListener"):
+           if('estado' in fila):
+             resultados[cast]['estado']       = fila['estado']
+           if('volumen' in fila):
+             resultados[cast]['volumen']      = fila['volumen']
+           if('mute' in fila):
+             resultados[cast]['mute']         = fila['mute']
+           if('texto' in fila):
+             resultados[cast]['texto']        = fila['texto']       
+           if('icono' in fila):
+             resultados[cast]['icono']        = fila['icono']       
+
+    return resultados

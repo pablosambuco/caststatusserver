@@ -13,13 +13,17 @@
     <!--script type="text/javascript" src="/static/bootstrap.min.js"></script--> 
 </head>
 <body>
+    <!--
     <img src="/images/base.png" class="base" />
     <img src="/images/play.png" class="boton" />
     <img src="https://i.ytimg.com/vi/k0Q8CUhTlxw/hqdefault.jpg" class="imagen">
-
+    -->
     <div class="container">
-    % for event in data:
-           {{event['clave']['listener']}}: {{event['clave']['cast']}}<br />
+    % for cast in data:
+         {{cast}}
+         % for att in data[cast]:
+            {{att}}: {{data[cast][att]}}
+         % end
     % end
     </div> 
     <!-- /container -->
