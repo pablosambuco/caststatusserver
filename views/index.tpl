@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Bottle web project template">
     <meta name="author" content="datamate">
-    <link rel="icon" href="/static/favicon.ico">        
+    <link rel="icon" type="image/png" href="/images/favicon.png">        
     <title>Project</title>
     <link rel="stylesheet" type="text/css" href="/static/estilo.css">
     <!--script type="text/javascript" src="/static/jquery.min.js"></script-->
@@ -18,7 +18,9 @@
     <img src="https://i.ytimg.com/vi/k0Q8CUhTlxw/hqdefault.jpg" class="imagen">
 
     <div class="container">
-            {{data}}
+    % for event in data:
+           {{event['clave']['listener']}}: {{event['clave']['cast']}}<br />
+    % end
     </div> 
     <!-- /container -->
 </body>
