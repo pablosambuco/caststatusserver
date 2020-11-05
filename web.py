@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from bottle import Bottle, run, template, get, static_file
 import modules.db_functions as db
-import modules.web_functions as web
 import modules.custom_functions as f
 import os, sys
 

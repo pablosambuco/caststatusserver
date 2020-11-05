@@ -51,7 +51,10 @@ def write_status(listener,status):
              dict['imagen']=status.images[0].url
     
     dict['timestamp']=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    db.write(dict,'clave')
+    if(hasattr(status,'player_state') and status.player_state == "UNKNOWN"):
+        db.delete(dict,'clave')
+    else:
+        db.write(dict,'clave')
 
 class StatusListener:
     def __init__(self, name, cast):
