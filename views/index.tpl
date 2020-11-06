@@ -23,17 +23,17 @@
         <div class="mdl-grid">
             % for cast in data:
             <div class="mdl-card mdl-cell mdl-cell--6-col mdl-cell--4-col-tablet mdl-shadow--2dp">
-               % for att in data[cast]:
-                  % if(att == "imagen"):             
-                     <a href="#">
-                     <div class="mdl-card__media" style="background: url({{data[cast][att]}}) 50% 50%">
-                     
-                     </div>
-                     </a>
-                  % elif(att == "cast"):
-                     <div class="mdl-card__title">
-                        <h1 class="mdl-card__title-text">{{cast}}</h1>
-                     </div>
+                <div class="cast">{{cast}}</div>
+                % for att in data[cast]:
+                    % if(att == "imagen"):             
+                        <a href="#">
+                        <div class="mdl-card__media" style="background: url({{data[cast][att]}}) 50% 50%">
+                        </div>
+                        </a>
+                    % elif(att == "cast"):
+                        <div class="mdl-card__title">
+                            <h1 class="mdl-card__title-text">{{cast}}</h1>
+                        </div>
                   % end
                % end
                <div class="mdl-card__supporting-text">
@@ -41,12 +41,9 @@
                   % if(att == "volumen"): 
                   <div id="player">
                      <i class="fa fa-volume-down"></i>
-                     <div id="volume"></div>
+                     <input type="range" min="1" max="100" value="{{"{:.0f}".format(100*float(data[cast][att]))}}" class="slider" id="volume" />
                      <i class="fa fa-volume-up"></i>
-                     <script>
-                         setVolume({{"{:.0f}".format(100*float(data[cast][att]))}});
-                     </script>                     
-                  </div>                  
+                   </div>                  
                    % end
                %end
                % for att in data[cast]:

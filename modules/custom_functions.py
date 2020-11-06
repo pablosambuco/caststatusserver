@@ -17,7 +17,7 @@ def write_status(listener,status):
     clave['cast']=str(listener.cast.device.friendly_name)
 
     dict['clave']=clave
-    
+
     if(hasattr(status,'player_state') and status.player_state):
        dict['estado']=status.player_state
     if(hasattr(status,'volume_level') and status.volume_level):
@@ -49,7 +49,7 @@ def write_status(listener,status):
        if(len(status.images)>=1):
           if(hasattr(status.images[0],'url')):
              dict['imagen']=status.images[0].url
-    
+
     dict['timestamp']=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     if(hasattr(status,'player_state') and status.player_state == "UNKNOWN"):
         db.delete(dict,'clave')
@@ -100,15 +100,15 @@ def create_listeners():
 
 def parse(data):
     resultados = {}
-    
+
     for fila in list(data):
         cast=fila['clave']['cast']
         listener=fila['clave']['listener']
- 
+
         #si no existe la clave la creo como un diccionario vacio
         if(cast not in resultados):
            resultados[cast]={}
-           
+
         if(listener == "StatusMediaListener"):
            if('titulo' in fila):
              resultados[cast]['titulo']       = fila['titulo']
@@ -117,28 +117,43 @@ def parse(data):
            if('serie' in fila):
              resultados[cast]['serie']        = fila['serie']
            if('temporada' in fila):
-             resultados[cast]['temporada']    = fila['temporada']       
+             resultados[cast]['temporada']    = fila['temporada']
            if('episodio' in fila):
-             resultados[cast]['episodio']     = fila['episodio']       
+             resultados[cast]['episodio']     = fila['episodio']
            if('artista' in fila):
-             resultados[cast]['artista']      = fila['artista']       
+             resultados[cast]['artista']      = fila['artista']
            if('album' in fila):
-             resultados[cast]['album']        = fila['album']       
+             resultados[cast]['album']        = fila['album']
            if('pista' in fila):
-             resultados[cast]['pista']        = fila['pista']       
+             resultados[cast]['pista']        = fila['pista']
            if('imagen' in fila):
-             resultados[cast]['imagen']       = fila['imagen']             
-
-        if(listener == "StatusListener"):
+             resultados[cast]['imagen']       = fila['imagen']
            if('estado' in fila):
              resultados[cast]['estado']       = fila['estado']
+
+        if(listener == "StatusListener"):
            if('volumen' in fila):
              resultados[cast]['volumen']      = fila['volumen']
            if('mute' in fila):
              resultados[cast]['mute']         = fila['mute']
            if('texto' in fila):
-             resultados[cast]['texto']        = fila['texto']       
+             resultados[cast]['texto']        = fila['texto']
            if('icono' in fila):
-             resultados[cast]['icono']        = fila['icono']       
+             resultados[cast]['icono']        = fila['icono']
+
+    #Si al terminar el loop, no tengo algunos datos, los completo con otros
+    for cast in resultados.keys():
+        if('imagen' not in resultados[cast] and 'icono' in resultados[cast]):
+            resultados[cast]['imagen'] = resultados[cast]['icono']
+        if('titulo' not in resultados[cast] and 'texto' in resultados[cast]):
+            resultados[cast]['titulo'] = resultados[cast]['texto']
+
+    #Si al terminar el loop, no tengo algunos datos, borro el registro
+    borrar=[]
+    for cast in resultados.keys():
+        if('estado' not in resultados[cast]):
+            borrar.append(cast)
+    for i in borrar:
+        del resultados[i]
 
     return resultados

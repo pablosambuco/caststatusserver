@@ -3,38 +3,20 @@
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
 @import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css);
 
-$primary-color: #2ecc71;
-
-.base {
-  position: absolute;
-  width:    372px;
-  height:   660px;
-  left:     0px;
-  top:      0px;
-  z-index:  0;
-  border-radius: 10px;
-}
-.boton {
-  position: absolute;
-  width:    64px;
-  height:   64px;
-  left :    154px;
-  top:      491px;
-  z-index:  1;
-}
-.imagen {
-  position: absolute;
-  width:    480px;
-  height:   360px;
-  left:     -54px;  
-  top:      52px;
-  z-index:  -1;
+/* paleta de colores https://coolors.co/1d3557-294b7a-a8dadc-f1faee-5590b4-e63946 */
+:root {
+  --fondo: #1d3557;
+  --fondo2: #294B7A;  
+  --acento: #a8dadc;
+  --texto1: #f1faee;
+  --texto2: #5590B4;
+  --error: #e63946;
 }
 
 /* grilla y formato general */
 .mdl-grid {
-	max-width: 600px;
-   border-radius: 10px;
+    max-width: 600px;
+    border-radius: 20px;
 }
 .mdl-card {
    margin: auto;
@@ -42,8 +24,9 @@ $primary-color: #2ecc71;
    max-height: 90%;   
    width: 280px;
    height: 400px;
-   border-radius: 10px 10px 0px 10px;
-   background-color: #1d1e22;
+   border: 2px solid var(--fondo2);
+   border-radius: 0px 20px 0px 20px;
+   background-color: var(--fondo);
 }
 .mdl-card__media {
    top: 20px;
@@ -51,15 +34,14 @@ $primary-color: #2ecc71;
    left: 20px;
    right: 20px;
    margin: auto;
-   margin-top: 15px;
    margin-left: 15px;
    margin-right: 15px;
    width: 250px; 
    height: 250px;
    max-width: 250px;
    max-height: 250px; 
-   border: 2px solid #ddd;
-   border-radius: 10px 10px 0px 10px;
+   border: 2px solid var(--fondo2   );
+   border-radius: 0px 20px 0px 20px;
    background-size: cover;
    background-position: center;
    background-repeat: no-repeat;
@@ -67,70 +49,73 @@ $primary-color: #2ecc71;
 
 /* slider volumen */
 #player {
-	width: 250px;
-	height: 25px;
-	position: relative;
-
-   .i {
-      margin-top: -6px;
-      color: #00F;
-  
-      .fa-volume-down {
-         margin-left: -8px;
-         color: #0F0;   
-      }
-      .fa-volume-up {
-         margin-right: -8px;
-         right: 0;
-         color: #F00;   
-      }
-   }
+    margin-left: 25px;
+    margin-right: 25px;
+    width: 200px;
+    height: 25px;
+    position: relative;
+}
+#player.i {
+    margin-top: -6px;
+    color: var(--texto2);
+}
+#player.i.fa-volume-down {
+    margin-left: -8px;
+}
+#player.i.fa-volume-up {
+     margin-right: -8px;
+     right: 0;  
 }
 
 #volume {
-	position: absolute;
-	margin: 0 auto;
-   left: 24px;
-	height: 5px;
-	width: 200px;
-	background: #555;
-	border-radius: 10px;
+	margin: auto;
+    width: 200px;
+	height: 6px;
+	background: var(--fondo2);
+	border-radius: 3px;
+    /*overflow: hidden;*/
+    opacity: 0.7;    
+    -webkit-appearance: none;
+    -webkit-transition: .2s;
+    transition: opacity .2s;   
 }
-#volume.ui-slider-range-min {
-		height: 5px;
-		width: 200px;
-		position: absolute;
-		background: $primary-color;
-		border: none;
-		border-radius: 10px;
-      outline: none;
-}
-#volume.ui-slider-handle {   
-      width: 10px;
-      height: 10px;
-      border-radius: 10px;
-      background: #FFF;
-      position: absolute;
-      margin-left: -8px;
-      margin-top: -8px;
-      cursor: pointer;
-      outline: none;
+#volume::-webkit-slider-thumb {
+    width: 15px;
+    height: 15px;
+    -webkit-appearance: none;
+    cursor: ew-resize;
+    background: var(--acento);
+    /*box-shadow: -200px 0 0 200px var(--acento);*/
+    border-radius: 50%; 
 }
 
 /* otros textos */
-.artista {
+.cast {
+   width: 100%;
    text-align: center;
-   font-size: 12px;
-   color: #eee;
+   margin-top: 5px;
+   margin-left: 5px;
+   margin-bottom: 5px;
+   font-size: 18px;
+   color: var(--acento);
 }
 .titulo {
    text-align: center;
    font-size: 16px;
    font-weight: bold;
-   color: #eee;
+   color: var(--texto1);
+}
+.artista {
+   text-align: center;
+   font-size: 12px;
+   color: var(--texto2);
 }
 .album {
    text-align: center;
    font-size: 8px;
-   color: #eee;
+   color: var(--texto1);
 }
+
+
+
+
