@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" href="/images/favicon.png">        
     <title>Project</title>
     <link rel="stylesheet" type="text/css" href="/static/estilo.css">
-    <script type="text/javascript" src="/static/volumen.js"></script>
+    <script type="text/javascript" src="/static/volumen.js")"></script>
     
 </head>
 <body>
@@ -41,10 +41,10 @@
                   % if(att == "volumen"): 
                   <div id="player">
                      <i class="fa fa-volume-down"></i>
-                     <input type="range" min="1" max="100" value="{{"{:.0f}".format(100*float(data[cast][att]))}}" class="slider" id="volume" />
+                     <input type="range" min="1" max="100" class="slider" id="volume-{{cast}}" />
                      <i class="fa fa-volume-up"></i>
-                   </div>                  
-                   % end
+                  </div>                  
+                  % end
                %end
                % for att in data[cast]:
                   % if(att == "titulo"):             
@@ -59,6 +59,17 @@
                </div>                
             </div> 
             % end
+            <script>
+            window.onload=function(){
+            % for cast in data:
+               % for att in data[cast]:
+                  % if(att == "volumen"): 
+                     setVolume("{{cast}}",{{"{:.0f}".format(100*float(data[cast][att]))}});
+                  % end
+               % end
+            % end
+            }
+            </script>            
         </div>
     </main>
 </div>
