@@ -13,11 +13,6 @@
     
 </head>
 <body>
-    <!--
-    <img src="/images/base.png" class="base" />
-    <img src="/images/play.png" class="boton" />
-    <img src="https://i.ytimg.com/vi/k0Q8CUhTlxw/hqdefault.jpg" class="imagen">
-    -->
 <div class="mdl-layout mdl-js-layout mdl-color--grey-100">
     <main class="mdl-layout__content">
         <div class="mdl-grid">
@@ -39,13 +34,14 @@
                <div class="mdl-card__supporting-text">
                % for att in data[cast]:
                   % if(att == "volumen"): 
-                  <div id="player">
+                  <div class="player">
                      <i class="fa fa-volume-down"></i>
                      <input type="range" min="1" max="100" class="slider" id="volume-{{cast}}" />
                      <i class="fa fa-volume-up"></i>
                   </div>                  
                   % end
                %end
+
                % for att in data[cast]:
                   % if(att == "titulo"):             
                      <span class="titulo">{{data[cast][att]}}</span><br />
@@ -61,15 +57,14 @@
             % end
             <script>
             window.onload=function(){
-            % for cast in data:
-               % for att in data[cast]:
-                  % if(att == "volumen"): 
-                     setVolume("{{cast}}",{{"{:.0f}".format(100*float(data[cast][att]))}});
+               % for cast in data:
+                  % for att in data[cast]:
+                     % if(att == "volumen"): 
+                        setVolume("{{cast}}",{{"{:.0f}".format(100*float(data[cast][att]))}});
+                     %end
                   % end
                % end
-            % end
-            }
-            </script>            
+            </script>   
         </div>
     </main>
 </div>
