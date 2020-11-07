@@ -2,7 +2,7 @@
 @import url(https://storage.googleapis.com/code.getmdl.io/1.0.1/material.teal-red.min.css);
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
 @import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css);
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url(https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap);
 
 /* paleta de colores https://coolors.co/1d3557-294b7a-a8dadc-f1faee-5590b4-e63946 */
 :root {
@@ -16,7 +16,7 @@
 
 html *
 {
-   font-family: 'Roboto', sans-serif !important;
+   font-family: 'Roboto', sans-serif;
 }
 
 /* grilla y formato general */
