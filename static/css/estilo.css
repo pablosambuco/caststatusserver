@@ -2,6 +2,7 @@
 @import url(https://storage.googleapis.com/code.getmdl.io/1.0.1/material.teal-red.min.css);
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
 @import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css);
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 /* paleta de colores https://coolors.co/1d3557-294b7a-a8dadc-f1faee-5590b4-e63946 */
 :root {
@@ -11,6 +12,11 @@
   --texto1: #f1faee;
   --texto2: #5590B4;
   --error: #e63946;
+}
+
+html *
+{
+   font-family: 'Roboto', sans-serif !important;
 }
 
 /* grilla y formato general */
@@ -77,6 +83,7 @@
    position: absolute;
    right: 6px; 
 }
+
 .player .slider {
    position: absolute;
    margin: auto;
@@ -109,6 +116,7 @@
    margin-left: 5px;
    margin-bottom: 5px;
    font-size: 18px;
+   font-weigth: bold;
    color: var(--acento);
 }
 .titulo {
@@ -124,6 +132,7 @@
    width: 100%;   
    text-align: center;
    font-size: 12px;
+   font-weigth: regular;
    color: var(--texto2);
 }
 
