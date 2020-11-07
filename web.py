@@ -11,16 +11,16 @@ pause="/images/pause.png"
 dirname = os.path.dirname(sys.argv[0])
 
 app = Bottle()
-@app.route('/static/<filename:re:.*\.css>')
+@app.route(r'/static/<filename:re:.*\.css>')
 def send_css(filename):
     return static_file(filename, root=dirname+'/static/css')
     
-@app.route('/static/<filename:re:.*\.js>')
-def send_css(filename):
+@app.route(r'/static/<filename:re:.*\.js>')
+def send_js(filename):
     return static_file(filename, root=dirname+'/static/js')
 
-@app.route('/images/<filename:re:.*\.png>')
-def send_css(filename):
+@app.route(r'/images/<filename:re:.*\.png>')
+def send_png(filename):
     return static_file(filename, root=dirname+'/static/images')      
 
 @app.route('/')
