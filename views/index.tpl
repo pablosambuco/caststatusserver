@@ -10,7 +10,7 @@
     <title>Project</title>
     <link rel="stylesheet" type="text/css" href="/static/estilo.css">
     <script type="text/javascript" src="/static/volumen.js")"></script>
-    
+    <script src="https://kit.fontawesome.com/cea894e75c.js" crossorigin="anonymous"></script>    
 </head>
 <body>
 <div class="mdl-layout mdl-js-layout mdl-color--grey-100">
@@ -52,6 +52,16 @@
                      <span class="artista">{{data[cast][att]}}</span>
                   % end
                %end
+
+               % for att in data[cast]:
+                  % if(att == "volumen"): 
+                     <i class="fas fa-step-backward" id="back-{{cast}}"></i>
+                     <i class="fas fa-play-circle" id="play-{{cast}}"></i>                          
+                     <i class="fas fa-pause-circle" id="pause-{{cast}}"></i>
+                     <i class="fas fa-step-forward" id="forward-{{cast}}"></i>
+                  % end
+               %end
+
                </div>                
             </div> 
             % end
