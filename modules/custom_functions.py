@@ -151,7 +151,7 @@ def parse(data):
     #Si al terminar el loop, no tengo algunos datos, borro el registro
     borrar=[]
     for cast in resultados.keys():
-        if('estado' not in resultados[cast]):
+        if('estado' not in resultados[cast] and 'texto' not in resultados[cast]):
             borrar.append(cast)
     for i in borrar:
         del resultados[i]
