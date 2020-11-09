@@ -57,7 +57,8 @@ def write_status(listener, status):
         db.delete(dict, 'clave')
     else:
         db.write(dict, 'clave')
-
+    
+    print(dict)
 
 class StatusListener:
     def __init__(self, name, cast):
