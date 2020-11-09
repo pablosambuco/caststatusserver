@@ -26,15 +26,15 @@ function setHandlers(cast) {
   back.onclick = function () {};
   play.onclick = function () {
     var play = document.getElementById("play-" + cast);
-    var pause = document.getElementById("pause-" + cast);    
-    play.style.display = "none";      
+    var pause = document.getElementById("pause-" + cast);
+    play.style.display = "none";
     pause.style.display = "inherit";
   };
   pause.onclick = function () {
     var play = document.getElementById("play-" + cast);
-    var pause = document.getElementById("pause-" + cast);    
+    var pause = document.getElementById("pause-" + cast);
     play.style.display = "inherit";
-    pause.style.display = "none";  
+    pause.style.display = "none";
   };
   forward.onclick = function () {};
 }

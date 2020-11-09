@@ -20,7 +20,7 @@
             <div class="mdl-grid">
                 % for cast in data:
                 <div class="mdl-card mdl-cell mdl-cell--6-col mdl-cell--4-col-tablet mdl-shadow--2dp">
-                    <div class="cast">{{cast}}</div>
+                    <div class="cast" data-uuid="{{data[cast]["uuid"]}}">{{cast}}</div>
                     % for att in data[cast]:
                     % if(att == "imagen"):
                       <div class="mdl-card__media" style="background: url({{data[cast][att]}}) 50% 50%"></div>
