@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-from bottle import Bottle, run, template, get, static_file
+from bottle import Bottle, run, template, get, static_file, post, request
 import modules.db_functions as db
 import modules.custom_functions as f
 import os, sys
@@ -27,5 +27,10 @@ def send_png(filename):
 def index():
     data = f.parse(db.read())
     return template('index',data = data)
+
+@app.post('/api')
+def api():
+    f.atender(request.body.getvalue().decode('utf-8'))
+    return request.body
 
 run(app, host='0.0.0.0', port = 8083)

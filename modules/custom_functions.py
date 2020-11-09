@@ -119,6 +119,8 @@ def parse(data):
         if(listener == "StatusMediaListener"):
             if('uuid' in fila):
                 resultados[cast]['uuid'] = fila['uuid']
+            if('volumen' in fila):
+                resultados[cast]['volumen'] = fila['volumen']
             if('titulo' in fila):
                 resultados[cast]['titulo'] = fila['titulo']
             if('subtitulo' in fila):
@@ -141,6 +143,8 @@ def parse(data):
                 resultados[cast]['estado'] = fila['estado']
 
         if(listener == "StatusListener"):
+            if('uuid' in fila):
+                resultados[cast]['uuid'] = fila['uuid']
             if('volumen' in fila):
                 resultados[cast]['volumen'] = fila['volumen']
             if('mute' in fila):
@@ -156,6 +160,8 @@ def parse(data):
             resultados[cast]['imagen'] = resultados[cast]['icono']
         if('titulo' not in resultados[cast] and 'texto' in resultados[cast]):
             resultados[cast]['titulo'] = resultados[cast]['texto']
+        if('artista' not in resultados[cast] and 'subtitulo' in resultados[cast]):
+            resultados[cast]['artista'] = resultados[cast]['subtitulo']
 
     # Si al terminar el loop, no tengo algunos datos, borro el registro
     borrar = []
@@ -166,3 +172,13 @@ def parse(data):
         del resultados[i]
 
     return resultados
+
+
+def atender(params):
+    parametros = params.split(',')
+    uuid=parametros[0].split('=')[1]
+    cast=parametros[1].split('=')[1]
+    accion=parametros[2].split('=')[1]
+    parametro=parametros[3].split('=')[1]
+    print(uuid + "-" + cast + "-" + accion + "-" + parametro)
+    return
