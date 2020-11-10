@@ -4,10 +4,11 @@ import pychromecast
 import configparser
 import os
 
-
 def get_col():
-    parser = configparser.RawConfigParser()
-    parser.read(os.path.join(os.path.dirname(__file__),'db','db.cfg'))
+    parser = configparser.ConfigParser()
+    #../db/db.cfg
+    configfile = os.path.join(os.path.dirname(os.path.dirname(__file__)),'db','db.cfg')
+    parser.read(configfile)
 
     server = parser.get('mongo', 'server')
     base = parser.get('mongo', 'base')
