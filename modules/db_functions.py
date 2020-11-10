@@ -2,12 +2,12 @@
 from pymongo import MongoClient, errors
 import pychromecast
 import configparser
+import os
 
 
 def get_col():
     parser = configparser.RawConfigParser()
-    configfile = r'db/db.cfg'
-    parser.read(configfile)
+    parser.read(os.path.join(os.path.dirname(__file__),'db','db.cfg'))
 
     server = parser.get('mongo', 'server')
     base = parser.get('mongo', 'base')
