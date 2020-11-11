@@ -12,9 +12,11 @@
     <link rel="stylesheet" type="text/css" href="/static/estilo.css">
     <script type="text/javascript" src="/static/funciones.js" )"></script>
     <script src="https://kit.fontawesome.com/cea894e75c.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
 
 <body>
+<div id="coso"></div>
     <div class="mdl-layout mdl-js-layout mdl-color--grey-100">
         <main class="mdl-layout__content">
             <div class="mdl-grid">

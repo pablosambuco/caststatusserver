@@ -3,14 +3,11 @@ import pychromecast
 import zeroconf
 import time
 import datetime
-import modules.db_functions as db
+import requests
 from uuid import UUID
 
 
-def write_status(listener, status):
-    # Despues ver como sacar los datos por separado de cada chromecast
-    # Ver como levantar en vivo a una pagina
-    # Agregar botones de control para cada chromecast, play, pausa, stop, volumen (slider)
+def send_status(listener, status):
     dict = {}
     clave = {}
 
@@ -53,12 +50,15 @@ def write_status(listener, status):
                 dict['imagen'] = status.images[0].url
 
     dict['timestamp'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    if(hasattr(status, 'player_state') and status.player_state == "UNKNOWN"):
-        db.delete(dict, 'clave')
-    else:
-        db.write(dict, 'clave')
-    
-    print(dict)
+
+    # if(hasattr(status, 'player_state') and status.player_state == "UNKNOWN"):
+    #     db.delete(dict, 'clave')
+    # else:
+    #     db.write(dict, 'clave')
+    payload = {'key1': 'value1', 'key2': 'value2'}
+    r = requests.get('http://127.0.0.1:8083/estado', params=payload)
+    print(r.url)
+
 
 class StatusListener:
     def __init__(self, name, cast):
@@ -66,7 +66,7 @@ class StatusListener:
         self.cast = cast
 
     def new_cast_status(self, status):
-        write_status(self, status)
+        send_status(self, status)
 
 
 class StatusMediaListener:
@@ -75,7 +75,7 @@ class StatusMediaListener:
         self.cast = cast
 
     def new_media_status(self, status):
-        write_status(self, status)
+        send_status(self, status)
 
 
 dispositivos = []
@@ -88,7 +88,9 @@ def create_listeners():
     listener = pychromecast.CastListener()
     zconf = zeroconf.Zeroconf()
     browser = pychromecast.discovery.start_discovery(listener, zconf)
-    time.sleep(1)
+    for i in range (5):
+        print(str(i)+"...")
+        time.sleep(1)
     for uuid, service in listener.services.items():
         cast = pychromecast.get_chromecast_from_service(service, zconf)
         if(service[2] == "Chromecast"):
@@ -104,6 +106,7 @@ def create_listeners():
                 chromecasts.append(cast)
 
     pychromecast.stop_discovery(browser)
+    print(chromecasts)
 
 
 def parse(data):
@@ -177,9 +180,9 @@ def parse(data):
 
 def atender(params):
     parametros = params.split(',')
-    uuid=parametros[0].split('=')[1]
-    cast=parametros[1].split('=')[1]
-    accion=parametros[2].split('=')[1]
-    parametro=parametros[3].split('=')[1]
+    uuid = parametros[0].split('=')[1]
+    cast = parametros[1].split('=')[1]
+    accion = parametros[2].split('=')[1]
+    parametro = parametros[3].split('=')[1]
     print(uuid + "-" + cast + "-" + accion + "-" + parametro)
     return
