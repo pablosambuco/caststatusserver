@@ -62,11 +62,20 @@ def send_status(listener, status):
 
     # Si al terminar el loop, no tengo algunos datos, los completo con otros
     for cast in estados.keys():
-        if('imagen' not in estados[cast] and 'icono' in estados[cast]):
+
+        if('imagen' not in estados[cast] and 'icono' in estados[cast]
+            or 'imagen' in estados[cast] and 'icono' in estados[cast] and estados[cast]['imagen'] != estados[cast]['icono']
+           ):
             estados[cast]['imagen'] = estados[cast]['icono']
-        if('titulo' not in estados[cast] and 'texto' in estados[cast]):
+
+        if('titulo' not in estados[cast] and 'texto' in estados[cast]
+           or 'titulo' in estados[cast] and 'texto' in estados[cast] and estados[cast]['titulo'] != estados[cast]['texto']
+           ):
             estados[cast]['titulo'] = estados[cast]['texto']
-        if('artista' not in estados[cast] and 'subtitulo' in estados[cast]):
+
+        if('artista' not in estados[cast] and 'subtitulo' in estados[cast]
+           or 'artista' in estados[cast] and 'subtitulo' in estados[cast] and estados[cast]['artista'] != estados[cast]['subtitulo']
+           ):
             estados[cast]['artista'] = estados[cast]['subtitulo']
 
     estados[cast]['timestamp'] = datetime.datetime.now().strftime(
@@ -80,7 +89,7 @@ def send_status(listener, status):
     for i in borrar:
         del estados[i]
 
-    r = requests.get('http://127.0.0.1:8083/estado', params=estados)
+    r = requests.get('http://127.0.0.1:8083/estado', params=estados[cast])
     print(r.url)
 
 
