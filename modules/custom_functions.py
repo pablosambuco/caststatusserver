@@ -84,7 +84,10 @@ def send_status(listener, status):
     # Si al terminar el loop, no tengo algunos datos, borro el registro
     borrar = []
     for cast in estados.keys():
-        if('estado' in estados[cast] and estados[cast]['estado'] == "UNKNOWN" and 'texto' not in estados[cast]):
+        if('texto' not in estados[cast] and ('estado' in estados[cast] and estados[cast]['estado'] == "UNKNOWN"
+                                             or 'estado' not in estados[cast]
+                                             )
+           ):
             borrar.append(cast)
     for i in borrar:
         del estados[i]
