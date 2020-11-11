@@ -63,19 +63,19 @@ def send_status(listener, status):
     # Si al terminar el loop, no tengo algunos datos, los completo con otros
     for cast in estados.keys():
 
-        if('imagen' not in estados[cast] and 'icono' in estados[cast]
-            or 'imagen' in estados[cast] and 'icono' in estados[cast] and estados[cast]['imagen'] != estados[cast]['icono']
-           ):
+        if('imagen' in estados[cast] and 'icono' in estados[cast] and estados[cast]['imagen'] != estados[cast]['icono']):
+            del estados[cast]['icono']
+        elif('imagen' not in estados[cast] and 'icono' in estados[cast]):
             estados[cast]['imagen'] = estados[cast]['icono']
 
-        if('titulo' not in estados[cast] and 'texto' in estados[cast]
-           or 'titulo' in estados[cast] and 'texto' in estados[cast] and estados[cast]['titulo'] != estados[cast]['texto']
-           ):
+        if('titulo' in estados[cast] and 'texto' in estados[cast] and estados[cast]['titulo'] != estados[cast]['texto']):
+            del estados[cast]['texto']
+        elif('titulo' not in estados[cast] and 'texto' in estados[cast]):
             estados[cast]['titulo'] = estados[cast]['texto']
 
-        if('artista' not in estados[cast] and 'subtitulo' in estados[cast]
-           or 'artista' in estados[cast] and 'subtitulo' in estados[cast] and estados[cast]['artista'] != estados[cast]['subtitulo']
-           ):
+        if('artista' in estados[cast] and 'subtitulo' in estados[cast] and estados[cast]['artista'] != estados[cast]['subtitulo']):
+            del estados[cast]['subtitulo']
+        elif('artista' not in estados[cast] and 'subtitulo' in estados[cast]):
             estados[cast]['artista'] = estados[cast]['subtitulo']
 
     estados[cast]['timestamp'] = datetime.datetime.now().strftime(
