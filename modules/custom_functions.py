@@ -6,56 +6,81 @@ import datetime
 import requests
 from uuid import UUID
 
+dispositivos = []
+ips = []
+uuids = []
+chromecasts = []
+estados = {}
+
 
 def send_status(listener, status):
-    dict = {}
-    clave = {}
+    cast = str(listener.cast.device.friendly_name)
+    listener_aux = listener.__class__.__name__
 
-    clave['listener'] = listener.__class__.__name__
-    clave['cast'] = str(listener.cast.device.friendly_name)
+    # si no existe la clave la creo como un diccionario vacio
+    if(cast not in estados):
+        estados[cast] = {}
+        estados[cast]['uuid'] = str(listener.cast.device.uuid)
+        estados[cast]['cast'] = cast
 
-    dict['clave'] = clave
-    dict['uuid'] = str(listener.cast.device.uuid)
+    if(listener_aux == "StatusMediaListener"):
+        if(hasattr(status, 'volume_level') and status.volume_level):
+            estados[cast]['volumen'] = '{:.2f}'.format(status.volume_level)
+        if(hasattr(status, 'title') and status.title):
+            estados[cast]['titulo'] = status.title
+        if(hasattr(status, 'media_metadata') and status.media_metadata):
+            if('subtitle' in status.media_metadata):
+                estados[cast]['subtitulo'] = status.media_metadata['subtitle']
+        if(hasattr(status, 'series_title') and status.series_title):
+            estados[cast]['serie'] = status.series_title
+        if(hasattr(status, 'season') and status.season):
+            estados[cast]['temporada'] = status.season
+        if(hasattr(status, 'episode') and status.episode):
+            estados[cast]['episodio'] = status.episode
+        if(hasattr(status, 'artist') and status.artist):
+            estados[cast]['artista'] = status.artist
+        if(hasattr(status, 'album_name') and status.album_name):
+            estados[cast]['album'] = status.album_name
+        if(hasattr(status, 'track') and status.track):
+            estados[cast]['pista'] = status.track
+        if(hasattr(status, 'images')):
+            if(len(status.images) >= 1):
+                if(hasattr(status.images[0], 'url')):
+                    estados[cast]['imagen'] = status.images[0].url
+        if(hasattr(status, 'player_state') and status.player_state):
+            estados[cast]['estado'] = status.player_state
 
-    if(hasattr(status, 'player_state') and status.player_state):
-        dict['estado'] = status.player_state
-    if(hasattr(status, 'volume_level') and status.volume_level):
-        dict['volumen'] = '{:.2f}'.format(status.volume_level)
-    if(hasattr(status, 'volume_muted') and status.volume_muted):
-        dict['mute'] = status.volume_muted
-    if(hasattr(status, 'title') and status.title):
-        dict['titulo'] = status.title
-    if(hasattr(status, 'media_metadata') and status.media_metadata):
-        if('subtitle' in status.media_metadata):
-            dict['subtitulo'] = status.media_metadata['subtitle']
-    if(hasattr(status, 'series_title') and status.series_title):
-        dict['serie'] = status.series_title
-    if(hasattr(status, 'season') and status.season):
-        dict['temporada'] = status.season
-    if(hasattr(status, 'episode') and status.episode):
-        dict['episodio'] = status.episode
-    if(hasattr(status, 'artist') and status.artist):
-        dict['artista'] = status.artist
-    if(hasattr(status, 'album_name') and status.album_name):
-        dict['album'] = status.album_name
-    if(hasattr(status, 'track') and status.track):
-        dict['pista'] = status.track
-    if(hasattr(status, 'status_text') and status.status_text):
-        dict['texto'] = status.status_text
-    if(hasattr(status, 'icon_url') and status.icon_url):
-        dict['icono'] = status.icon_url
-    if(hasattr(status, 'images')):
-        if(len(status.images) >= 1):
-            if(hasattr(status.images[0], 'url')):
-                dict['imagen'] = status.images[0].url
+    if(listener_aux == "StatusListener"):
+        if(hasattr(status, 'volume_level') and status.volume_level):
+            estados[cast]['volumen'] = '{:.2f}'.format(status.volume_level)
+        if(hasattr(status, 'volume_muted') and status.volume_muted):
+            estados[cast]['mute'] = status.volume_muted
+        if(hasattr(status, 'status_text') and status.status_text):
+            estados[cast]['texto'] = status.status_text
+        if(hasattr(status, 'icon_url') and status.icon_url):
+            estados[cast]['icono'] = status.icon_url
 
-    dict['timestamp'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Si al terminar el loop, no tengo algunos datos, los completo con otros
+    for cast in estados.keys():
+        if('imagen' not in estados[cast] and 'icono' in estados[cast]):
+            estados[cast]['imagen'] = estados[cast]['icono']
+        if('titulo' not in estados[cast] and 'texto' in estados[cast]):
+            estados[cast]['titulo'] = estados[cast]['texto']
+        if('artista' not in estados[cast] and 'subtitulo' in estados[cast]):
+            estados[cast]['artista'] = estados[cast]['subtitulo']
 
-    # if(hasattr(status, 'player_state') and status.player_state == "UNKNOWN"):
-    #     db.delete(dict, 'clave')
-    # else:
-    #     db.write(dict, 'clave')
-    r = requests.get('http://127.0.0.1:8083/estado', params=dict)
+    estados[cast]['timestamp'] = datetime.datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S")
+
+    # Si al terminar el loop, no tengo algunos datos, borro el registro
+    borrar = []
+    for cast in estados.keys():
+        if('estado' in estados[cast] and estados[cast]['estado'] == "UNKNOWN" and 'texto' not in estados[cast]):
+            borrar.append(cast)
+    for i in borrar:
+        del estados[i]
+
+    r = requests.get('http://127.0.0.1:8083/estado', params=estados)
     print(r.url)
 
 
@@ -77,19 +102,11 @@ class StatusMediaListener:
         send_status(self, status)
 
 
-dispositivos = []
-ips = []
-uuids = []
-chromecasts = []
-
-
 def create_listeners():
     listener = pychromecast.CastListener()
     zconf = zeroconf.Zeroconf()
     browser = pychromecast.discovery.start_discovery(listener, zconf)
-    for i in range(5):
-        print(str(i)+"...")
-        time.sleep(1)
+    time.sleep(1)
     for uuid, service in listener.services.items():
         cast = pychromecast.get_chromecast_from_service(service, zconf)
         if(service[2] == "Chromecast"):
@@ -105,75 +122,6 @@ def create_listeners():
                 chromecasts.append(cast)
 
     pychromecast.stop_discovery(browser)
-
-
-def parse(data):
-    resultados = {}
-
-    for fila in list(data):
-        cast = fila['clave']['cast']
-        listener = fila['clave']['listener']
-
-        # si no existe la clave la creo como un diccionario vacio
-        if(cast not in resultados):
-            resultados[cast] = {}
-
-        if(listener == "StatusMediaListener"):
-            if('uuid' in fila):
-                resultados[cast]['uuid'] = fila['uuid']
-            if('volumen' in fila):
-                resultados[cast]['volumen'] = fila['volumen']
-            if('titulo' in fila):
-                resultados[cast]['titulo'] = fila['titulo']
-            if('subtitulo' in fila):
-                resultados[cast]['subtitulo'] = fila['subtitulo']
-            if('serie' in fila):
-                resultados[cast]['serie'] = fila['serie']
-            if('temporada' in fila):
-                resultados[cast]['temporada'] = fila['temporada']
-            if('episodio' in fila):
-                resultados[cast]['episodio'] = fila['episodio']
-            if('artista' in fila):
-                resultados[cast]['artista'] = fila['artista']
-            if('album' in fila):
-                resultados[cast]['album'] = fila['album']
-            if('pista' in fila):
-                resultados[cast]['pista'] = fila['pista']
-            if('imagen' in fila):
-                resultados[cast]['imagen'] = fila['imagen']
-            if('estado' in fila):
-                resultados[cast]['estado'] = fila['estado']
-
-        if(listener == "StatusListener"):
-            if('uuid' in fila):
-                resultados[cast]['uuid'] = fila['uuid']
-            if('volumen' in fila):
-                resultados[cast]['volumen'] = fila['volumen']
-            if('mute' in fila):
-                resultados[cast]['mute'] = fila['mute']
-            if('texto' in fila):
-                resultados[cast]['texto'] = fila['texto']
-            if('icono' in fila):
-                resultados[cast]['icono'] = fila['icono']
-
-    # Si al terminar el loop, no tengo algunos datos, los completo con otros
-    for cast in resultados.keys():
-        if('imagen' not in resultados[cast] and 'icono' in resultados[cast]):
-            resultados[cast]['imagen'] = resultados[cast]['icono']
-        if('titulo' not in resultados[cast] and 'texto' in resultados[cast]):
-            resultados[cast]['titulo'] = resultados[cast]['texto']
-        if('artista' not in resultados[cast] and 'subtitulo' in resultados[cast]):
-            resultados[cast]['artista'] = resultados[cast]['subtitulo']
-
-    # Si al terminar el loop, no tengo algunos datos, borro el registro
-    borrar = []
-    for cast in resultados.keys():
-        if('estado' not in resultados[cast] and 'texto' not in resultados[cast]):
-            borrar.append(cast)
-    for i in borrar:
-        del resultados[i]
-
-    return resultados
 
 
 def atender(params):
