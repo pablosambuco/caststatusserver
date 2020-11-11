@@ -55,8 +55,7 @@ def send_status(listener, status):
     #     db.delete(dict, 'clave')
     # else:
     #     db.write(dict, 'clave')
-    payload = {'key1': 'value1', 'key2': 'value2'}
-    r = requests.get('http://127.0.0.1:8083/estado', params=payload)
+    r = requests.get('http://127.0.0.1:8083/estado', params=dict)
     print(r.url)
 
 
@@ -88,7 +87,7 @@ def create_listeners():
     listener = pychromecast.CastListener()
     zconf = zeroconf.Zeroconf()
     browser = pychromecast.discovery.start_discovery(listener, zconf)
-    for i in range (5):
+    for i in range(5):
         print(str(i)+"...")
         time.sleep(1)
     for uuid, service in listener.services.items():
@@ -106,7 +105,6 @@ def create_listeners():
                 chromecasts.append(cast)
 
     pychromecast.stop_discovery(browser)
-    print(chromecasts)
 
 
 def parse(data):
