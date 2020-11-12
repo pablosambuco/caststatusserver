@@ -5,7 +5,7 @@ Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /home/pi/CastStatus/chromecast.py
+ExecStart=/usr/bin/python3 /home/pi/CastStatus/web.py
 StandardInput=tty-force
 
 [Install]

@@ -2,13 +2,13 @@
 <html>
 
 <head>
+    <title>Cast Status</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Bottle web project template">
-    <meta name="author" content="datamate">
+    <meta name="description" content="Cast Status">
+    <meta name="author" content="Pablo Sambuco">
     <link rel="icon" type="image/png" href="/images/favicon.png">
-    <title>Project</title>
     <link rel="stylesheet" type="text/css" href="/static/estilo.css">
     <script type="text/javascript" src="/static/funciones.js" )"></script>
     <script src="https://kit.fontawesome.com/cea894e75c.js" crossorigin="anonymous"></script>
