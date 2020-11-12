@@ -97,5 +97,13 @@ venv.bak/
 # Logs
 logs/*
 
-# Visual Studio Code
-.vscode
+### VisualStudioCode ###
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+*.code-workspace
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.ionide
