@@ -19,7 +19,7 @@
 
   <script type="text/javascript">
     function init(){
-        var ws = new WebSocket("ws://127.0.0.1:8083/websocket");
+        var ws = new WebSocket("ws://" + windows.location.hostname + ":8083/websocket");
         var output = document.getElementById("coso");
         var timer = ""
 
