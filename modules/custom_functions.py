@@ -15,9 +15,10 @@ uuids = []
 chromecasts = []
 estados = {}
 
+def get_status():
+    return estados
 
-async def send_status(listener, status):
-    print("llegue aca");
+def update_status(listener, status):
     cast = str(listener.cast.device.friendly_name)
     listener_aux = listener.__class__.__name__
 
@@ -96,19 +97,13 @@ async def send_status(listener, status):
     for i in borrar:
         del estados[i]
 
-    r = requests.get('http://127.0.0.1:8083/estado', params=estados[cast])
-
-    websocket_resource_url = "ws://127.0.0.1:8083/websocket"
-    async with websockets.connect(websocket_resource_url) as ws:
-        await ws.send("Hola!")
-
 class StatusListener:
     def __init__(self, name, cast):
         self.name = name
         self.cast = cast
 
     def new_cast_status(self, status):
-        send_status(self, status)
+        update_status(self, status)
 
 
 class StatusMediaListener:
@@ -117,7 +112,7 @@ class StatusMediaListener:
         self.cast = cast
 
     def new_media_status(self, status):
-        send_status(self, status)
+        update_status(self, status)
 
 
 def create_listeners():
@@ -141,12 +136,10 @@ def create_listeners():
 
     pychromecast.stop_discovery(browser)
 
-
 def atender(params):
     parametros = params.split(',')
     uuid = parametros[0].split('=')[1]
     cast = parametros[1].split('=')[1]
     accion = parametros[2].split('=')[1]
     parametro = parametros[3].split('=')[1]
-    print(uuid + "-" + cast + "-" + accion + "-" + parametro)
     return

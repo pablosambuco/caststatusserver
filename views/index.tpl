@@ -16,42 +16,31 @@
 </head>
 
 <body>
-
   <script type="text/javascript">
+    var ws = new WebSocket("ws://" + window.location.hostname + ":8083/websocket");
     function init(){
-        var ws = new WebSocket("ws://" + windows.location.hostname + ":8083/websocket");
-        var output = document.getElementById("coso");
         var timer = ""
 
         ws.onopen = function() {
-            var pre = document.createElement("p"); 
-            pre.style.wordWrap = "break-word"; 
-            pre.innerHTML = "Abierto"; 
-            output.appendChild(pre);
-            timer=setInterval(actualizar(ws),2000);
+            console.log("WebSocket abierto");
+            ws.send("init");
+            timer=setInterval(actualizar,1000);
         };
         ws.onmessage = function (evt) {
-            var pre = document.createElement("p"); 
-            pre.style.wordWrap = "break-word"; 
-            pre.innerHTML = "Mensaje:" + evt.data; 
-            output.appendChild(pre);        
+            console.log("Mensaje recibido, actualizando intefaz");
         };
         ws.onclose = function () {
-            var pre = document.createElement("p"); 
-            pre.style.wordWrap = "break-word"; 
-            pre.innerHTML = "Cerrado"; 
-            output.appendChild(pre);            
+            console.log("WebSocket cerrado");            
             clearInterval(timer);        
         };
-        setTimeout(clearTimeout(timer),10000);
+        setTimeout(clearInterval(timer),10000);
     }
-    function actualizar(ws) {
-        ws.send("Actualizame, gracias!");
+    function actualizar() {
+        ws.send("update");
     }
     window.addEventListener("load", init, false);
   </script>
 
-<div id="coso"></div>
     <div class="mdl-layout mdl-js-layout mdl-color--grey-100">
         <main class="mdl-layout__content">
             <div class="mdl-grid">
@@ -61,10 +50,6 @@
                     % for att in data[cast]:
                     % if(att == "imagen"):
                       <div class="mdl-card__media" style="background: url({{data[cast][att]}}) 50% 50%"></div>
-                    % elif(att == "cast"):
-                    <div class="mdl-card__title">
-                        <h1 class="mdl-card__title-text">{{cast}}</h1>
-                    </div>
                     % end
                     % end
                     <div class="mdl-card__supporting-text">

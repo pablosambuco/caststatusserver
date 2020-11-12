@@ -38,7 +38,6 @@ def estado():
     response={}
     for key in ['cast','estado','imagen','titulo','volumen','mute','uuid',]:
         response[key]=request.query.get(key,default="")
-    print(response)
     return response
 
 @app.route('/websocket')
@@ -50,8 +49,7 @@ def handle_websocket():
     while True:
         try:
             message = wsock.receive()
-            print(message)
-            wsock.send("tu vieja")
+            wsock.send(str(f.get_status()))
         except WebSocketError:
             break
 
