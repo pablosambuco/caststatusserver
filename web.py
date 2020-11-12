@@ -6,8 +6,11 @@ import os, sys, time, logging
 from logging.handlers import RotatingFileHandler
 from gevent.pywsgi import WSGIServer
 from geventwebsocket import WebSocketHandler, WebSocketError
+from pathlib import Path
 
 f.create_listeners()
+
+Path("logs").mkdir(parents=True, exist_ok=True)
 logger=logging.getLogger()
 handler=RotatingFileHandler('logs/web.log', maxBytes=1048576, backupCount=5)
 formatter=logging.Formatter('%(levelname)s %(asctime)s %(message)s')
