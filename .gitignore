@@ -95,7 +95,7 @@ env.bak/
 venv.bak/
 
 # Logs
-logs/*
+logs/*.log
 
 ### VisualStudioCode ###
 .vscode/*
