@@ -2,19 +2,45 @@
 <html>
 
 <head>
+    <title>Cast Status</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Bottle web project template">
-    <meta name="author" content="datamate">
+    <meta name="description" content="Cast Status">
+    <meta name="author" content="Pablo Sambuco">
     <link rel="icon" type="image/png" href="/images/favicon.png">
-    <title>Project</title>
     <link rel="stylesheet" type="text/css" href="/static/estilo.css">
     <script type="text/javascript" src="/static/funciones.js" )"></script>
     <script src="https://kit.fontawesome.com/cea894e75c.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
 
 <body>
+  <script type="text/javascript">
+    var ws = new WebSocket("ws://" + window.location.hostname + ":8083/websocket");
+    function init(){
+        var timer = ""
+
+        ws.onopen = function() {
+            console.log("WebSocket abierto");
+            ws.send("init");
+            timer=setInterval(actualizar,1000);
+        };
+        ws.onmessage = function (evt) {
+            console.log("Mensaje recibido, actualizando intefaz");
+        };
+        ws.onclose = function () {
+            console.log("WebSocket cerrado");            
+            clearInterval(timer);        
+        };
+        setTimeout(clearInterval(timer),10000);
+    }
+    function actualizar() {
+        ws.send("update");
+    }
+    window.addEventListener("load", init, false);
+  </script>
+
     <div class="mdl-layout mdl-js-layout mdl-color--grey-100">
         <main class="mdl-layout__content">
             <div class="mdl-grid">
@@ -24,10 +50,6 @@
                     % for att in data[cast]:
                     % if(att == "imagen"):
                       <div class="mdl-card__media" style="background: url({{data[cast][att]}}) 50% 50%"></div>
-                    % elif(att == "cast"):
-                    <div class="mdl-card__title">
-                        <h1 class="mdl-card__title-text">{{cast}}</h1>
-                    </div>
                     % end
                     % end
                     <div class="mdl-card__supporting-text">

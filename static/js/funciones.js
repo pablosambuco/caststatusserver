@@ -19,11 +19,11 @@ function setHandlers(cast, uuid) {
     request.open("POST", "/api", false);
     params = `uuid=${uuid},cast=${cast},accion=volumen,paramero=${this.value}`;
     request.send(params);
-  };  
+  };
 
   back.onclick = function () {
     var request = new XMLHttpRequest();
-    request.open("POST", "/api", false);    
+    request.open("POST", "/api", false);
     params = `uuid=${uuid},cast=${cast},accion=back,parametro=`;
     request.send(params);
   };
@@ -36,7 +36,7 @@ function setHandlers(cast, uuid) {
     var play = document.getElementById("play-" + cast);
     var pause = document.getElementById("pause-" + cast);
     play.style.display = "none";
-    pause.style.display = "inherit";    
+    pause.style.display = "inherit";
   };
   pause.onclick = function () {
     var request = new XMLHttpRequest();
@@ -47,13 +47,17 @@ function setHandlers(cast, uuid) {
     var play = document.getElementById("play-" + cast);
     var pause = document.getElementById("pause-" + cast);
     play.style.display = "inherit";
-    pause.style.display = "none";    
+    pause.style.display = "none";
   };
 
   forward.onclick = function () {
     var request = new XMLHttpRequest();
-    request.open("POST", "/api", false);    
+    request.open("POST", "/api", false);
     params = `uuid=${uuid},cast=${cast},accion=forward,parametro=`;
     request.send(params);
   };
+}
+
+function setState(response) {
+   console.log(response);
 }
