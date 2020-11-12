@@ -5,6 +5,9 @@ import time
 import datetime
 import requests
 from uuid import UUID
+from gevent.pywsgi import WSGIServer
+from geventwebsocket import WebSocketHandler, WebSocketError
+import websockets
 
 dispositivos = []
 ips = []
@@ -13,7 +16,8 @@ chromecasts = []
 estados = {}
 
 
-def send_status(listener, status):
+async def send_status(listener, status):
+    print("llegue aca");
     cast = str(listener.cast.device.friendly_name)
     listener_aux = listener.__class__.__name__
 
@@ -93,8 +97,10 @@ def send_status(listener, status):
         del estados[i]
 
     r = requests.get('http://127.0.0.1:8083/estado', params=estados[cast])
-    print(r.url)
 
+    websocket_resource_url = "ws://127.0.0.1:8083/websocket"
+    async with websockets.connect(websocket_resource_url) as ws:
+        await ws.send("Hola!")
 
 class StatusListener:
     def __init__(self, name, cast):

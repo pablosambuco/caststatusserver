@@ -16,6 +16,41 @@
 </head>
 
 <body>
+
+  <script type="text/javascript">
+    function init(){
+        var ws = new WebSocket("ws://127.0.0.1:8083/websocket");
+        var output = document.getElementById("coso");
+        var timer = ""
+
+        ws.onopen = function() {
+            var pre = document.createElement("p"); 
+            pre.style.wordWrap = "break-word"; 
+            pre.innerHTML = "Abierto"; 
+            output.appendChild(pre);
+            timer=setInterval(actualizar(ws),2000);
+        };
+        ws.onmessage = function (evt) {
+            var pre = document.createElement("p"); 
+            pre.style.wordWrap = "break-word"; 
+            pre.innerHTML = "Mensaje:" + evt.data; 
+            output.appendChild(pre);        
+        };
+        ws.onclose = function () {
+            var pre = document.createElement("p"); 
+            pre.style.wordWrap = "break-word"; 
+            pre.innerHTML = "Cerrado"; 
+            output.appendChild(pre);            
+            clearInterval(timer);        
+        };
+        setTimeout(clearTimeout(timer),10000);
+    }
+    function actualizar(ws) {
+        ws.send("Actualizame, gracias!");
+    }
+    window.addEventListener("load", init, false);
+  </script>
+
 <div id="coso"></div>
     <div class="mdl-layout mdl-js-layout mdl-color--grey-100">
         <main class="mdl-layout__content">

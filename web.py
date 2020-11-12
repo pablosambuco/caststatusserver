@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-from bottle import Bottle, run, template, get, static_file, post, request
-import modules.db_functions as db
+from bottle import Bottle, run, template, get, static_file, post, request, abort
 import modules.custom_functions as f
 import os, sys, time
+from gevent.pywsgi import WSGIServer
+from geventwebsocket import WebSocketHandler, WebSocketError
 
-play="/images/play.png"
-base="/images/base.png"
-pause="/images/pause.png"
+f.create_listeners()
+
 dirname = os.path.dirname(sys.argv[0])
 
 app = Bottle()
@@ -25,7 +25,7 @@ def send_png(filename):
 
 @app.route('/')
 def index():
-    data = f.parse(db.read())
+    data = f.estados
     return template('index',data = data)
 
 @app.post('/api')
@@ -41,5 +41,21 @@ def estado():
     print(response)
     return response
 
-f.create_listeners()
-run(app, host='0.0.0.0', port = 8083)
+@app.route('/websocket')
+def handle_websocket():
+    wsock = request.environ.get('wsgi.websocket')
+    if not wsock:
+        abort(400, 'Expected WebSocket request.')
+
+    while True:
+        try:
+            message = wsock.receive()
+            print(message)
+            wsock.send("tu vieja")
+        except WebSocketError:
+            break
+
+server = WSGIServer(("0.0.0.0", 8083), app, handler_class=WebSocketHandler)
+server.serve_forever()
+
+# run(app, host='0.0.0.0', port = 8083)
