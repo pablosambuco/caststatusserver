@@ -2,11 +2,18 @@
 # -*- coding: utf-8 -*-
 from bottle import Bottle, run, template, get, static_file, post, request, abort
 import modules.custom_functions as f
-import os, sys, time
+import os, sys, time, logging
+from logging.handlers import RotatingFileHandler
 from gevent.pywsgi import WSGIServer
 from geventwebsocket import WebSocketHandler, WebSocketError
 
 f.create_listeners()
+logger=logging.getLogger()
+handler=RotatingFileHandler('logs/web.log', maxBytes=1048576, backupCount=5)
+formatter=logging.Formatter('%(levelname)s %(asctime)s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 dirname = os.path.dirname(sys.argv[0])
 
@@ -49,7 +56,14 @@ def handle_websocket():
     while True:
         try:
             message = wsock.receive()
-            wsock.send(str(f.get_status()))
+            if(message=="init"):
+                logger.info(message + " recibido. Enviando listado de dispositivos.")
+                wsock.send(str(f.init()))    
+            elif(message=="update"):
+                logger.info(message + " recibido. Enviando estado de dispositivos.")
+                wsock.send(str(f.get_status()))
+            else:
+                logger.warning(message + " recibido. No hay servicio asociado.")
         except WebSocketError:
             break
 

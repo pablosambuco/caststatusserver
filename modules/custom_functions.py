@@ -18,6 +18,9 @@ estados = {}
 def get_status():
     return estados
 
+def init():
+    return chromecasts
+
 def update_status(listener, status):
     cast = str(listener.cast.device.friendly_name)
     listener_aux = listener.__class__.__name__
@@ -138,8 +141,8 @@ def create_listeners():
 
 def atender(params):
     parametros = params.split(',')
-    uuid = parametros[0].split('=')[1]
-    cast = parametros[1].split('=')[1]
-    accion = parametros[2].split('=')[1]
-    parametro = parametros[3].split('=')[1]
-    return
+    # uuid = parametros[0].split('=')[1]
+    # cast = parametros[1].split('=')[1]
+    # accion = parametros[2].split('=')[1]
+    # parametro = parametros[3].split('=')[1]
+    return parametros
