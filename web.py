@@ -1,50 +1,97 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-from bottle import Bottle, run, template, get, static_file, post, request, abort
-import modules.custom_functions as f
-import os, sys, time, logging
+"""Web.py: servidor principal de CastStatus
+"""
+import os
+import sys
+from pathlib import Path
+import logging
 from logging.handlers import RotatingFileHandler
 from gevent.pywsgi import WSGIServer
 from geventwebsocket import WebSocketHandler, WebSocketError
-from pathlib import Path
+from bottle import Bottle, template, static_file, request, abort
+import modules.custom_functions as f
 
 f.create_listeners()
 
 Path("logs").mkdir(parents=True, exist_ok=True)
-logger=logging.getLogger()
-handler=RotatingFileHandler('logs/web.log', maxBytes=1048576, backupCount=5)
-formatter=logging.Formatter('%(levelname)s %(asctime)s %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+LOGGER = logging.getLogger()
+HANDLER = RotatingFileHandler('logs/web.log', maxBytes=1048576, backupCount=5)
+FORMATTER = logging.Formatter('%(levelname)s %(asctime)s %(message)s')
+HANDLER.setFormatter(FORMATTER)
+LOGGER.addHandler(HANDLER)
+LOGGER.setLevel(logging.INFO)
 
-dirname = os.path.dirname(sys.argv[0])
+DIRNAME = os.path.dirname(sys.argv[0])
 
-app = Bottle()
-@app.route(r'/static/<filename:re:.*\.css>')
+APP = Bottle()
+@APP.route(r'/static/<filename:re:.*\.css>')
 def send_css(filename):
-    return static_file(filename, root=dirname+'/static/css')
-    
-@app.route(r'/static/<filename:re:.*\.js>')
+    """Redireccion de static/*.css a static/css/*.css
+
+    Args:
+        filename (string): Ruta del css a redirigir
+
+    Returns:
+        string Ruta del css redirigido
+    """
+    return static_file(filename, root=DIRNAME+'/static/css')
+
+@APP.route(r'/static/<filename:re:.*\.js>')
 def send_js(filename):
-    return static_file(filename, root=dirname+'/static/js')
+    """Redireccion de static/*.js a static/js/*.js
 
-@app.route(r'/images/<filename:re:.*\.png>')
+    Args:
+        filename (string): Ruta del js a redirigir
+
+    Returns:
+        string Ruta del js redirigido
+    """
+    return static_file(filename, root=DIRNAME+'/static/js')
+
+@APP.route(r'/images/<filename:re:.*\.png>')
 def send_png(filename):
-    return static_file(filename, root=dirname+'/static/images')      
+    """Redireccion de images/*.png a static/images/*.png
 
-@app.route('/')
+    Args:
+        filename (string): Ruta del png a redirigir
+
+    Returns:
+        string Ruta del png redirigido
+    """
+    return static_file(filename, root=DIRNAME+'/static/images')
+
+@APP.route('/')
 def index():
-    data = f.chromecasts
-    return template('index',data = data)
+    """Ruta /
 
-@app.post('/api')
+    Correspode a la pagina principal de la aplicacion
+
+    Returns:
+        HTML: contenido procesado a partir del template
+    """
+    data = f.CHROMECASTS
+    return template('index', data=data)
+
+@APP.post('/api')
 def api():
+    """Ruta POST /api
+
+    Ruta utilizada para llamar funciones de PyChromecast desde JavaScript
+
+    Returns:
+        Response: respuesta del server para ser procesada en JavaScript
+    """
     f.atender(request.body.getvalue().decode('utf-8'))
     return request.body
 
-@app.route('/websocket')
+@APP.route('/websocket')
 def handle_websocket():
+    """Ruta WS /websocket
+
+    Ruta utilizada para la comunicacion entre JavaScript (AJAX/JQuery) y Python
+
+    """
     wsock = request.environ.get('wsgi.websocket')
     if not wsock:
         abort(400, 'Expected WebSocket request.')
@@ -52,16 +99,29 @@ def handle_websocket():
     while True:
         try:
             message = wsock.receive()
-            if(message=="init"):
-                logger.info(message + " recibido. Enviando listado de dispositivos.")
-                wsock.send(str(f.init()))    
-            elif(message=="update"):
-                logger.info(message + " recibido. Enviando estado de dispositivos.")
+            if message == "init":
+                LOGGER.info(str(message +
+                                " recibido. Enviando listado de dispositivos."
+                                ))
+                wsock.send(str(f.init()))
+            elif message == "update":
+                LOGGER.info(str(message +
+                                " recibido. Enviando estado de dispositivos."
+                                ))
                 wsock.send(str(f.get_status()))
         except WebSocketError:
             break
 
-server = WSGIServer(("0.0.0.0", 8083), app, handler_class=WebSocketHandler)
-server.serve_forever()
 
-# run(app, host='0.0.0.0', port = 8083)
+# @APP.route('/doc')
+# def handle_doc():
+#     """Ruta Doxygen docs
+
+#     Ruta utilizada para la documentacion
+
+#     """
+#     return static_file('index.html', root=DIRNAME+'/html')
+
+
+SERVER = WSGIServer(("0.0.0.0", 8083), APP, handler_class=WebSocketHandler)
+SERVER.serve_forever()

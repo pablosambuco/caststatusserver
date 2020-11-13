@@ -107,3 +107,8 @@ logs/
 # Ignore all local history of files
 .history
 .ionide
+
+Doxyfile
+py_filter
+html/*
+latex/*
