@@ -1,3 +1,4 @@
+
 function setVolume(cast, valor) {
   var slider = document.getElementById("volume-" + cast);
   slider.value = valor;
@@ -17,20 +18,20 @@ function setHandlers(cast, uuid) {
   slider.onmouseup = function () {
     var request = new XMLHttpRequest();
     request.open("POST", "/api", false);
-    params = `uuid=${uuid},cast=${cast},accion=volumen,paramero=${this.value}`;
+    params = `cast=${cast},accion=volumen,paramero=${this.value}`;
     request.send(params);
   };
 
   back.onclick = function () {
     var request = new XMLHttpRequest();
     request.open("POST", "/api", false);
-    params = `uuid=${uuid},cast=${cast},accion=back,parametro=`;
+    params = `cast=${cast},accion=back,parametro=`;
     request.send(params);
   };
   play.onclick = function () {
     var request = new XMLHttpRequest();
     request.open("POST", "/api", false);
-    params = `uuid=${uuid},cast=${cast},accion=play,parametro=`;
+    params = `cast=${cast},accion=play,parametro=`;
     request.send(params);
 
     var play = document.getElementById("play-" + cast);
@@ -41,7 +42,7 @@ function setHandlers(cast, uuid) {
   pause.onclick = function () {
     var request = new XMLHttpRequest();
     request.open("POST", "/api", false);
-    params = `uuid=${uuid},cast=${cast},accion=pause,parametro=`;
+    params = `cast=${cast},accion=pause,parametro=`;
     request.send(params);
 
     var play = document.getElementById("play-" + cast);
@@ -53,11 +54,11 @@ function setHandlers(cast, uuid) {
   forward.onclick = function () {
     var request = new XMLHttpRequest();
     request.open("POST", "/api", false);
-    params = `uuid=${uuid},cast=${cast},accion=forward,parametro=`;
+    params = `cast=${cast},accion=forward,parametro=`;
     request.send(params);
   };
 }
 
 function setState(response) {
-   console.log(response);
+  console.log(response);
 }

@@ -13,96 +13,74 @@
     <script type="text/javascript" src="/static/funciones.js" )"></script>
     <script src="https://kit.fontawesome.com/cea894e75c.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        var ws = new WebSocket("ws://" + window.location.hostname + ":8083/websocket");
+        var timer = "";
+
+        ws.onopen = function () {
+            console.log("WebSocket abierto");
+        };
+        ws.onmessage = function (evt) {
+            console.log(evt);
+        };
+        ws.onclose = function () {
+            console.log("WebSocket cerrado");
+            clearInterval(timer);
+        };
+
+        function init() {
+            ws.send("init");
+            timer = setInterval(actualizar, 1000);
+        };
+
+        function actualizar() {
+            ws.send("update");
+        };
+        
+        window.onload = function() {
+            % for cast in data:
+                setVolume("{{cast}}",50);    
+            % end
+            % for cast in data:
+                setHandlers("{{cast}}");
+            % end
+            init();
+        }
+    </script>
 </head>
 
 <body>
-  <script type="text/javascript">
-    var ws = new WebSocket("ws://" + window.location.hostname + ":8083/websocket");
-    function init(){
-        var timer = ""
-
-        ws.onopen = function() {
-            console.log("WebSocket abierto");
-            ws.send("init");
-            timer=setInterval(actualizar,1000);
-        };
-        ws.onmessage = function (evt) {
-            console.log("Mensaje recibido, actualizando intefaz");
-        };
-        ws.onclose = function () {
-            console.log("WebSocket cerrado");            
-            clearInterval(timer);        
-        };
-        setTimeout(clearInterval(timer),10000);
-    }
-    function actualizar() {
-        ws.send("update");
-    }
-    window.addEventListener("load", init, false);
-  </script>
-
+    <div id="coso"></div>
     <div class="mdl-layout mdl-js-layout mdl-color--grey-100">
         <main class="mdl-layout__content">
             <div class="mdl-grid">
                 % for cast in data:
-                <div class="mdl-card mdl-cell mdl-cell--6-col mdl-cell--4-col-tablet mdl-shadow--2dp">
-                    <div class="cast" id="{{cast}}" data-uuid="{{data[cast]["uuid"]}}">{{cast}}</div>
-                    % for att in data[cast]:
-                    % if(att == "imagen"):
-                      <div class="mdl-card__media" style="background: url({{data[cast][att]}}) 50% 50%"></div>
-                    % end
-                    % end
-                    <div class="mdl-card__supporting-text">
-                        % for att in data[cast]:
-                        % if(att == "volumen"):
+                <div class="mdl-card mdl-cell mdl-cell--6-col mdl-cell--4-col-tablet mdl-shadow--2dp" id="{{cast}}">
+                    <div class="cast" id="titulo-{{cast}}" data-uuid="">{{cast}}</div>
+                    <div class="mdl-card__media" id="imagen-{{cast}}" style="background: url("") 50% 50%"></div>
+                    <div class="mdl-card__supporting-text" id="support-{{cast}}">
                         <div class="volumen">
                             <i class="fas fa-volume-down"></i>
                             <input type="range" min="1" max="100" class="slider" id="volume-{{cast}}" />
                             <i class="fas fa-volume-up"></i>
                         </div>
-                        % end
-                        %end
-                        <div class="contenido">
-                            % for att in data[cast]:
-                            % if(att == "titulo"):
-                            <div class="titulo">{{data[cast][att]}}</div>
-                            % end
-                            %end
-                            % for att in data[cast]:
-                            % if(att == "artista"):
-                            <div class="subtitulo">{{data[cast][att]}}</div>
-                            % end
-                            %end
+                        <div class="contenido" id="contenido-{{cast}}">
+                            <div class="titulo" id="titulo-{{cast}}"></div>
+                            <div class="subtitulo" id="subtitulo-{{cast}}"></div>
                         </div>
-                        <div class="controles">
-                            % for att in data[cast]:
-                            % if(att == "volumen"):
+                        <div class="controles" id="controles-{{cast}}">
                             <i class="fas fa-step-backward" id="back-{{cast}}"></i>
                             <i class="fas fa-play-circle fa-3x" id="play-{{cast}}"></i>
                             <i class="fas fa-pause-circle fa-3x" id="pause-{{cast}}"></i>
                             <i class="fas fa-step-forward" id="forward-{{cast}}"></i>
-                            % end
-                            %end
                         </div>
                     </div>
                 </div>
                 % end
-                <script>
-                  window.onload = function() {
-                     % for cast in data:
-                     % for att in data[cast]:
-                     % if (att == "volumen"):
-                        setVolume("{{cast}}",{{"{:.0f}".format(100*float(data[cast][att]))}});
-                        setHandlers("{{cast}}","{{data[cast]["uuid"]}}");
-                     % end 
-                     % end 
-                     % end
-                  }
-                </script>
             </div>
         </main>
     </div>
-
 </body>
 
 </html>

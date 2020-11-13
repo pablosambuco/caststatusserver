@@ -16,9 +16,11 @@ chromecasts = []
 estados = {}
 
 def get_status():
+    print(estados)
     return estados
 
 def init():
+    print(chromecasts)
     return chromecasts
 
 def update_status(listener, status):
@@ -135,7 +137,7 @@ def create_listeners():
                 dispositivos.append(service[3])
                 ips.append(service[4])
                 uuids.append(uuid)
-                chromecasts.append(cast)
+                chromecasts.append(cast.name)
 
     pychromecast.stop_discovery(browser)
 

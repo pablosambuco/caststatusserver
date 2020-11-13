@@ -35,20 +35,13 @@ def send_png(filename):
 
 @app.route('/')
 def index():
-    data = f.estados
+    data = f.chromecasts
     return template('index',data = data)
 
 @app.post('/api')
 def api():
     f.atender(request.body.getvalue().decode('utf-8'))
     return request.body
-
-@app.route('/estado')
-def estado():
-    response={}
-    for key in ['cast','estado','imagen','titulo','volumen','mute','uuid',]:
-        response[key]=request.query.get(key,default="")
-    return response
 
 @app.route('/websocket')
 def handle_websocket():
@@ -65,8 +58,6 @@ def handle_websocket():
             elif(message=="update"):
                 logger.info(message + " recibido. Enviando estado de dispositivos.")
                 wsock.send(str(f.get_status()))
-            else:
-                logger.warning(message + " recibido. No hay servicio asociado.")
         except WebSocketError:
             break
 
