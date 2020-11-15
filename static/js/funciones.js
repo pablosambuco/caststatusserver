@@ -15,7 +15,7 @@ function f_forward(cast) {
 }
 
 function f_volumen(cast, valor) {
-  ws.send(`volumen,${cast},${valor}`);
+  ws.send(`volume,${cast},${valor}`);
 }
 
 function setVolume(cast, valor) {

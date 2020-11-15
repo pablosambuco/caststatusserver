@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+"""Funciones custom para tratar toda la interaccion web-chromecast
+"""
 import time
 import datetime
+import logging
 import zeroconf
+from geventwebsocket import WebSocketError
 #import requests
 #from gevent.pywsgi import WSGIServer
 #from geventwebsocket import WebSocketHandler, WebSocketError
@@ -9,10 +13,9 @@ import zeroconf
 import pychromecast
 
 
-DISPOSITIVOS = []
 IPS = []
 UUIDS = []
-CHROMECASTS = []
+CHROMECASTS = {}
 ESTADOS = {}
 
 def get_status():
@@ -24,18 +27,22 @@ def get_status():
     return ESTADOS
 
 def init():
-    """Devuelve el listado de chromecasts
+    """Devuelve el listado de nombres de chromecasts
 
     Returns:
-        list listado de chromecasts
+        list listado de nombres de chromecasts
     """
-    return CHROMECASTS
+    lista = []
+    for cast in CHROMECASTS.values():
+        lista.append(cast.device.friendly_name)
+    lista.sort()
+    return lista
 
 def update_status(listener, status):
     """Actualiza el diccionario de estados
 
     Args:
-        listener (StatusListener/StatusMediaListener): objeto listener que detecta llama a esta funcion
+        listener (Listener): objeto listener que detecta llama a esta funcion
         status (Response): respuesta del chromecast con el cambio de estado
     """
     cast = str(listener.cast.device.friendly_name)
@@ -137,6 +144,11 @@ class StatusListener:
         self.cast = cast
 
     def new_cast_status(self, status):
+        """Metodo para enviar nuevos estados
+
+        Args:
+            status (Response): Estado que se envia al diccionario de estados
+        """
         update_status(self, status)
 
 
@@ -148,6 +160,11 @@ class StatusMediaListener:
         self.cast = cast
 
     def new_media_status(self, status):
+        """Metodo para enviar nuevos estados
+
+        Args:
+            status (Response): Estado que se envia al diccionario de estados
+        """
         update_status(self, status)
 
 
@@ -161,15 +178,77 @@ def create_listeners():
     for uuid, service in listener.services.items():
         cast = pychromecast.get_chromecast_from_service(service, zconf)
         if service[2] == "Chromecast":
-            if service[3] not in DISPOSITIVOS:
+            if service[3] not in CHROMECASTS:
                 cast.wait()
                 listener_cast = StatusListener(cast.name, cast)
                 cast.register_status_listener(listener_cast)
                 listener_media = StatusMediaListener(cast.name, cast)
                 cast.media_controller.register_status_listener(listener_media)
-                DISPOSITIVOS.append(service[3])
-                IPS.append(service[4])
                 UUIDS.append(uuid)
-                CHROMECASTS.append(cast.name)
+                CHROMECASTS[service[3]] = cast
 
     pychromecast.stop_discovery(browser)
+
+def atender(wsock):
+    """Funcion para atender los mensajes del WebSocket
+
+    Args:
+        wsock (WebSocket): objeto donde se recibiran los mensajes
+
+    Raises:
+        exc: Si ocurre una excepcion de WebSocket se envia al programa principal
+    """
+    logger=logging.getLogger()
+    try:
+        message = wsock.receive()
+        if message == "init":
+            logger.info("%s recibido. Enviando listado de dispositivos.",
+                         message)
+            wsock.send(str(init()))
+        elif message == "update":
+            logger.info("%s recibido. Enviando listado de dispositivos.",
+                         message)
+            wsock.send(str(get_status()))
+        elif message:
+            comando=message.split(',')
+            if comando[0] == "play":
+                f_play(cast=comando[1])
+            elif comando[0] == "pause":
+                f_pause(cast=comando[1])
+            elif comando[0] == "back":
+                f_back(cast=comando[1])
+            elif comando[0] == "forward":
+                f_forward(cast=comando[1])
+            elif comando[0] == "volume":
+                f_volume(cast=comando[1],value=comando[2])
+            else:
+                print(message)
+    except WebSocketError as exc:
+        raise exc
+
+def f_back(cast):
+    try:
+        CHROMECASTS[cast].media_controller.queue_prev()
+    except AttributeError:
+        pass        
+
+def f_play(cast):
+    try:
+        CHROMECASTS[cast].media_controller.play()
+    except AttributeError:
+        pass        
+
+def f_pause(cast):
+    try:
+        CHROMECASTS[cast].media_controller.pause()
+    except AttributeError:
+        pass
+
+def f_forward(cast):
+    try:
+        CHROMECASTS[cast].media_controller.queue_next()
+    except AttributeError:
+        pass
+
+def f_volume(cast,value):
+    CHROMECASTS[cast].set_volume(float(value)/100)

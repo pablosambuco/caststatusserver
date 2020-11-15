@@ -70,7 +70,7 @@ def index():
     Returns:
         HTML: contenido procesado a partir del template
     """
-    data = f.CHROMECASTS
+    data = f.init()
     return template('index', data=data)
 
 @APP.route('/websocket')
@@ -86,19 +86,7 @@ def handle_websocket():
 
     while True:
         try:
-            message = wsock.receive()
-            if message == "init":
-                LOGGER.info(str(message +
-                                " recibido. Enviando listado de dispositivos."
-                                ))
-                wsock.send(str(f.init()))
-            elif message == "update":
-                LOGGER.info(str(message +
-                                " recibido. Enviando estado de dispositivos."
-                                ))
-                wsock.send(str(f.get_status()))
-            else:
-                print(message)  
+            f.atender(wsock)
         except WebSocketError:
             break
 
