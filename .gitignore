@@ -112,3 +112,4 @@ Doxyfile
 py_filter
 html/*
 latex/*
+_gsdata_/*

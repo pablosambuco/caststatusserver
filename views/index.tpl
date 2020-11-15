@@ -58,7 +58,7 @@
                 % for cast in data:
                 <div class="mdl-card mdl-cell mdl-cell--6-col mdl-cell--4-col-tablet mdl-shadow--2dp" id="{{cast}}">
                     <div class="cast" id="titulo-{{cast}}" data-uuid="">{{cast}}</div>
-                    <div class="mdl-card__media" id="imagen-{{cast}}" style="background: url("") 50% 50%"></div>
+                    <div class="mdl-card__media" id="imagen-{{cast}}" style="background: url('images/black.png') 50% 50%"></div>
                     <div class="mdl-card__supporting-text" id="support-{{cast}}">
                         <div class="volumen">
                             <i class="fas fa-volume-down"></i>
