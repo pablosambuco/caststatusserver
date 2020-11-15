@@ -73,18 +73,6 @@ def index():
     data = f.CHROMECASTS
     return template('index', data=data)
 
-@APP.post('/api')
-def api():
-    """Ruta POST /api
-
-    Ruta utilizada para llamar funciones de PyChromecast desde JavaScript
-
-    Returns:
-        Response: respuesta del server para ser procesada en JavaScript
-    """
-    f.atender(request.body.getvalue().decode('utf-8'))
-    return request.body
-
 @APP.route('/websocket')
 def handle_websocket():
     """Ruta WS /websocket
@@ -109,6 +97,8 @@ def handle_websocket():
                                 " recibido. Enviando estado de dispositivos."
                                 ))
                 wsock.send(str(f.get_status()))
+            else:
+                print(message)  
         except WebSocketError:
             break
 

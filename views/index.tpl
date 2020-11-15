@@ -16,28 +16,27 @@
 
     <script type="text/javascript">
         var ws = new WebSocket("ws://" + window.location.hostname + ":8083/websocket");
-        var timer = "";
-
-        ws.onopen = function () {
-            console.log("WebSocket abierto");
-        };
-        ws.onmessage = function (evt) {
-            console.log(evt);
-        };
-        ws.onclose = function () {
-            console.log("WebSocket cerrado");
-            clearInterval(timer);
-        };
-
         function init() {
-            ws.send("init");
-            timer = setInterval(actualizar, 1000);
+            var timer = "";
+            
+            ws.onopen = function () {
+                console.log("WebSocket abierto");
+                ws.send("init");
+                timer = setInterval(actualizar, 1000);            
+            };
+            ws.onmessage = function (evt) {
+                console.log(evt);
+            };
+            ws.onclose = function () {
+                console.log("WebSocket cerrado");
+                clearInterval(timer);
+            };
         };
-
+        
         function actualizar() {
             ws.send("update");
         };
-        
+    
         window.onload = function() {
             % for cast in data:
                 setVolume("{{cast}}",50);    

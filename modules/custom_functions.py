@@ -16,12 +16,28 @@ CHROMECASTS = []
 ESTADOS = {}
 
 def get_status():
+    """Devuelve el estado actual de los chromecasts
+
+    Returns:
+        dict: diccionario de diccionarios con los estados
+    """
     return ESTADOS
 
 def init():
+    """Devuelve el listado de chromecasts
+
+    Returns:
+        list listado de chromecasts
+    """
     return CHROMECASTS
 
 def update_status(listener, status):
+    """Actualiza el diccionario de estados
+
+    Args:
+        listener (StatusListener/StatusMediaListener): objeto listener que detecta llama a esta funcion
+        status (Response): respuesta del chromecast con el cambio de estado
+    """
     cast = str(listener.cast.device.friendly_name)
     listener_aux = listener.__class__.__name__
 
@@ -114,6 +130,8 @@ def update_status(listener, status):
         del ESTADOS[i]
 
 class StatusListener:
+    """Clase listener para cambios de estado
+    """
     def __init__(self, name, cast):
         self.name = name
         self.cast = cast
@@ -123,6 +141,8 @@ class StatusListener:
 
 
 class StatusMediaListener:
+    """Clase listener para cambios de contenido multimedia
+    """
     def __init__(self, name, cast):
         self.name = name
         self.cast = cast
@@ -132,6 +152,8 @@ class StatusMediaListener:
 
 
 def create_listeners():
+    """Creacion de listeners y attach a cada objeto Chromecast
+    """
     listener = pychromecast.CastListener()
     zconf = zeroconf.Zeroconf()
     browser = pychromecast.discovery.start_discovery(listener, zconf)
@@ -151,11 +173,3 @@ def create_listeners():
                 CHROMECASTS.append(cast.name)
 
     pychromecast.stop_discovery(browser)
-
-def atender(params):
-    parametros = params.split(',')
-    # uuid = parametros[0].split('=')[1]
-    # cast = parametros[1].split('=')[1]
-    # accion = parametros[2].split('=')[1]
-    # parametro = parametros[3].split('=')[1]
-    return parametros
