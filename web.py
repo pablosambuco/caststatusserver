@@ -10,13 +10,13 @@ from logging.handlers import RotatingFileHandler
 from gevent.pywsgi import WSGIServer
 from geventwebsocket import WebSocketHandler, WebSocketError
 from bottle import Bottle, template, static_file, request, abort
-import modules.custom_functions as f
+from caststatusserver import CastStatusServer
 
-f.create_listeners()
+caststatus = CastStatusServer()
 
 Path("logs").mkdir(parents=True, exist_ok=True)
 LOGGER = logging.getLogger()
-HANDLER = RotatingFileHandler('logs/web.log', maxBytes=1048576, backupCount=5)
+HANDLER = RotatingFileHandler('logs/web.log', maxBytes=1024*1024, backupCount=5)
 FORMATTER = logging.Formatter('%(levelname)s %(asctime)s %(message)s')
 HANDLER.setFormatter(FORMATTER)
 LOGGER.addHandler(HANDLER)
@@ -70,7 +70,7 @@ def index():
     Returns:
         HTML: contenido procesado a partir del template
     """
-    data = f.init()
+    data = caststatus.init()
     return template('index', data=data)
 
 @APP.route('/websocket')
@@ -86,7 +86,7 @@ def handle_websocket():
 
     while True:
         try:
-            f.atender(wsock)
+            caststatus.atender(wsock)
         except WebSocketError:
             break
 

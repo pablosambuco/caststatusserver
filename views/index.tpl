@@ -50,7 +50,7 @@
 </head>
 
 <body>
-    <div id="coso"></div>
+    <div id="demo"></div>
     <div class="mdl-layout mdl-js-layout mdl-color--grey-100">
         <main class="mdl-layout__content">
             <div class="mdl-grid">

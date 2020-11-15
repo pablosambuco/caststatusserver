@@ -67,5 +67,24 @@ function setHandlers(cast, uuid) {
 }
 
 function setState(response) {
+
+document.getElementById("demo").innerHTML = response;
+
+//lookup_claves = {
+//        'volume_level': 'volumen',
+////        'title': 'titulo',  
+ //         'subtitle': 'subtitulo',
+ //       'series_title': 'serie',
+//        'season': 'temporada',
+  //      'episode': 'episodio',
+    //    'artist': 'artista',
+      //  'album_name': 'album',
+        //'track': 'pista',
+//        'images': 'imagen',
+  //      'player_state': 'estado',
+    //    'volume_muted': 'mute',
+      //  'status_text': 'texto',
+        //'icon_url': 'icono'
+
   console.log(response);
 }
