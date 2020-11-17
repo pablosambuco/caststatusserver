@@ -1,4 +1,4 @@
-# CastStatus
+# CastStatusServer
 
 WebApp con actualizacion automatica del estado de los chromecast disponibles en la red local
 
