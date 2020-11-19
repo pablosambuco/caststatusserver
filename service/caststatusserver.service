@@ -1,11 +1,11 @@
 [Unit]
-Description=CastStatus
+Description=CastStatusServer
 After=multi-user.target
 Conflicts=getty@tty1.service
 
 [Service]
-Type=simple
-ExecStart=/usr/bin/python3 /home/pi/CastStatus/web.py
+Type=simplServere
+ExecStart=/usr/bin/python3 /home/pi/CastStatusServer/web.py
 StandardInput=tty-force
 
 [Install]

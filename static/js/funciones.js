@@ -63,28 +63,42 @@ function setHandlers(cast, uuid) {
 
   forward.onclick = function () {
     f_forward(cast);
+    console.log(cast,"forward");
   };
 }
 
-function setState(response) {
+  // key_lookup = {
+  //   'volume_level': 'volume',
+  //   'title': 'title',
+  //   'subtitle': 'subtitle',
+  //   'series_title': 'series',
+  //   'season': 'season',
+  //   'episode': 'episode',
+  //   'artist': 'artist',
+  //   'album_name': 'album',
+  //   'track': 'track',
+  //   'images': 'image',
+  //   'player_state': 'state',
+  //   'volume_muted': 'mute',
+  //   'status_text': 'text',
+  //   'icon_url': 'icon'
+  // }
 
-document.getElementById("demo").innerHTML = response;
-
-//lookup_claves = {
-//        'volume_level': 'volumen',
-////        'title': 'titulo',  
- //         'subtitle': 'subtitulo',
- //       'series_title': 'serie',
-//        'season': 'temporada',
-  //      'episode': 'episodio',
-    //    'artist': 'artista',
-      //  'album_name': 'album',
-        //'track': 'pista',
-//        'images': 'imagen',
-  //      'player_state': 'estado',
-    //    'volume_muted': 'mute',
-      //  'status_text': 'texto',
-        //'icon_url': 'icono'
-
-  console.log(response);
+function atender(message) {
+  var msg = "";
+  var name = "";
+  var jsonObject = "";
+  try {
+    jsonObject = JSON.parse(message.data);
+    console.log(`${jsonObject}`);
+    name = jsonObject.name;
+    //console.log(`${name}`);
+    msg = jsonObject.message;
+    //console.log(`${msg}`);
+  } 
+  catch(err){
+      //NADA
+  }
+  //console.log(`${message.data}`);
+  //TODO tratar los mensajes
 }

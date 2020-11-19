@@ -15,22 +15,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
     <script type="text/javascript">
-        var ws = new WebSocket("ws://" + window.location.hostname + ":8083/websocket");
+        var ws = "";
+        var timer = "";
+
         function init() {
-            var timer = "";
-            
-            ws.onopen = function () {
-                console.log("WebSocket abierto");
-                ws.send("init");
-                timer = setInterval(actualizar, 1000);            
-            };
-            ws.onmessage = function (evt) {
-                console.log(evt);
-            };
-            ws.onclose = function () {
-                console.log("WebSocket cerrado");
-                clearInterval(timer);
-            };
+            ws.send("init");
+            timer = window.setInterval(actualizar, 1000);            
         };
         
         function actualizar() {
@@ -41,11 +31,29 @@
             % for cast in data:
                 setVolume("{{cast}}",50);    
             % end
+
             % for cast in data:
                 setHandlers("{{cast}}");
             % end
-            init();
-        }
+            ws = new WebSocket("ws://" + window.location.hostname + ":8083/websocket");
+
+            ws.onopen = function () {
+                console.log("WebSocket abierto");
+                init();
+            };
+            
+            ws.onmessage = function (evt) {
+                atender(evt);
+            };
+            
+            ws.onclose = function () {
+                console.log("WebSocket cerrado");
+                while(timer) {
+                    window.clearInterval(timer--);
+                };
+            };
+                        
+        };
     </script>
 </head>
 

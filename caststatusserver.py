@@ -4,6 +4,7 @@
 import time
 import datetime
 import logging
+import json
 import zeroconf
 from geventwebsocket import WebSocketError
 #import requests
@@ -12,9 +13,14 @@ from geventwebsocket import WebSocketError
 #import websockets
 import pychromecast
 
-class CastStatusServer(object):
+class CastStatusServer:
     """Clase con funcionalidades de busqueda y control de
-        Chromecasts en una red local
+    Chromecasts en una red local
+
+    Esta clase contiene una instancia de tipo CastStatusSingleton.
+
+    Todos los metodos son derivados a esa instancia unica que atiende todos
+    los pedidos.
     """
     instance = None
     def __new__(cls):
@@ -49,9 +55,9 @@ class CastStatusServer(object):
                 if service[2] == "Chromecast":
                     if service[3] not in self.casts:
                         cast.wait()
-                        slist = StatusListener(cast.name, cast)
+                        slist = StatusListener(self, cast.name, cast)
                         cast.register_status_listener(slist)
-                        mlist = StatusMediaListener(cast.name, cast)
+                        mlist = StatusMediaListener(self, cast.name, cast)
                         cast.media_controller.register_status_listener(mlist)
                         self.uuids.append(uuid)
                         self.casts[service[3]] = cast
@@ -67,11 +73,7 @@ class CastStatusServer(object):
             Returns:
                 list listado de nombres de chromecasts
             """
-            aux = []
-            for cast in self.casts.values():
-                aux.append(cast.device.friendly_name)
-            aux.sort()
-            return aux
+            return self.casts
 
         def update_status(self, listener, status):
             """Actualiza el diccionario de estados
@@ -135,7 +137,9 @@ class CastStatusServer(object):
                 'player_state': 'state',
                 'volume_muted': 'mute',
                 'status_text': 'text',
-                'icon_url': 'icon'
+                'icon_url': 'icon',
+                'is_active_input': 'is_active_input',
+                'is_stand_by': 'is_stand_by'
             }
 
             for attr in attr_lookup:
@@ -182,18 +186,20 @@ class CastStatusServer(object):
             logger=logging.getLogger()
             try:
                 message = wsock.receive()
-                log = message + "recibido"
                 if message == "init":
+                    log = message + " recibido"
                     logger.info("%s. Enviando listado de dispositivos.",
                                 log)
                     wsock.send(str(self.init()))
-                elif message == "update":
+                if message == "update":
+                    log = message + " recibido"
                     logger.info("%s. Enviando listado de dispositivos.",
                                 log)
-                    wsock.send(str(self.status))
+                    wsock.send(json.dumps(str(self.status)))
                 elif message:
+                    log = message + " recibido"
                     comando=message.split(',')
-                    if comando[0] == "play":
+                    if len(comando) == 2 and comando[0] == "play":
                         self.play(cast=comando[1])
                     elif comando[0] == "pause":
                         self.pause(cast=comando[1])
@@ -204,7 +210,7 @@ class CastStatusServer(object):
                     elif comando[0] == "volume":
                         self.volume(cast=comando[1],value=comando[2])
                     else:
-                        logger(log)
+                        logger.info("%s",log)
             except WebSocketError as exc:
                 raise exc
 
@@ -229,6 +235,8 @@ class CastStatusServer(object):
                 self.casts[cast].media_controller.play()
             except AttributeError:
                 pass
+            except KeyError:
+                pass
 
         def pause(self, cast):
             """Pause
@@ -239,6 +247,8 @@ class CastStatusServer(object):
             try:
                 self.casts[cast].media_controller.pause()
             except AttributeError:
+                pass
+            except KeyError:
                 pass
 
         def forward(self, cast):
@@ -251,6 +261,8 @@ class CastStatusServer(object):
                 self.casts[cast].media_controller.queue_next()
             except AttributeError:
                 pass
+            except KeyError:
+                pass
 
         def volume(self, cast, value):
             """Cambio de Volumen
@@ -259,12 +271,18 @@ class CastStatusServer(object):
                 cast (Chromecast): Cast en el que se aplica el volumen
                 value (int): Valor de 0 a 100 para aplicar
             """
-            self.casts[cast].set_volume(float(value)/100)
+            try:
+                self.casts[cast].set_volume(float(value)/100)
+            except AttributeError:
+                pass
+            except KeyError:
+                pass
 
 class StatusListener:
     """Clase listener para cambios de estado
     """
-    def __init__(self, name, cast):
+    def __init__(self, server, name, cast):
+        self.server = server        
         self.name = name
         self.cast = cast
 
@@ -274,15 +292,17 @@ class StatusListener:
         Args:
             status (Response): Estado que se envia al diccionario de estados
         """
-        CastStatusServer().update_status(self, status)
+        self.server.update_status(self, status)
 
 
 class StatusMediaListener:
     """Clase listener para cambios de contenido multimedia
     """
-    def __init__(self, name, cast):
+    def __init__(self, server, name, cast):
+        self.server = server
         self.name = name
         self.cast = cast
+
 
     def new_media_status(self, status):
         """Metodo para enviar nuevos estados
@@ -290,4 +310,4 @@ class StatusMediaListener:
         Args:
             status (Response): Estado que se envia al diccionario de estados
         """
-        CastStatusServer().update_status(self, status)
+        self.server.update_status(self, status)
