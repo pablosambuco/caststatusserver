@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
 """Modulo conteniendo las clases necesarias para el manejo de chromecasts
 """
+
+# pylint: disable=line-too-long
+
 import time
 import datetime
 import logging
 import json
 import zeroconf
 from geventwebsocket import WebSocketError
-#import requests
-#from gevent.pywsgi import WSGIServer
-#from geventwebsocket import WebSocketHandler, WebSocketError
-#import websockets
+
+# import requests
+# from gevent.pywsgi import WSGIServer
+# from geventwebsocket import WebSocketHandler, WebSocketError
+# import websockets
 import pychromecast
+
 
 class CastStatusServer:
     """Clase con funcionalidades de busqueda y control de
@@ -22,25 +27,25 @@ class CastStatusServer:
     Todos los metodos son derivados a esa instancia unica que atiende todos
     los pedidos.
     """
+
     instance = None
+
     def __new__(cls):
         if not CastStatusServer.instance:
             CastStatusServer.instance = CastStatusServer.CastStatusSingleton()
         return CastStatusServer.instance
 
     def __getattr__(self, name):
-        """Singleton getattr
-        """
+        """Singleton getattr"""
         return getattr(self.instance, name)
 
     def __setattr__(self, name, value):
-        """Singleton setattr
-        """
+        """Singleton setattr"""
         return setattr(self.instance, name, value)
 
     class CastStatusSingleton:
-        """Singleton (?)
-        """
+        """Singleton (?)"""
+
         def __init__(self):
             self.uuids = []
             self.casts = {}
@@ -88,7 +93,7 @@ class CastStatusServer:
             # si no existe la clave la creo como un diccionario vacio
             if cast not in self.status:
                 self.status[cast] = {}
-                self.status[cast]['uuid'] = str(listener.cast.device.uuid)
+                self.status[cast]["uuid"] = str(listener.cast.device.uuid)
 
             try:
                 status_image = status.images[0].url
@@ -97,60 +102,52 @@ class CastStatusServer:
             except KeyError:
                 status_image = None
 
-            if aux_list == 'StatusMediaListener':
+            if aux_list == "StatusMediaListener":
                 attr_lookup = {
-                    'volume_level': '{:.2f}'.format(status.volume_level),
-                    'title': status.title,
-                    'subtitle': status.media_metadata.get('subtitle'),
-                    'series_title': status.series_title,
-                    'season': status.season,
-                    'episode': status.episode,
-                    'artist': status.artist,
-                    'album_name': status.album_name,
-                    'player_state': status.player_state,
-                    'track': status.track,
-                    'images': status_image
+                    "volume_level": "{:.2f}".format(status.volume_level),
+                    "title": status.title,
+                    "subtitle": status.media_metadata.get("subtitle"),
+                    "series_title": status.series_title,
+                    "season": status.season,
+                    "episode": status.episode,
+                    "artist": status.artist,
+                    "album_name": status.album_name,
+                    "player_state": status.player_state,
+                    "track": status.track,
+                    "images": status_image,
                 }
-            elif aux_list == 'StatusListener':
+            elif aux_list == "StatusListener":
                 attr_lookup = {
-                    'volume_level': '{:.2f}'.format(status.volume_level),
-                    'volume_muted': status.volume_muted,
-                    'status_text': status.status_text,
-                    'icon_url': status.icon_url,
-                    'is_active_input': status.is_active_input,
-                    'is_stand_by': status.is_stand_by
+                    "volume_level": "{:.2f}".format(status.volume_level),
+                    "volume_muted": status.volume_muted,
+                    "status_text": status.status_text,
+                    "icon_url": status.icon_url,
                 }
             else:
                 attr_lookup = {}
 
             key_lookup = {
-                'volume_level': 'volume',
-                'title': 'title',
-                'subtitle': 'subtitle',
-                'series_title': 'series',
-                'season': 'season',
-                'episode': 'episode',
-                'artist': 'artist',
-                'album_name': 'album',
-                'track': 'track',
-                'images': 'image',
-                'player_state': 'state',
-                'volume_muted': 'mute',
-                'status_text': 'text',
-                'icon_url': 'icon',
-                'is_active_input': 'is_active_input',
-                'is_stand_by': 'is_stand_by'
+                "volume_level": "volume",
+                "title": "title",
+                "subtitle": "subtitle",
+                "series_title": "series",
+                "season": "season",
+                "episode": "episode",
+                "artist": "artist",
+                "album_name": "album",
+                "track": "track",
+                "images": "image",
+                "player_state": "state",
+                "volume_muted": "mute",
+                "status_text": "text",
+                "icon_url": "icon",
             }
 
             for attr in attr_lookup:
                 if hasattr(status, attr) and attr_lookup[attr] is not None:
                     self.status[cast][key_lookup[attr]] = attr_lookup[attr]
 
-            subs_lookup = {
-                'image': 'icon',
-                'title': 'text',
-                'artist': 'subtitle'
-            }
+            subs_lookup = {"image": "icon", "title": "text", "artist": "subtitle"}
             # Completo datos con sus reemplazos
             for cast in self.status:
                 for orig in subs_lookup:
@@ -162,17 +159,11 @@ class CastStatusServer:
                             del self.status[cast][subs]
 
             now = datetime.datetime.now()
-            self.status[cast]['timestamp'] = now.strftime("%Y-%m-%d %H:%M:%S")
+            self.status[cast]["timestamp"] = now.strftime("%Y-%m-%d %H:%M:%S")
 
             # Si al terminar el loop, no tengo algunos datos, borro el registro
-            delete = []
-            for cast in self.status:
-                if ('text' not in self.status[cast] and
-                    self.status[cast].get('state',"UNKNOWN") == "UNKNOWN"
-                   ):
-                    delete.append(cast)
-            for i in delete:
-                del self.status[i]
+            # if listener.cast.is_idle:
+            #     del self.status[cast]
 
         def atender(self, wsock):
             """Funcion para atender los mensajes del WebSocket
@@ -183,22 +174,20 @@ class CastStatusServer:
             Raises:
                 exc: Si ocurre una excepcion de WebSocket se envia
             """
-            logger=logging.getLogger()
+            logger = logging.getLogger()
             try:
                 message = wsock.receive()
                 if message == "init":
                     log = message + " recibido"
-                    logger.info("%s. Enviando listado de dispositivos.",
-                                log)
-                    wsock.send(str(self.init()))
+                    logger.info("%s. Enviando listado de dispositivos.", log)
+                    wsock.send(str(sorted(self.init().keys(), key=lambda x: x.lower())))
                 if message == "update":
                     log = message + " recibido"
-                    logger.info("%s. Enviando listado de dispositivos.",
-                                log)
+                    logger.info("%s. Enviando listado de estados.", log)
                     wsock.send(json.dumps(str(self.status)))
                 elif message:
                     log = message + " recibido"
-                    comando=message.split(',')
+                    comando = message.split(",")
                     if len(comando) == 2 and comando[0] == "play":
                         self.play(cast=comando[1])
                     elif comando[0] == "pause":
@@ -208,9 +197,9 @@ class CastStatusServer:
                     elif comando[0] == "forward":
                         self.forward(cast=comando[1])
                     elif comando[0] == "volume":
-                        self.volume(cast=comando[1],value=comando[2])
+                        self.volume(cast=comando[1], value=comando[2])
                     else:
-                        logger.info("%s",log)
+                        logger.info("%s", log)
             except WebSocketError as exc:
                 raise exc
 
@@ -221,6 +210,7 @@ class CastStatusServer:
                 cast (Chromecast): Cast en el que se aplica el back
             """
             try:
+                self.casts[cast].media_controller.rewind()
                 self.casts[cast].media_controller.queue_prev()
             except AttributeError:
                 pass
@@ -258,6 +248,9 @@ class CastStatusServer:
                 cast (Chromecast): Cast en el que se aplica el forward
             """
             try:
+                # self.casts[cast].media_controller.skip()
+                # TODO esto tendria que ser seek al final (hoy va a -5 segundos del final)
+                # TODO la propiedad es status.duration
                 self.casts[cast].media_controller.queue_next()
             except AttributeError:
                 pass
@@ -272,17 +265,18 @@ class CastStatusServer:
                 value (int): Valor de 0 a 100 para aplicar
             """
             try:
-                self.casts[cast].set_volume(float(value)/100)
+                self.casts[cast].set_volume(float(value) / 100)
             except AttributeError:
                 pass
             except KeyError:
                 pass
 
+
 class StatusListener:
-    """Clase listener para cambios de estado
-    """
+    """Clase listener para cambios de estado"""
+
     def __init__(self, server, name, cast):
-        self.server = server        
+        self.server = server
         self.name = name
         self.cast = cast
 
@@ -296,13 +290,12 @@ class StatusListener:
 
 
 class StatusMediaListener:
-    """Clase listener para cambios de contenido multimedia
-    """
+    """Clase listener para cambios de contenido multimedia"""
+
     def __init__(self, server, name, cast):
         self.server = server
         self.name = name
         self.cast = cast
-
 
     def new_media_status(self, status):
         """Metodo para enviar nuevos estados
