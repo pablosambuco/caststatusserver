@@ -265,8 +265,9 @@ class CastStatusServer:
             """
             try:
                 # self.casts[cast].media_controller.skip()
-                # TODO esto tendria que ser seek al final (hoy va a -5 segundos del final)
-                # TODO la propiedad es status.duration
+                # TODO Arreglar el forward
+                #  esto tendria que ser seek al final (hoy va a -5 segundos del final)
+                #  la propiedad es status.duration
                 self.casts[cast].media_controller.queue_next()
             except AttributeError:
                 pass
