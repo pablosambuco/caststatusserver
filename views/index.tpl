@@ -35,7 +35,8 @@
             % for cast in data:
                 setHandlers("{{cast}}");
             % end
-            ws = new WebSocket("ws://" + window.location.hostname + ":8083/websocket");
+            var full = window.location.hostname+(window.location.port ? ':' + window.location.port:'');
+            ws = new WebSocket("ws://" + full + "/websocket");
 
             ws.onopen = function () {
                 console.log("WebSocket abierto");
@@ -64,19 +65,19 @@
             <div class="mdl-grid">
                 % for cast in data:
                 <div class="mdl-card mdl-cell mdl-cell--6-col mdl-cell--4-col-tablet mdl-shadow--2dp" id="{{cast}}">
-                    <div class="cast" id="titulo-{{cast}}" data-uuid="">{{cast}}</div>
-                    <div class="mdl-card__media" id="imagen-{{cast}}" style="background: url('images/black.png') 50% 50%"></div>
-                    <div class="mdl-card__supporting-text" id="support-{{cast}}">
-                        <div class="volumen">
+                    <div class="cast" id="cast-{{cast}}" data-uuid="">{{cast}}</div>
+                    <div class="mdl-card__media" id="image-{{cast}}" style="background: url('images/black.png') 50% 50%"></div>
+                    <div class="mdl-card__supporting-text" id="text-{{cast}}">
+                        <div class="volume">
                             <i class="fas fa-volume-down"></i>
                             <input type="range" min="1" max="100" class="slider" id="volume-{{cast}}" />
                             <i class="fas fa-volume-up"></i>
                         </div>
-                        <div class="contenido" id="contenido-{{cast}}">
-                            <div class="titulo" id="titulo-{{cast}}"></div>
-                            <div class="subtitulo" id="subtitulo-{{cast}}"></div>
+                        <div class="content" id="content-{{cast}}">
+                            <div class="title" id="title-{{cast}}"></div>
+                            <div class="subtitle" id="subtitle-{{cast}}"></div>
                         </div>
-                        <div class="controles" id="controles-{{cast}}">
+                        <div class="controls" id="controls-{{cast}}">
                             <i class="fas fa-step-backward" id="back-{{cast}}"></i>
                             <i class="fas fa-play-circle fa-3x" id="play-{{cast}}"></i>
                             <i class="fas fa-pause-circle fa-3x" id="pause-{{cast}}"></i>

@@ -80,6 +80,24 @@ class CastStatusServer:
             """
             return self.casts
 
+        def update(self):
+            """Devuelve el listado de nombres de chromecasts
+
+            Returns:
+                list listado de nombres de chromecasts
+            """
+
+            lista = []
+            for key in self.status:
+                aux = {}
+                aux["cast"] = key
+                aux["contenido"] = self.status[key]
+                lista.append(aux)
+            respuesta = {}
+            respuesta["chromecasts"] = lista
+
+            return respuesta
+
         def update_status(self, listener, status):
             """Actualiza el diccionario de estados
 
@@ -177,14 +195,12 @@ class CastStatusServer:
             logger = logging.getLogger()
             try:
                 message = wsock.receive()
-                if message == "init":
-                    log = message + " recibido"
-                    logger.info("%s. Enviando listado de dispositivos.", log)
-                    wsock.send(str(sorted(self.init().keys(), key=lambda x: x.lower())))
+
                 if message == "update":
                     log = message + " recibido"
                     logger.info("%s. Enviando listado de estados.", log)
-                    wsock.send(json.dumps(str(self.status)))
+                    respuesta = json.dumps(self.update())
+                    wsock.send(respuesta)
                 elif message:
                     log = message + " recibido"
                     comando = message.split(",")
