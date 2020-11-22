@@ -78,6 +78,9 @@ class CastStatusServer:
             Returns:
                 list listado de nombres de chromecasts
             """
+            # TODO detectar chromecasts nuevos y desconexiones.
+            #  Este metodo deberia devolver el listado y el javascript 
+            #  de manera dinámica dibujar o eliminar las tarjetas
             return self.casts
 
         def update(self):
@@ -179,9 +182,10 @@ class CastStatusServer:
             now = datetime.datetime.now()
             self.status[cast]["timestamp"] = now.strftime("%Y-%m-%d %H:%M:%S")
 
-            # Si al terminar el loop, no tengo algunos datos, borro el registro
-            # if listener.cast.is_idle:
-            #     del self.status[cast]
+            # TODO Detectar fin de transmision en chromecasts existentes
+            #  Si al terminar el loop, no tengo algunos datos, borro el registro
+            #  if listener.cast.is_idle:
+            #      del self.status[cast]
 
         def atender(self, wsock):
             """Funcion para atender los mensajes del WebSocket
