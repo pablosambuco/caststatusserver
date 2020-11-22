@@ -123,6 +123,9 @@ class CastStatusServer:
             except KeyError:
                 status_image = None
 
+            # TODO Tener en cuenta el metadataType (https://developers.google.com/cast/docs/reference/messages#MediaStatus)
+            #  con este dato se puede decidir què atributos buscar y simplificar el diccionario de estados
+            #  Tambien estaria muy bien determinar que comandos estan permitidos (atributo supportedMediaCommands) para enviar al frontend que botones deben estar disponibles
             if aux_list == "StatusMediaListener":
                 attr_lookup = {
                     "volume_level": "{:.2f}".format(status.volume_level),

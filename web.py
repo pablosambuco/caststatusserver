@@ -70,6 +70,8 @@ def index():
     Returns:
         HTML: contenido procesado a partir del template
     """
+    # TODO Separar 100% el webserver del CastStatusServer. Ofrecer websocket desde el Cast.
+    #  Esto implica sacar las variables del template de index, y crear una funcion en js para dibujar todo desde cero. ver a que nivel hay que insertar los objetos
     data = caststatus.init()
     return template('index', data=data)
 
