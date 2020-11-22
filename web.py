@@ -2,11 +2,19 @@
 # -*- coding: utf-8 -*-
 """Web.py: servidor principal de CastStatus
 """
+
+# pylint: disable=line-too-long
+
 import os
 import sys
 from pathlib import Path
 import logging
 from logging.handlers import RotatingFileHandler
+# TODO Cambiar framework gevent.
+#  gevent-websocket no tiene publicado WebSocketHandler, lo que produce un error al importar. 
+#  voy a buscar como pedir que lo incluyan, pero no pinta bien
+#  Propuesta: tornado
+# labels: mejora
 from gevent.pywsgi import WSGIServer
 from geventwebsocket import WebSocketHandler, WebSocketError
 from bottle import Bottle, template, static_file, request, abort
