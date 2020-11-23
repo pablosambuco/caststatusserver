@@ -2,7 +2,7 @@
 """Modulo conteniendo las clases necesarias para el manejo de chromecasts
 """
 
-# pylint: disable=line-too-long,too-few-public-methods
+# pylint: disable=line-too-long,too-few-public-methods,fixme
 
 import time
 import datetime
