@@ -11,7 +11,7 @@ from pathlib import Path
 import logging
 from logging.handlers import RotatingFileHandler
 from gevent.pywsgi import WSGIServer
-from geventwebsocket.exceptions import WebSocketError
+from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 from bottle import Bottle, template, static_file, request, abort
 from caststatusserver import CastStatusServer
