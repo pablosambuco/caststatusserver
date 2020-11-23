@@ -3,7 +3,7 @@
 """Web.py: servidor principal de CastStatus
 """
 
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long,too-few-public-methods
 
 import os
 import sys
@@ -16,7 +16,7 @@ from geventwebsocket.handler import WebSocketHandler
 from bottle import Bottle, template, static_file, request, abort
 from caststatusserver import CastStatusServer
 
-caststatus = CastStatusServer()
+CASTSTATUS = CastStatusServer()
 
 Path("logs").mkdir(parents=True, exist_ok=True)
 LOGGER = logging.getLogger()
@@ -76,7 +76,7 @@ def index():
     """
     # TODO Separar 100% el webserver del CastStatusServer. Ofrecer websocket desde el Cast.
     #  Esto implica sacar las variables del template de index, y crear una funcion en js para dibujar todo desde cero. ver a que nivel hay que insertar los objetos
-    data = caststatus.init()
+    data = CASTSTATUS.init()
     return template('index', data=data)
 
 @APP.route('/websocket')
@@ -92,7 +92,7 @@ def handle_websocket():
 
     while True:
         try:
-            caststatus.atender(wsock)
+            CASTSTATUS.atender(wsock)
         except WebSocketError:
             break
 

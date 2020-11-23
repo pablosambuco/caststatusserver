@@ -2,7 +2,7 @@
 """Modulo conteniendo las clases necesarias para el manejo de chromecasts
 """
 
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long,too-few-public-methods
 
 import time
 import datetime
@@ -79,7 +79,7 @@ class CastStatusServer:
                 list listado de nombres de chromecasts
             """
             # TODO detectar chromecasts nuevos y desconexiones.
-            #  Este metodo deberia devolver el listado y el javascript 
+            #  Este metodo deberia devolver el listado y el javascript
             #  de manera dinámica dibujar o eliminar las tarjetas
             return self.casts
 
@@ -140,15 +140,13 @@ class CastStatusServer:
                     "track": status.track,
                     "images": status_image,
                 }
-            elif aux_list == "StatusListener":
+            else: # StatusListener
                 attr_lookup = {
                     "volume_level": "{:.2f}".format(status.volume_level),
                     "volume_muted": status.volume_muted,
                     "status_text": status.status_text,
                     "icon_url": status.icon_url,
                 }
-            else:
-                attr_lookup = {}
 
             key_lookup = {
                 "volume_level": "volume",
