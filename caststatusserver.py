@@ -49,7 +49,7 @@ class CastStatusServer:
             zconf = zeroconf.Zeroconf()
             browser = pychromecast.discovery.start_discovery(listener, zconf)
             time.sleep(1)
-            for uuid, service in listener.services.items():
+            for service in listener.services.items():
                 cast = pychromecast.get_chromecast_from_service(service, zconf)
                 if service[2] == "Chromecast":
                     if service[3] not in self.casts:
@@ -161,6 +161,7 @@ class CastStatusServer:
             subs_lookup = {
                 "image": "icon",
                 "title": "text",
+                "subtitle": "series",
                 "artist": "subtitle",
             }
             # Completo datos con sus reemplazos
