@@ -125,18 +125,21 @@ function setHandlers(cast) {
 
 function atender(message) {
   jsonObject = JSON.parse(message.data);
-  atender_recursivo(jsonObject, "");
+  var resultado = atender_recursivo(jsonObject, "");
+  var aux = resultado.split(",");
+  if (aux[0] == "REMOVE") removeCard(aux[1]);
 }
 
 function atender_recursivo(jsonObject, cast) {
-  local_cast = cast;
+  var local_cast = cast;
+  var retorno = "";
   for (var key in jsonObject) {
     if (key == "cast") {
       local_cast = jsonObject[key];
-      createIfNotExists(local_cast);
+      createCard(local_cast);
     }
     if (jsonObject[key] instanceof Object) {
-      atender_recursivo(jsonObject[key], local_cast);
+      retorno = atender_recursivo(jsonObject[key], local_cast);
     } else {
       switch (key) {
         case "volume":
@@ -158,6 +161,7 @@ function atender_recursivo(jsonObject, cast) {
           setEpisode(local_cast, jsonObject[key]);
           break;
         case "state":
+          retorno = `${jsonObject[key]},${local_cast}`;
           setState(local_cast, jsonObject[key]);
           break;
         case "image":
@@ -172,9 +176,15 @@ function atender_recursivo(jsonObject, cast) {
       }
     }
   }
+  return retorno;
 }
 
-function createIfNotExists(cast) {
+function removeCard(cast) {
+  var card = document.getElementById(cast);
+  if (card) card.parentNode.removeChild(card);
+}
+
+function createCard(cast) {
   newDiv = document.getElementById(cast);
   grid = document.getElementById("grid");
   if (!newDiv) {
@@ -194,7 +204,7 @@ function createIfNotExists(cast) {
     image = document.createElement("div");
     image.setAttribute("class", "mdl-card__media");
     image.setAttribute("id", `image-${cast}`);
-    image.setAttribute("style","background: url('images/black.png') 50% 50%");
+    image.setAttribute("style", "background: url('images/black.png') 50% 50%");
     card.appendChild(image);
 
     support = document.createElement("div");
@@ -269,7 +279,7 @@ function createIfNotExists(cast) {
     card.appendChild(support);
 
     grid.appendChild(card);
-    
+
     setHandlers(cast);
   }
 }

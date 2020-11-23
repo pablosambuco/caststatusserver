@@ -10,11 +10,6 @@ import logging
 import json
 import zeroconf
 from geventwebsocket import WebSocketError
-
-# import requests
-# from gevent.pywsgi import WSGIServer
-# from geventwebsocket import WebSocketHandler, WebSocketError
-# import websockets
 import pychromecast
 
 
@@ -47,7 +42,6 @@ class CastStatusServer:
         """Singleton (?)"""
 
         def __init__(self):
-            self.uuids = []
             self.casts = {}
             self.status = {}
 
@@ -64,7 +58,6 @@ class CastStatusServer:
                         cast.register_status_listener(slist)
                         mlist = StatusMediaListener(self, cast.name, cast)
                         cast.media_controller.register_status_listener(mlist)
-                        self.uuids.append(uuid)
                         self.casts[service[3]] = cast
 
             pychromecast.stop_discovery(browser)
@@ -78,9 +71,6 @@ class CastStatusServer:
             Returns:
                 list listado de nombres de chromecasts
             """
-            # TODO detectar chromecasts nuevos y desconexiones.
-            #  Este metodo deberia devolver el listado y el javascript
-            #  de manera dinámica dibujar o eliminar las tarjetas
             return self.casts
 
         def update(self):
@@ -114,7 +104,6 @@ class CastStatusServer:
             # si no existe la clave la creo como un diccionario vacio
             if cast not in self.status:
                 self.status[cast] = {}
-                self.status[cast]["uuid"] = str(listener.cast.device.uuid)
 
             try:
                 status_image = status.images[0].url
@@ -187,13 +176,13 @@ class CastStatusServer:
                             del self.status[cast][subs]
 
             state_lookup = {
-                "IDLE": "PAUSED",
+                "IDLE": "REMOVE",
                 "PLAYING": "PLAYING",
                 "BUFFERING": "PLAYING",
                 "PAUSED": "PAUSED",
             }
 
-            # Ajusto el estado a uno de los 2 valores que manejamos en el frontend
+            # Ajusto el estado a uno de los valores que maneja el frontend
             self.status[cast]["state"] = state_lookup[
                 self.status[cast].get("state", "PAUSED")
             ]
@@ -201,10 +190,9 @@ class CastStatusServer:
             now = datetime.datetime.now()
             self.status[cast]["timestamp"] = now.strftime("%Y-%m-%d %H:%M:%S")
 
-            # TODO Detectar fin de transmision en chromecasts existentes
-            #  Si al terminar el loop, no tengo algunos datos, borro el registro
-            #  if listener.cast.is_idle:
-            #      del self.status[cast]
+            #  Si el reproductor esta en un estado desconocido, lo marco
+            if listener.cast.media_controller.status.player_state == "UNKNOWN":
+                self.status[cast]["state"] = "REMOVE"
 
         def atender(self, wsock):
             """Funcion para atender los mensajes del WebSocket
