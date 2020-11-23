@@ -98,6 +98,9 @@ class CastStatusServer:
                 listener (Listener): objeto listener que llama a este metodo
                 status (MediaStatus): respuesta del cast con el cambio de estado
             """
+            # TODO Deal with too-many-branches
+            # labels mejora
+
             cast = str(listener.cast.device.friendly_name)
             aux_list = listener.__class__.__name__
 
