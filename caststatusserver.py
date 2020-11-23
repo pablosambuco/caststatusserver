@@ -140,7 +140,7 @@ class CastStatusServer:
                     "track": status.track,
                     "images": status_image,
                 }
-            else: # StatusListener
+            else:  # StatusListener
                 attr_lookup = {
                     "volume_level": "{:.2f}".format(status.volume_level),
                     "volume_muted": status.volume_muted,
@@ -169,7 +169,11 @@ class CastStatusServer:
                 if hasattr(status, attr) and attr_lookup[attr] is not None:
                     self.status[cast][key_lookup[attr]] = attr_lookup[attr]
 
-            subs_lookup = {"image": "icon", "title": "text", "artist": "subtitle"}
+            subs_lookup = {
+                "image": "icon",
+                "title": "text",
+                "artist": "subtitle",
+            }
             # Completo datos con sus reemplazos
             for cast in self.status:
                 for orig in subs_lookup:
@@ -177,8 +181,22 @@ class CastStatusServer:
                     if subs in self.status[cast]:
                         if orig not in self.status[cast]:
                             self.status[cast][orig] = self.status[cast][subs]
-                        elif self.status[cast][orig] != self.status[cast][subs]:
+                        elif (
+                            self.status[cast][orig] != self.status[cast][subs]
+                        ):
                             del self.status[cast][subs]
+
+            state_lookup = {
+                "IDLE": "PAUSED",
+                "PLAYING": "PLAYING",
+                "BUFFERING": "PLAYING",
+                "PAUSED": "PAUSED",
+            }
+
+            # Ajusto el estado a uno de los 2 valores que manejamos en el frontend
+            self.status[cast]["state"] = state_lookup[
+                self.status[cast].get("state", "PAUSED")
+            ]
 
             now = datetime.datetime.now()
             self.status[cast]["timestamp"] = now.strftime("%Y-%m-%d %H:%M:%S")

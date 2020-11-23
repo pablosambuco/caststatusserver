@@ -20,8 +20,10 @@ CASTSTATUS = CastStatusServer()
 
 Path("logs").mkdir(parents=True, exist_ok=True)
 LOGGER = logging.getLogger()
-HANDLER = RotatingFileHandler('logs/web.log', maxBytes=1024*1024, backupCount=5)
-FORMATTER = logging.Formatter('%(levelname)s %(asctime)s %(message)s')
+HANDLER = RotatingFileHandler(
+    "logs/web.log", maxBytes=1024 * 1024, backupCount=5
+)
+FORMATTER = logging.Formatter("%(levelname)s %(asctime)s %(message)s")
 HANDLER.setFormatter(FORMATTER)
 LOGGER.addHandler(HANDLER)
 LOGGER.setLevel(logging.INFO)
@@ -29,7 +31,9 @@ LOGGER.setLevel(logging.INFO)
 DIRNAME = os.path.dirname(sys.argv[0])
 
 APP = Bottle()
-@APP.route(r'/static/<filename:re:.*\.css>')
+
+
+@APP.route(r"/static/<filename:re:.*\.css>")
 def send_css(filename):
     """Redireccion de static/*.css a static/css/*.css
 
@@ -39,9 +43,10 @@ def send_css(filename):
     Returns:
         string Ruta del css redirigido
     """
-    return static_file(filename, root=DIRNAME+'/static/css')
+    return static_file(filename, root=DIRNAME + "/static/css")
 
-@APP.route(r'/static/<filename:re:.*\.js>')
+
+@APP.route(r"/static/<filename:re:.*\.js>")
 def send_js(filename):
     """Redireccion de static/*.js a static/js/*.js
 
@@ -51,9 +56,10 @@ def send_js(filename):
     Returns:
         string Ruta del js redirigido
     """
-    return static_file(filename, root=DIRNAME+'/static/js')
+    return static_file(filename, root=DIRNAME + "/static/js")
 
-@APP.route(r'/images/<filename:re:.*\.png>')
+
+@APP.route(r"/images/<filename:re:.*\.png>")
 def send_png(filename):
     """Redireccion de images/*.png a static/images/*.png
 
@@ -63,9 +69,10 @@ def send_png(filename):
     Returns:
         string Ruta del png redirigido
     """
-    return static_file(filename, root=DIRNAME+'/static/images')
+    return static_file(filename, root=DIRNAME + "/static/images")
 
-@APP.route('/')
+
+@APP.route("/")
 def index():
     """Ruta /
 
@@ -77,18 +84,19 @@ def index():
     # TODO Separar 100% el webserver del CastStatusServer. Ofrecer websocket desde el Cast.
     #  Esto implica sacar las variables del template de index, y crear una funcion en js para dibujar todo desde cero. ver a que nivel hay que insertar los objetos
     data = CASTSTATUS.init()
-    return template('index', data=data)
+    return template("index", data=data)
 
-@APP.route('/websocket')
+
+@APP.route("/websocket")
 def handle_websocket():
     """Ruta WS /websocket
 
     Ruta utilizada para la comunicacion entre JavaScript (AJAX/JQuery) y Python
 
     """
-    wsock = request.environ.get('wsgi.websocket')
+    wsock = request.environ.get("wsgi.websocket")
     if not wsock:
-        abort(400, 'Expected WebSocket request.')
+        abort(400, "Expected WebSocket request.")
 
     while True:
         try:
