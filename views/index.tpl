@@ -19,7 +19,6 @@
         var timer = "";
 
         function init() {
-            ws.send("init");
             timer = window.setInterval(actualizar, 1000);            
         };
         
@@ -28,13 +27,6 @@
         };
     
         window.onload = function() {
-            % for cast in data:
-                setVolume("{{cast}}",50);    
-            % end
-
-            % for cast in data:
-                setHandlers("{{cast}}");
-            % end
             var full = window.location.hostname+(window.location.port ? ':' + window.location.port:'');
             ws = new WebSocket("ws://" + full + "/websocket");
 
@@ -62,31 +54,7 @@
     <div id="demo"></div>
     <div class="mdl-layout mdl-js-layout mdl-color--grey-100">
         <main class="mdl-layout__content">
-            <div class="mdl-grid">
-                % for cast in data:
-                <div class="mdl-card mdl-cell mdl-cell--6-col mdl-cell--4-col-tablet mdl-shadow--2dp" id="{{cast}}">
-                    <div class="cast" id="cast-{{cast}}" data-uuid="">{{cast}}</div>
-                    <div class="mdl-card__media" id="image-{{cast}}" style="background: url('images/black.png') 50% 50%"></div>
-                    <div class="mdl-card__supporting-text" id="text-{{cast}}">
-                        <div class="volume">
-                            <i class="fas fa-volume-down"></i>
-                            <input type="range" min="1" max="100" class="slider" id="volume-{{cast}}" />
-                            <i class="fas fa-volume-up"></i>
-                        </div>
-                        <div class="content" id="content-{{cast}}">
-                            <div class="title" id="title-{{cast}}"></div>
-                            <div class="subtitle" id="subtitle-{{cast}}"></div>
-                        </div>
-                        <div class="controls" id="controls-{{cast}}">
-                            <i class="fas fa-step-backward" id="back-{{cast}}"></i>
-                            <i class="fas fa-play-circle fa-3x" id="play-{{cast}}"></i>
-                            <i class="fas fa-pause-circle fa-3x" id="pause-{{cast}}"></i>
-                            <i class="fas fa-step-forward" id="forward-{{cast}}"></i>
-                        </div>
-                    </div>
-                </div>
-                % end
-            </div>
+            <div class="mdl-grid" id="grid"></div>
         </main>
     </div>
 </body>
