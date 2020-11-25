@@ -103,7 +103,7 @@ class CastStatusServer:
             if cast not in self.status:
                 self.status[cast] = {}
 
-            attr_lookup = self.get_attribs(listener.listener_type, status)
+            attr_lookup = get_attribs(listener.listener_type, status)
             for attr in attr_lookup:
                 if hasattr(status, attr) and attr_lookup[attr] is not None:
                     self.status[cast][map_key(attr)] = attr_lookup[attr]
@@ -231,55 +231,6 @@ class CastStatusServer:
             except KeyError:
                 pass
 
-        def get_attribs(self, listener_type, status):
-            """Parse de los atributos del estado
-
-            Args:
-                listener_type (string): tipo de listener que detecta el cambio
-                status (MediaStatus): Objeto con el estado actual
-            """
-            # TODO Tener en cuenta el metadataType (https://developers.google.com/cast/docs/reference/messages#MediaStatus)
-            #  con este dato se puede decidir què atributos buscar y simplificar el diccionario de estados
-            #  Tambien estaria muy bien determinar que comandos estan permitidos (atributo supportedMediaCommands) para enviar al frontend que botones deben estar disponibles
-            #  0: GenericMediaMetadata: title, subtitle, images
-            #  1: MovieMediaMetadata: title, subtitle, images, studio
-            #  2: TvShowMediaMetadata: seriesTitle, subtitle, season, episode, images
-            #  3: MusicTrackMediaMetadata: title, albumName, artist, images
-            #  4: PhotoMediaMetadata: title, artist, location
-            #
-            #  MediaStatus: playerState, supportedMediaCommands, volume
-            try:
-                status_image = status.images[0].url
-            except AttributeError:
-                status_image = None
-            except KeyError:
-                status_image = None
-
-            lookup = {}
-            if listener_type == "media":
-                lookup = {
-                    "volume_level": "{:.2f}".format(status.volume_level),
-                    "title": status.title,
-                    "subtitle": status.media_metadata.get("subtitle"),
-                    "series_title": status.series_title,
-                    "season": status.season,
-                    "episode": status.episode,
-                    "artist": status.artist,
-                    "album_name": status.album_name,
-                    "player_state": status.player_state,
-                    "track": status.track,
-                    "images": status_image,
-                }
-            elif listener_type == "status":
-                lookup = {
-                    "volume_level": "{:.2f}".format(status.volume_level),
-                    "volume_muted": status.volume_muted,
-                    "status_text": status.status_text,
-                    "icon_url": status.icon_url,
-                }
-
-            return lookup
-
         def set_state(self, listener, cast):
             """Metodo para establecer el estado o borrar la tarjeta en el front
 
@@ -367,3 +318,52 @@ def map_key(key):
         "icon_url": "icon",
     }
     return lookup[key]
+
+def get_attribs(listener_type, status):
+    """Parse de los atributos del estado
+
+    Args:
+        listener_type (string): tipo de listener que detecta el cambio
+        status (MediaStatus): Objeto con el estado actual
+    """
+    # TODO Tener en cuenta el metadataType (https://developers.google.com/cast/docs/reference/messages#MediaStatus)
+    #  con este dato se puede decidir què atributos buscar y simplificar el diccionario de estados
+    #  Tambien estaria muy bien determinar que comandos estan permitidos (atributo supportedMediaCommands) para enviar al frontend que botones deben estar disponibles
+    #  0: GenericMediaMetadata: title, subtitle, images
+    #  1: MovieMediaMetadata: title, subtitle, images, studio
+    #  2: TvShowMediaMetadata: seriesTitle, subtitle, season, episode, images
+    #  3: MusicTrackMediaMetadata: title, albumName, artist, images
+    #  4: PhotoMediaMetadata: title, artist, location
+    #
+    #  MediaStatus: playerState, supportedMediaCommands, volume
+    try:
+        status_image = status.images[0].url
+    except AttributeError:
+        status_image = None
+    except KeyError:
+        status_image = None
+
+    lookup = {}
+    if listener_type == "media":
+        lookup = {
+            "volume_level": "{:.2f}".format(status.volume_level),
+            "title": status.title,
+            "subtitle": status.media_metadata.get("subtitle"),
+            "series_title": status.series_title,
+            "season": status.season,
+            "episode": status.episode,
+            "artist": status.artist,
+            "album_name": status.album_name,
+            "player_state": status.player_state,
+            "track": status.track,
+            "images": status_image,
+        }
+    elif listener_type == "status":
+        lookup = {
+            "volume_level": "{:.2f}".format(status.volume_level),
+            "volume_muted": status.volume_muted,
+            "status_text": status.status_text,
+            "icon_url": status.icon_url,
+        }
+
+    return lookup
