@@ -106,7 +106,7 @@ class CastStatusServer:
             attr_lookup = self.get_attribs(listener.listener_type, status)
             for attr in attr_lookup:
                 if hasattr(status, attr) and attr_lookup[attr] is not None:
-                    self.status[cast][self.map_key(attr)] = attr_lookup[attr]
+                    self.status[cast][map_key(attr)] = attr_lookup[attr]
 
             self.set_substitutes(cast)
             self.set_state(listener,cast)
@@ -280,26 +280,6 @@ class CastStatusServer:
 
             return lookup
 
-        def map_key(self, key):
-            """Metodo para mapear las claves"""
-            lookup = {
-                "volume_level": "volume",
-                "title": "title",
-                "subtitle": "subtitle",
-                "series_title": "series",
-                "season": "season",
-                "episode": "episode",
-                "artist": "artist",
-                "album_name": "album",
-                "track": "track",
-                "images": "image",
-                "player_state": "state",
-                "volume_muted": "mute",
-                "status_text": "text",
-                "icon_url": "icon",
-            }
-            return lookup[key]
-
         def set_state(self, listener, cast):
             """Metodo para establecer el estado o borrar la tarjeta en el front
 
@@ -367,3 +347,23 @@ class GenericListener:
             status (Response): Estado que se envia al diccionario de estados
         """
         self.server.update_status(self, status)
+
+def map_key(key):
+    """Funcion para mapear las claves"""
+    lookup = {
+        "volume_level": "volume",
+        "title": "title",
+        "subtitle": "subtitle",
+        "series_title": "series",
+        "season": "season",
+        "episode": "episode",
+        "artist": "artist",
+        "album_name": "album",
+        "track": "track",
+        "images": "image",
+        "player_state": "state",
+        "volume_muted": "mute",
+        "status_text": "text",
+        "icon_url": "icon",
+    }
+    return lookup[key]
