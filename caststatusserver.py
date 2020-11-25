@@ -2,7 +2,7 @@
 """Modulo conteniendo las clases necesarias para el manejo de chromecasts
 """
 
-# pylint: disable=line-too-long,too-few-public-methods,fixme
+# pylint: disable=line-too-long,fixme
 
 import time
 import datetime
@@ -54,9 +54,9 @@ class CastStatusServer:
                 if service[2] == "Chromecast":
                     if service[3] not in self.casts:
                         cast.wait()
-                        slist = StatusListener(self, cast)
+                        slist = GenericListener(self, cast, "status")
                         cast.register_status_listener(slist)
-                        mlist = StatusMediaListener(self, cast)
+                        mlist = GenericListener(self, cast, "media")
                         cast.media_controller.register_status_listener(mlist)
                         self.casts[service[3]] = cast
 
@@ -98,113 +98,26 @@ class CastStatusServer:
                 listener (Listener): objeto listener que llama a este metodo
                 status (MediaStatus): respuesta del cast con el cambio de estado
             """
-            # TODO Deal with too-many-branches
-            # labels mejora
-
             cast = str(listener.cast.device.friendly_name)
-            aux_list = listener.__class__.__name__
-
             # si no existe la clave la creo como un diccionario vacio
-            self.status[cast] = self.status.get("cast",{})
-            #if cast not in self.status:
-            #    self.status[cast] = {}
+            if cast not in self.status:
+                self.status[cast] = {}
 
-            try:
-                status_image = status.images[0].url
-            except AttributeError:
-                status_image = None
-            except KeyError:
-                status_image = None
-
-            # TODO Tener en cuenta el metadataType (https://developers.google.com/cast/docs/reference/messages#MediaStatus)
-            #  con este dato se puede decidir què atributos buscar y simplificar el diccionario de estados
-            #  Tambien estaria muy bien determinar que comandos estan permitidos (atributo supportedMediaCommands) para enviar al frontend que botones deben estar disponibles
-            #  0: GenericMediaMetadata: title, subtitle, images
-            #  1: MovieMediaMetadata: title, subtitle, images, studio
-            #  2: TvShowMediaMetadata: seriesTitle, subtitle, season, episode, images
-            #  3: MusicTrackMediaMetadata: title, albumName, artist, images
-            #  4: PhotoMediaMetadata: title, artist, location
-            #
-            #  MediaStatus: playerState, supportedMediaCommands, volume
-            if aux_list == "StatusMediaListener":
-                attr_lookup = {
-                    "volume_level": "{:.2f}".format(status.volume_level),
-                    "title": status.title,
-                    "subtitle": status.media_metadata.get("subtitle"),
-                    "series_title": status.series_title,
-                    "season": status.season,
-                    "episode": status.episode,
-                    "artist": status.artist,
-                    "album_name": status.album_name,
-                    "player_state": status.player_state,
-                    "track": status.track,
-                    "images": status_image,
-                }
-            else:  # StatusListener
-                attr_lookup = {
-                    "volume_level": "{:.2f}".format(status.volume_level),
-                    "volume_muted": status.volume_muted,
-                    "status_text": status.status_text,
-                    "icon_url": status.icon_url,
-                }
-
-            key_lookup = {
-                "volume_level": "volume",
-                "title": "title",
-                "subtitle": "subtitle",
-                "series_title": "series",
-                "season": "season",
-                "episode": "episode",
-                "artist": "artist",
-                "album_name": "album",
-                "track": "track",
-                "images": "image",
-                "player_state": "state",
-                "volume_muted": "mute",
-                "status_text": "text",
-                "icon_url": "icon",
-            }
-
+            attr_lookup = self.get_attribs(listener.listener_type, status)
             for attr in attr_lookup:
                 if hasattr(status, attr) and attr_lookup[attr] is not None:
-                    self.status[cast][key_lookup[attr]] = attr_lookup[attr]
+                    self.status[cast][self.map_key(attr)] = attr_lookup[attr]
 
-            subs_lookup = {
-                "image": "icon",
-                "title": "text",
-                "subtitle": "series",
-                "artist": "subtitle",
-            }
-            # Completo datos con sus reemplazos
-            for cast in self.status:
-                for orig in subs_lookup:
-                    subs = subs_lookup[orig]
-                    if subs in self.status[cast]:
-                        if orig not in self.status[cast]:
-                            self.status[cast][orig] = self.status[cast][subs]
-                        elif (
-                            self.status[cast][orig] != self.status[cast][subs]
-                        ):
-                            del self.status[cast][subs]
+            self.set_substitutes(cast)
+            self.set_state(listener,cast)
 
-            state_lookup = {
-                "IDLE": "REMOVE",
-                "PLAYING": "PLAYING",
-                "BUFFERING": "PLAYING",
-                "PAUSED": "PAUSED",
-            }
+            now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.status[cast]["timestamp"] = now
 
-            # Ajusto el estado a uno de los valores que maneja el frontend
-            self.status[cast]["state"] = state_lookup[
-                self.status[cast].get("state", "PAUSED")
-            ]
-
-            now = datetime.datetime.now()
-            self.status[cast]["timestamp"] = now.strftime("%Y-%m-%d %H:%M:%S")
-
-            #  Si el reproductor esta en un estado desconocido, lo marco
-            if listener.cast.media_controller.status.player_state == "UNKNOWN":
-                self.status[cast]["state"] = "REMOVE"
+            # TODO Dejar de solicitar actualizaciones desde el front
+            #  y enviarlas directamente a todos los clientes desde update_status
+            #  labels: mejora
+            #  assignees: pablosambuco
 
         def atender(self, wsock):
             """Funcion para atender los mensajes del WebSocket
@@ -318,33 +231,138 @@ class CastStatusServer:
             except KeyError:
                 pass
 
+        def get_attribs(self, listener_type, status):
+            """Parse de los atributos del estado
 
-class StatusListener:
-    """Clase listener para cambios de estado"""
+            Args:
+                listener_type (string): tipo de listener que detecta el cambio
+                status (MediaStatus): Objeto con el estado actual
+            """
+            # TODO Tener en cuenta el metadataType (https://developers.google.com/cast/docs/reference/messages#MediaStatus)
+            #  con este dato se puede decidir què atributos buscar y simplificar el diccionario de estados
+            #  Tambien estaria muy bien determinar que comandos estan permitidos (atributo supportedMediaCommands) para enviar al frontend que botones deben estar disponibles
+            #  0: GenericMediaMetadata: title, subtitle, images
+            #  1: MovieMediaMetadata: title, subtitle, images, studio
+            #  2: TvShowMediaMetadata: seriesTitle, subtitle, season, episode, images
+            #  3: MusicTrackMediaMetadata: title, albumName, artist, images
+            #  4: PhotoMediaMetadata: title, artist, location
+            #
+            #  MediaStatus: playerState, supportedMediaCommands, volume
+            try:
+                status_image = status.images[0].url
+            except AttributeError:
+                status_image = None
+            except KeyError:
+                status_image = None
 
-    def __init__(self, server, cast):
+            lookup = {}
+            if listener_type == "media":
+                lookup = {
+                    "volume_level": "{:.2f}".format(status.volume_level),
+                    "title": status.title,
+                    "subtitle": status.media_metadata.get("subtitle"),
+                    "series_title": status.series_title,
+                    "season": status.season,
+                    "episode": status.episode,
+                    "artist": status.artist,
+                    "album_name": status.album_name,
+                    "player_state": status.player_state,
+                    "track": status.track,
+                    "images": status_image,
+                }
+            elif listener_type == "status":
+                lookup = {
+                    "volume_level": "{:.2f}".format(status.volume_level),
+                    "volume_muted": status.volume_muted,
+                    "status_text": status.status_text,
+                    "icon_url": status.icon_url,
+                }
+
+            return lookup
+
+        def map_key(self, key):
+            """Metodo para mapear las claves"""
+            lookup = {
+                "volume_level": "volume",
+                "title": "title",
+                "subtitle": "subtitle",
+                "series_title": "series",
+                "season": "season",
+                "episode": "episode",
+                "artist": "artist",
+                "album_name": "album",
+                "track": "track",
+                "images": "image",
+                "player_state": "state",
+                "volume_muted": "mute",
+                "status_text": "text",
+                "icon_url": "icon",
+            }
+            return lookup[key]
+
+        def set_state(self, listener, cast):
+            """Metodo para establecer el estado o borrar la tarjeta en el front
+
+            Args:
+                listener (Listener): Objeto que dispara el cambio de estado
+                cast (String): friendy_name del Cast
+
+            Returns:
+                String: nuevo estado a registrar
+            """
+            #  Si el reproductor esta en un estado desconocido, lo marco
+            if listener.cast.media_controller.status.player_state == "UNKNOWN":
+                self.status[cast]["state"] = "REMOVE"
+            else:
+                lookup = {
+                    "IDLE": "PAUSED",  # podria ser tambien REMOVE
+                    "PLAYING": "PLAYING",
+                    "BUFFERING": "PLAYING",
+                    "PAUSED": "PAUSED",
+                }
+
+                self.status[cast]["state"] = lookup[self.status[cast]["state"]]
+
+        def set_substitutes(self, cast):
+            """Metodo de reemplazo de atributos
+                Podria ser inutil si mejora la asignacion original
+
+            Args:
+                cast (String): friendly_name del Cast
+            """
+            lookup = {
+                "image": "icon",
+                "title": "text",
+                "subtitle": "series",
+                "artist": "subtitle",
+            }
+            # Completo datos con sus reemplazos y borro claves si es necesario
+            for orig in lookup:
+                subs = lookup[orig]
+                if subs in self.status[cast]:
+                    if orig not in self.status[cast]:
+                        self.status[cast][orig] = self.status[cast][subs]
+                    elif self.status[cast][orig] != self.status[cast][subs]:
+                        del self.status[cast][subs]
+
+class GenericListener:
+    """Clase listener generica"""
+
+    def __init__(self, server, cast, listener_type):
         self.server = server
         self.cast = cast
+        self.listener_type = listener_type
 
     def new_cast_status(self, status):
-        """Metodo para enviar nuevos estados
+        """Metodo para enviar cambios de estado
 
         Args:
             status (Response): Estado que se envia al diccionario de estados
         """
         self.server.update_status(self, status)
 
-
-class StatusMediaListener:
-    """Clase listener para cambios de contenido multimedia"""
-
-    def __init__(self, server, cast):
-        self.server = server
-        self.cast = cast
-
     def new_media_status(self, status):
-        """Metodo para enviar nuevos estados
-
+        """Metodo para enviar cambios de medios
         Args:
             status (Response): Estado que se envia al diccionario de estados
         """

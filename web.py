@@ -3,7 +3,7 @@
 """Web.py: servidor principal de CastStatus
 """
 
-# pylint: disable=line-too-long,too-few-public-methods,fixme
+# pylint: disable=line-too-long,fixme
 
 import os
 import sys
