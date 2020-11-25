@@ -49,14 +49,14 @@ class CastStatusServer:
             zconf = zeroconf.Zeroconf()
             browser = pychromecast.discovery.start_discovery(listener, zconf)
             time.sleep(1)
-            for service in listener.services.items():
+            for _, service in listener.services.items():
                 cast = pychromecast.get_chromecast_from_service(service, zconf)
                 if service[2] == "Chromecast":
                     if service[3] not in self.casts:
                         cast.wait()
-                        slist = StatusListener(self, cast.name, cast)
+                        slist = StatusListener(self, cast)
                         cast.register_status_listener(slist)
-                        mlist = StatusMediaListener(self, cast.name, cast)
+                        mlist = StatusMediaListener(self, cast)
                         cast.media_controller.register_status_listener(mlist)
                         self.casts[service[3]] = cast
 
@@ -105,8 +105,9 @@ class CastStatusServer:
             aux_list = listener.__class__.__name__
 
             # si no existe la clave la creo como un diccionario vacio
-            if cast not in self.status:
-                self.status[cast] = {}
+            self.status[cast] = self.status.get("cast",{})
+            #if cast not in self.status:
+            #    self.status[cast] = {}
 
             try:
                 status_image = status.images[0].url
@@ -118,6 +119,13 @@ class CastStatusServer:
             # TODO Tener en cuenta el metadataType (https://developers.google.com/cast/docs/reference/messages#MediaStatus)
             #  con este dato se puede decidir què atributos buscar y simplificar el diccionario de estados
             #  Tambien estaria muy bien determinar que comandos estan permitidos (atributo supportedMediaCommands) para enviar al frontend que botones deben estar disponibles
+            #  0: GenericMediaMetadata: title, subtitle, images
+            #  1: MovieMediaMetadata: title, subtitle, images, studio
+            #  2: TvShowMediaMetadata: seriesTitle, subtitle, season, episode, images
+            #  3: MusicTrackMediaMetadata: title, albumName, artist, images
+            #  4: PhotoMediaMetadata: title, artist, location
+            #
+            #  MediaStatus: playerState, supportedMediaCommands, volume
             if aux_list == "StatusMediaListener":
                 attr_lookup = {
                     "volume_level": "{:.2f}".format(status.volume_level),
@@ -283,6 +291,13 @@ class CastStatusServer:
                 # TODO Arreglar el forward
                 #  esto tendria que ser seek al final (hoy va a -5 segundos del final)
                 #  la propiedad es status.duration
+                #  https://developers.google.com/cast/docs/reference/messages#MediaComm
+                #  Seek: Sets the current position in the stream. Triggers a
+                #   STATUS event notification to all sender applications.
+                #   If the position provided is outside the range of valid
+                #   positions for the current content, then the player should
+                #   pick a valid position as close to the requested position as
+                #   possible.
                 self.casts[cast].media_controller.queue_next()
             except AttributeError:
                 pass
@@ -307,9 +322,8 @@ class CastStatusServer:
 class StatusListener:
     """Clase listener para cambios de estado"""
 
-    def __init__(self, server, name, cast):
+    def __init__(self, server, cast):
         self.server = server
-        self.name = name
         self.cast = cast
 
     def new_cast_status(self, status):
@@ -324,9 +338,8 @@ class StatusListener:
 class StatusMediaListener:
     """Clase listener para cambios de contenido multimedia"""
 
-    def __init__(self, server, name, cast):
+    def __init__(self, server, cast):
         self.server = server
-        self.name = name
         self.cast = cast
 
     def new_media_status(self, status):
