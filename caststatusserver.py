@@ -109,7 +109,7 @@ class CastStatusServer:
                     self.status[cast][map_key(attr)] = attr_lookup[attr]
 
             self.set_substitutes(cast)
-            self.set_state(listener,cast)
+            self.set_state(listener, cast)
 
             now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.status[cast]["timestamp"] = now
@@ -162,8 +162,8 @@ class CastStatusServer:
                 cast (Chromecast): Cast en el que se aplica el back
             """
             try:
-                self.casts[cast].media_controller.rewind()
                 self.casts[cast].media_controller.queue_prev()
+                self.casts[cast].media_controller.rewind()
             except AttributeError:
                 pass
 
@@ -200,18 +200,9 @@ class CastStatusServer:
                 cast (Chromecast): Cast en el que se aplica el forward
             """
             try:
-                # self.casts[cast].media_controller.skip()
-                # TODO Arreglar el forward
-                #  esto tendria que ser seek al final (hoy va a -5 segundos del final)
-                #  la propiedad es status.duration
-                #  https://developers.google.com/cast/docs/reference/messages#MediaComm
-                #  Seek: Sets the current position in the stream. Triggers a
-                #   STATUS event notification to all sender applications.
-                #   If the position provided is outside the range of valid
-                #   positions for the current content, then the player should
-                #   pick a valid position as close to the requested position as
-                #   possible.
-                self.casts[cast].media_controller.queue_next()
+                self.casts[cast].media_controller.seek(
+                    self.status[cast].get("duration", 9999)
+                )
             except AttributeError:
                 pass
             except KeyError:
@@ -276,6 +267,7 @@ class CastStatusServer:
                     elif self.status[cast][orig] != self.status[cast][subs]:
                         del self.status[cast][subs]
 
+
 class GenericListener:
     """Clase listener generica"""
 
@@ -299,6 +291,7 @@ class GenericListener:
         """
         self.server.update_status(self, status)
 
+
 def map_key(key):
     """Funcion para mapear las claves"""
     lookup = {
@@ -316,8 +309,10 @@ def map_key(key):
         "volume_muted": "mute",
         "status_text": "text",
         "icon_url": "icon",
+        "duration": "duration",
     }
     return lookup[key]
+
 
 def get_attribs(listener_type, status):
     """Parse de los atributos del estado
@@ -328,14 +323,15 @@ def get_attribs(listener_type, status):
     """
     # TODO Tener en cuenta el metadataType (https://developers.google.com/cast/docs/reference/messages#MediaStatus)
     #  con este dato se puede decidir què atributos buscar y simplificar el diccionario de estados
-    #  Tambien estaria muy bien determinar que comandos estan permitidos (atributo supportedMediaCommands) para enviar al frontend que botones deben estar disponibles
     #  0: GenericMediaMetadata: title, subtitle, images
     #  1: MovieMediaMetadata: title, subtitle, images, studio
     #  2: TvShowMediaMetadata: seriesTitle, subtitle, season, episode, images
     #  3: MusicTrackMediaMetadata: title, albumName, artist, images
     #  4: PhotoMediaMetadata: title, artist, location
     #
+    # TODO Determinar que comandos estan permitidos (atributo supportedMediaCommands) para enviar al frontend que botones deben estar disponibles
     #  MediaStatus: playerState, supportedMediaCommands, volume
+    #     
     try:
         status_image = status.images[0].url
     except AttributeError:
@@ -357,6 +353,7 @@ def get_attribs(listener_type, status):
             "player_state": status.player_state,
             "track": status.track,
             "images": status_image,
+            "duration": status.duration,
         }
     elif listener_type == "status":
         lookup = {

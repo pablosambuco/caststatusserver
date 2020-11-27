@@ -1,9 +1,3 @@
-var ongoingTouches = [];
-
-function touchStart(evt) {}
-
-function touchEnd(evt) {}
-
 function f_play(cast) {
   ws.send(`play,${cast}`);
 }
@@ -34,22 +28,27 @@ function setTitle(cast, valor) {
   var element = document.getElementById(`title-${cast}`);
   if (element) element.innerHTML = valor;
 }
+
 function setSubTitle(cast, valor) {
   var element = document.getElementById(`subtitle-${cast}`);
   if (element) element.innerHTML = valor;
 }
+
 function setSeries(cast, valor) {
   var element = document.getElementById(`series-${cast}`);
   if (element) element.innerHTML = valor;
 }
+
 function setSeason(cast, valor) {
   var element = document.getElementById(`season-${cast}`);
   if (element) element.innerHTML = valor;
 }
+
 function setEpisode(cast, valor) {
   var element = document.getElementById(`episode-${cast}`);
   if (element) element.innerHTML = valor;
 }
+
 function setState(cast, valor) {
   var play = document.getElementById(`play-${cast}`);
   var pause = document.getElementById(`pause-${cast}`);
@@ -69,10 +68,10 @@ function setImage(cast, valor) {
 }
 
 function setArtist(cast, valor) {
-  //var element = document.getElementById(`artist-${cast}`);
   var element = document.getElementById(`subtitle-${cast}`);
   if (element) element.innerHTML = valor;
 }
+
 function setAlbum(cast, valor) {
   var element = document.getElementById(`album-${cast}`);
   if (element) element.innerHTML = valor;
@@ -93,8 +92,9 @@ function setHandlers(cast) {
     f_volumen(cast, this.value);
   };
 
-  slider.addEventListener("touchstart", touchStart, false);
-  slider.addEventListener("touchEnd", touchEnd, false);
+  slider.ontouchend = function () {
+    f_volumen(cast, this.value);
+  };
 
   back.onclick = function () {
     f_back(cast);
