@@ -329,6 +329,7 @@ def get_attribs(listener_type, status):
     #  3: MusicTrackMediaMetadata: title, albumName, artist, images
     #  4: PhotoMediaMetadata: title, artist, location
     #
+    
     # TODO Determinar que comandos estan permitidos (atributo supportedMediaCommands) para enviar al frontend que botones deben estar disponibles
     #  MediaStatus: playerState, supportedMediaCommands, volume
     #
