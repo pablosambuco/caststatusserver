@@ -1,5 +1,0 @@
-titulo-{{cast}}    innerhtml
-imagen-{{cast}}    style="background: url("") 50% 50%"
-volume-{{cast}}    value -> setVolume("{{cast}}",{{"{:.0f}".format(100*float(data[cast][att]))}});
-titulo-{{cast}}    innerhtml
-subtitulo-{{cast}} innerhtml
