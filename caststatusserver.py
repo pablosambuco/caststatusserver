@@ -331,7 +331,7 @@ def get_attribs(listener_type, status):
     #
     # TODO Determinar que comandos estan permitidos (atributo supportedMediaCommands) para enviar al frontend que botones deben estar disponibles
     #  MediaStatus: playerState, supportedMediaCommands, volume
-    #     
+    #
     try:
         status_image = status.images[0].url
     except AttributeError:
