@@ -44,6 +44,7 @@ class CastStatusServer:
         def __init__(self):
             self.casts = {}
             self.status = {}
+            self.wsocks = []
 
             listener = pychromecast.CastListener()
             zconf = zeroconf.Zeroconf()
@@ -114,10 +115,7 @@ class CastStatusServer:
             now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.status[cast]["timestamp"] = now
 
-            # TODO Dejar de solicitar actualizaciones desde el front
-            #  y enviarlas directamente a todos los clientes desde update_status
-            #  labels: mejora
-            #  assignees: pablosambuco
+            self.send()
 
         def atender(self, wsock):
             """Funcion para atender los mensajes del WebSocket
@@ -131,12 +129,15 @@ class CastStatusServer:
             logger = logging.getLogger()
             try:
                 message = wsock.receive()
+                if message == "init":
+                    wsocks = []
+                    wsocks.append(wsock)
+                    for auxsock in self.wsocks:
+                        if not auxsock.closed:
+                            wsocks.append(auxsock)
+                    self.wsocks = list(set(wsocks))
+                    self.send()
 
-                if message == "update":
-                    log = message + " recibido"
-                    logger.info("%s. Enviando listado de estados.", log)
-                    respuesta = json.dumps(self.update())
-                    wsock.send(respuesta)
                 elif message:
                     log = message + " recibido"
                     comando = message.split(",")
@@ -266,7 +267,12 @@ class CastStatusServer:
                         self.status[cast][orig] = self.status[cast][subs]
                     elif self.status[cast][orig] != self.status[cast][subs]:
                         del self.status[cast][subs]
-
+        def send(self):
+            """Metodo para enviar el estado actual a todos los websockets
+            """
+            for wsock in self.wsocks:
+                message = json.dumps(self.update())
+                wsock.send(message)
 
 class GenericListener:
     """Clase listener generica"""
@@ -329,7 +335,7 @@ def get_attribs(listener_type, status):
     #  3: MusicTrackMediaMetadata: title, albumName, artist, images
     #  4: PhotoMediaMetadata: title, artist, location
     #
-    
+
     # TODO Determinar que comandos estan permitidos (atributo supportedMediaCommands) para enviar al frontend que botones deben estar disponibles
     #  MediaStatus: playerState, supportedMediaCommands, volume
     #

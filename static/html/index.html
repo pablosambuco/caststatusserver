@@ -18,21 +18,13 @@
         var ws = "";
         var timer = "";
 
-        function init() {
-            timer = window.setInterval(actualizar, 1000);            
-        };
-        
-        function actualizar() {
-            ws.send("update");
-        };
-    
         window.onload = function() {
             var full = window.location.hostname+(window.location.port ? ':' + window.location.port:'');
             ws = new WebSocket("ws://" + full + "/websocket");
 
             ws.onopen = function () {
                 console.log("WebSocket abierto");
-                init();
+                ws.send("init");
             };
             
             ws.onmessage = function (evt) {

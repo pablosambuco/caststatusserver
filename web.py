@@ -13,7 +13,10 @@ from logging.handlers import RotatingFileHandler
 from gevent.pywsgi import WSGIServer
 from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
-from bottle import Bottle, template, static_file, request, abort
+from bottle import Bottle
+from bottle import static_file
+from bottle import request
+from bottle import abort
 from caststatusserver import CastStatusServer
 
 CASTSTATUS = CastStatusServer()
@@ -43,7 +46,8 @@ def send_css(filename):
     Returns:
         string Ruta del css redirigido
     """
-    return static_file(filename, root=DIRNAME + "/static/css")
+    root = DIRNAME + "/static/css"
+    return static_file(filename, root=root)
 
 
 @APP.route(r"/static/<filename:re:.*\.js>")
@@ -56,7 +60,8 @@ def send_js(filename):
     Returns:
         string Ruta del js redirigido
     """
-    return static_file(filename, root=DIRNAME + "/static/js")
+    root = DIRNAME + "/static/js"
+    return static_file(filename, root=root)
 
 
 @APP.route(r"/images/<filename:re:.*\.png>")
@@ -69,11 +74,13 @@ def send_png(filename):
     Returns:
         string Ruta del png redirigido
     """
-    return static_file(filename, root=DIRNAME + "/static/images")
+    root = DIRNAME + "/static/images"
+    return static_file(filename, root=root)
 
 
 @APP.route("/")
-def index():
+@APP.route("/<filename>")
+def index(filename="index.html"):
     """Ruta /
 
     Correspode a la pagina principal de la aplicacion
@@ -83,8 +90,8 @@ def index():
     """
     # TODO Separar 100% el webserver del CastStatusServer. Ofrecer websocket desde el Cast.
     #  Esto implica sacar las variables del template de index, y crear una funcion en js para dibujar todo desde cero. ver a que nivel hay que insertar los objetos
-    data = CASTSTATUS.init()
-    return template("index", data=data)
+    root = DIRNAME + "/static/html"
+    return static_file(filename, root=root)
 
 
 @APP.route("/websocket")
