@@ -59,6 +59,8 @@ class CastStatusServer:
                         cast.register_status_listener(slist)
                         mlist = GenericListener(self, cast, "media")
                         cast.media_controller.register_status_listener(mlist)
+                        clist = GenericListener(self, cast, "connection")
+                        cast.register_connection_listener(clist)
                         self.casts[service[3]] = cast
 
             pychromecast.stop_discovery(browser)
@@ -234,7 +236,10 @@ class CastStatusServer:
                 String: nuevo estado a registrar
             """
             #  Si el reproductor esta en un estado desconocido, lo marco
-            if listener.cast.media_controller.status.player_state == "UNKNOWN":
+            if (
+                    listener.cast.media_controller.status.player_state == "UNKNOWN"
+                    or listener.cast.app_id is None
+            ):
                 self.status[cast]["state"] = "REMOVE"
             else:
                 lookup = {
@@ -267,12 +272,14 @@ class CastStatusServer:
                         self.status[cast][orig] = self.status[cast][subs]
                     elif self.status[cast][orig] != self.status[cast][subs]:
                         del self.status[cast][subs]
+
         def send(self):
-            """Metodo para enviar el estado actual a todos los websockets
-            """
+            """Metodo para enviar el estado actual a todos los websockets"""
+            message = json.dumps(self.update())
             for wsock in self.wsocks:
-                message = json.dumps(self.update())
-                wsock.send(message)
+                if not wsock.closed:
+                    wsock.send(message)
+
 
 class GenericListener:
     """Clase listener generica"""
@@ -291,6 +298,13 @@ class GenericListener:
         self.server.update_status(self, status)
 
     def new_media_status(self, status):
+        """Metodo para enviar cambios de medios
+        Args:
+            status (Response): Estado que se envia al diccionario de estados
+        """
+        self.server.update_status(self, status)
+
+    def new_connection_status(self, status):
         """Metodo para enviar cambios de medios
         Args:
             status (Response): Estado que se envia al diccionario de estados
@@ -368,6 +382,11 @@ def get_attribs(listener_type, status):
             "volume_muted": status.volume_muted,
             "status_text": status.status_text,
             "icon_url": status.icon_url,
+            "app_id": status.app_id,
+        }
+    elif listener_type == "connection":
+        lookup = {
+            "player_state": status.status,
         }
 
     return lookup
