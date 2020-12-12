@@ -227,13 +227,15 @@ class CastStatusServer:
         def set_state(self):
             """Metodo para establecer el estado o borrar la tarjeta en el front
             """
-            for cast in self.casts:
+            borrar = []
+            for cast in self.status:
                 #  Si el reproductor esta en un estado desconocido, lo marco
                 if (
                         self.casts[cast].media_controller.status.player_state == "UNKNOWN"
                         or self.casts[cast].app_id is None
                 ):
                     self.status[cast]["state"] = "REMOVE"
+                    borrar.append(cast)
                 else:
                     lookup = {
                         "IDLE": "PAUSED",  # podria ser tambien REMOVE
@@ -243,6 +245,8 @@ class CastStatusServer:
                     }
 
                     self.status[cast]["state"] = lookup[self.status[cast]["state"]]
+            for cast in borrar:
+                self.status.pop(cast, None)
 
         def set_substitutes(self, cast):
             """Metodo de reemplazo de atributos
