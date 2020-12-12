@@ -82,12 +82,11 @@ class CastStatusServer:
             Returns:
                 list listado de nombres de chromecasts
             """
-
             lista = []
-            for key in self.status:
+            for cast in self.status:
                 aux = {}
-                aux["cast"] = key
-                aux["contenido"] = self.status[key]
+                aux["cast"] = cast
+                aux["contenido"] = self.status[cast]
                 lista.append(aux)
             respuesta = {}
             respuesta["chromecasts"] = lista
@@ -112,7 +111,7 @@ class CastStatusServer:
                     self.status[cast][map_key(attr)] = attr_lookup[attr]
 
             self.set_substitutes(cast)
-            self.set_state(listener, cast)
+
 
             now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.status[cast]["timestamp"] = now
@@ -225,31 +224,25 @@ class CastStatusServer:
             except KeyError:
                 pass
 
-        def set_state(self, listener, cast):
+        def set_state(self):
             """Metodo para establecer el estado o borrar la tarjeta en el front
-
-            Args:
-                listener (Listener): Objeto que dispara el cambio de estado
-                cast (String): friendy_name del Cast
-
-            Returns:
-                String: nuevo estado a registrar
             """
-            #  Si el reproductor esta en un estado desconocido, lo marco
-            if (
-                    listener.cast.media_controller.status.player_state == "UNKNOWN"
-                    or listener.cast.app_id is None
-            ):
-                self.status[cast]["state"] = "REMOVE"
-            else:
-                lookup = {
-                    "IDLE": "PAUSED",  # podria ser tambien REMOVE
-                    "PLAYING": "PLAYING",
-                    "BUFFERING": "PLAYING",
-                    "PAUSED": "PAUSED",
-                }
+            for cast in self.casts:
+                #  Si el reproductor esta en un estado desconocido, lo marco
+                if (
+                        self.casts[cast].media_controller.status.player_state == "UNKNOWN"
+                        or self.casts[cast].app_id is None
+                ):
+                    self.status[cast]["state"] = "REMOVE"
+                else:
+                    lookup = {
+                        "IDLE": "PAUSED",  # podria ser tambien REMOVE
+                        "PLAYING": "PLAYING",
+                        "BUFFERING": "PLAYING",
+                        "PAUSED": "PAUSED",
+                    }
 
-                self.status[cast]["state"] = lookup[self.status[cast]["state"]]
+                    self.status[cast]["state"] = lookup[self.status[cast]["state"]]
 
         def set_substitutes(self, cast):
             """Metodo de reemplazo de atributos
@@ -275,6 +268,7 @@ class CastStatusServer:
 
         def send(self):
             """Metodo para enviar el estado actual a todos los websockets"""
+            self.set_state()
             message = json.dumps(self.update())
             for wsock in self.wsocks:
                 if not wsock.closed:
