@@ -1,4 +1,4 @@
-# CastStatusServer
+# CastStatusServer ![Pylint](https://github.com/pablosambuco/CastStatusServer/workflows/Pylint/badge.svg) ![CodeQL](https://github.com/pablosambuco/CastStatusServer/workflows/CodeQL/badge.svg)
 
 Web app for playing status and basic control of all the chromecast devices in your local network
 
