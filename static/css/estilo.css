@@ -27,9 +27,9 @@ html * {
   width: 280px;
   height: 400px;
   border: 2px solid var(--lineas);
-  border-radius: 0px 20px 0px 20px;
-  background-color: var(--fondo);
+  border-radius: 0 20px;
   background: linear-gradient(var(--fondo) 75%,black);
+  background-color: var(--fondo);
 }
 .mdl-card__media {
   top: 20px;
@@ -44,7 +44,7 @@ html * {
   max-width: 250px;
   max-height: 250px;
   border: 2px solid var(--lineas);
-  border-radius: 0px 20px 0px 20px;
+  border-radius: 0 20px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -181,7 +181,7 @@ html * {
   width: 50px;
   text-align: center;
 }
-.controls i.fa-pause-circle {
+.controls i.fa-play-circle {
   display: block;
 }
 .controls i.fa-pause-circle {
