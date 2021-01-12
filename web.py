@@ -122,5 +122,5 @@ def handle_websocket():
 #     return static_file('index.html', root=DIRNAME+'/html')
 
 
-SERVER = WSGIServer(("0.0.0.0", 8083), APP, handler_class=WebSocketHandler)
+SERVER = WSGIServer(("192.168.1.40", 8083), APP, handler_class=WebSocketHandler)
 SERVER.serve_forever()
