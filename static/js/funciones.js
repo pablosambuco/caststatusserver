@@ -304,6 +304,6 @@ window.onload = function() {
       console.log("WebSocket cerrado");
       while(timer) {
           window.clearInterval(timer--);
-      };
+      }
   };
-}
+};
