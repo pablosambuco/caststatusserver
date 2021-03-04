@@ -13,33 +13,7 @@
     <script type="text/javascript" src="/static/funciones.js" )"></script>
     <script src="https://kit.fontawesome.com/cea894e75c.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-
-    <script type="text/javascript">
-        var ws = "";
-        var timer = "";
-
-        window.onload = function() {
-            var full = window.location.hostname+(window.location.port ? ':' + window.location.port:'');
-            ws = new WebSocket("ws://" + full + "/websocket");
-
-            ws.onopen = function () {
-                console.log("WebSocket abierto");
-                ws.send("init");
-            };
-            
-            ws.onmessage = function (evt) {
-                atender(evt);
-            };
-            
-            ws.onclose = function () {
-                console.log("WebSocket cerrado");
-                while(timer) {
-                    window.clearInterval(timer--);
-                };
-            };
-                        
-        };
-    </script>
+    <script type="text/javascript" src="/static/init.js" )"></script>
 </head>
 
 <body>

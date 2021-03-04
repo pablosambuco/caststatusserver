@@ -7,10 +7,12 @@
 import time
 import datetime
 import logging
+import unittest
 import json
 import zeroconf
 from geventwebsocket import WebSocketError
 import pychromecast
+
 
 
 class CastStatusServer:
@@ -402,3 +404,6 @@ def get_attribs(listener_type, status):
         }
 
     return lookup
+
+if __name__ == '__main__':
+    unittest.main()
