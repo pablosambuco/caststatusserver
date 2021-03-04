@@ -112,7 +112,6 @@ class CastStatusServer:
 
             self.set_substitutes(cast)
 
-
             now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.status[cast]["timestamp"] = now
 
@@ -225,14 +224,18 @@ class CastStatusServer:
                 pass
 
         def set_state(self):
-            """Metodo para establecer el estado o borrar la tarjeta en el front
-            """
+            """Metodo para establecer el estado o borrar la tarjeta en el front"""
             borrar = []
             for cast in self.status:
+                try:
+                    chromecast = self.casts[cast]
+                except KeyError:
+                    chromecast = None
                 #  Si el reproductor esta en un estado desconocido, lo marco
                 if (
-                        self.casts[cast].media_controller.status.player_state == "UNKNOWN"
-                        or self.casts[cast].app_id is None
+                    not chromecast
+                    or chromecast.media_controller.status.player_state == "UNKNOWN"
+                    or chromecast.app_id is None
                 ):
                     self.status[cast]["state"] = "REMOVE"
                     borrar.append(cast)
@@ -244,7 +247,9 @@ class CastStatusServer:
                         "PAUSED": "PAUSED",
                     }
 
-                    self.status[cast]["state"] = lookup[self.status[cast]["state"]]
+                    self.status[cast]["state"] = lookup[
+                        self.status[cast]["state"]
+                    ]
             for cast in borrar:
                 self.status.pop(cast, None)
 
@@ -357,6 +362,15 @@ def get_attribs(listener_type, status):
         status_image = None
     except KeyError:
         status_image = None
+    except IndexError:
+        status_image = None
+
+    try:
+        app_id = status.app_id
+    except AttributeError:
+        app_id = None
+    except KeyError:
+        app_id = None
 
     lookup = {}
     if listener_type == "media":
@@ -380,7 +394,7 @@ def get_attribs(listener_type, status):
             "volume_muted": status.volume_muted,
             "status_text": status.status_text,
             "icon_url": status.icon_url,
-            "app_id": status.app_id,
+            "app_id": app_id,
         }
     elif listener_type == "connection":
         lookup = {
