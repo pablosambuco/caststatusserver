@@ -24,7 +24,7 @@ function f_volumen(cast, valor) {
 function setVolume(cast, valor) {
   var element = document.getElementById(`volume-${cast}`);
   element.value = valor;
-  element.style.background = `linear-gradient(to right, var(--acento) ${element.value}%, var(--lineas) ${element.value}%)`;
+  element.style.background = `linear-gradient(to right, rgb(var(--acento)) ${element.value}%, rgb(var(--lineas)) ${element.value}%)`;
 }
 
 function setTitle(cast, valor) {
@@ -88,7 +88,7 @@ function setHandlers(cast) {
   var forward = document.getElementById(`forward-${cast}`);
 
   slider.oninput = function () {
-    this.style.background = `linear-gradient(to right, var(--acento) ${this.value}%, var(--lineas) ${this.value}%)`;
+    this.style.background = `linear-gradient(to right, rgb(var(--acento)) ${this.value}%, rgb(var(--lineas)) ${this.value}%)`;
   };
 
   slider.onmouseup = function () {
@@ -287,6 +287,23 @@ function createCard(cast) {
   }
 }
 
+function randomgb() {
+  number = Math.floor(Math.random()*10+1)
+  document.body.style.background="url('https://www.gstatic.com/cast/images/home/background"+number+".jpg')"
+}
+
+//function randomgb() {
+//
+//  $.getJSON('https://raw.githubusercontent.com/dconnolly/chromecast-backgrounds/master/backgrounds.json', {format: "json"})
+//  .done(function(data) {
+//    var number = Math.floor(Math.random()*data.length);
+//    var url = data[number]["url"]
+//    console.log(number)
+//    console.log(url)
+//    document.body.style.background="url('"+url+"')";
+//  });
+//}
+
 window.onload = function() {
   var full = window.location.hostname+(window.location.port ? ':' + window.location.port:'');
   ws = new WebSocket("ws://" + full + "/websocket");
@@ -306,4 +323,10 @@ window.onload = function() {
           window.clearInterval(timer--);
       }
   };
+
+  document.body.ondblclick = function() { randomgb(); }
+  randomgb()
+
 };
+
+//levantar fondos desde https://raw.githubusercontent.com/dconnolly/chromecast-backgrounds/master/backgrounds.json

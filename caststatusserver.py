@@ -1,18 +1,14 @@
-# -*- coding: utf-8 -*-
 """Modulo conteniendo las clases necesarias para el manejo de chromecasts
 """
-
 # pylint: disable=line-too-long,fixme
 
 import time
 import datetime
 import logging
-import unittest
 import json
 import zeroconf
 from geventwebsocket import WebSocketError
 import pychromecast
-
 
 
 class CastStatusServer:
@@ -335,6 +331,7 @@ def map_key(key):
         "status_text": "text",
         "icon_url": "icon",
         "duration": "duration",
+        "app_id": "app_id",
     }
     return lookup[key]
 
@@ -404,6 +401,3 @@ def get_attribs(listener_type, status):
         }
 
     return lookup
-
-if __name__ == '__main__':
-    unittest.main()
