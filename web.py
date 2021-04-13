@@ -64,7 +64,7 @@ def send_js(filename):
 
 
 @APP.route(r"/images/<filename:re:.*\.jpg>")
-def send_png(filename):
+def send_jpg(filename):
     """Redireccion de images/*.jpg a static/images/*.jpg
 
     Args:
