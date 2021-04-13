@@ -95,7 +95,7 @@ body {
   -webkit-transform: translateY(-50%);
   width: 15px;
   text-align: center;
-  color: rgb(var(--texto-secundario));  
+  color: rgb(var(--texto-secundario));
 }
 .volume i.fa-volume-down {
   position: absolute;

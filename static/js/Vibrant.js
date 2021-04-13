@@ -205,7 +205,7 @@ var MMCQ = (function() {
                 a.vbox.count() * a.vbox.volume(),
                 b.vbox.count() * b.vbox.volume()
             )
-        });;
+        });
     }
     CMap.prototype = {
         push: function(vbox) {
@@ -405,8 +405,7 @@ var MMCQ = (function() {
 
         // XXX: check color content and convert to grayscale if insufficient
 
-        var histo = getHisto(pixels),
-            histosize = 1 << (3 * sigbits);
+        var histo = getHisto(pixels)
 
         // check that we aren't below maxcolors already
         var nColors = 0;
@@ -647,7 +646,7 @@ module.exports = MMCQ.quantize
         i = i + quality;
       }
       cmap = this.quantize(allPixels, colorCount);
-      this._swatches = cmap.vboxes.map((function(_this) {
+      this._swatches = cmap.vboxes.map((function(this) {
         return function(vbox) {
           return new Swatch(vbox.color, vbox.vbox.count());
         };
