@@ -1,6 +1,14 @@
 var ws = "";
 var timer = "";
 
+Number.prototype.pad = function (size) {
+  var s = String(this);
+  while (s.length < (size || 2)) {
+    s = "0" + s;
+  }
+  return s;
+};
+
 function f_play(cast) {
   ws.send(`play,${cast}`);
 }
@@ -288,45 +296,69 @@ function createCard(cast) {
 }
 
 function randomgb() {
-  number = Math.floor(Math.random()*10+1)
-  document.body.style.background="url('https://www.gstatic.com/cast/images/home/background"+number+".jpg')"
+  number = Math.floor(Math.random() * 449 + 1).pad(3);
+  image = "/images/image_" + number + ".jpg";
+
+  var img = document.createElement("img");
+  img.setAttribute("src", image);
+
+  img.addEventListener("load", function () {
+    var vibrant = new Vibrant(img);
+    var swatches = vibrant.swatches();
+    for (var swatch in swatches)
+      if (swatches.hasOwnProperty(swatch) && swatches[swatch])
+      {
+        var rgb = swatches[swatch].getRgb()
+        var variable = Math.floor(rgb[0])+","+Math.floor(rgb[1])+","+Math.floor(rgb[2])
+        if (swatch == "Vibrant") {
+          document.documentElement.style.setProperty('--acento', variable)
+          //pass
+        }
+        if (swatch == "DarkVibrant"){
+          //pass
+        }
+        if (swatch == "LightVibrant"){
+          document.documentElement.style.setProperty('--texto-principal', variable)
+          document.documentElement.style.setProperty('--texto-secundario', variable)
+          //pass
+        }
+        if (swatch == "Muted"){
+          document.documentElement.style.setProperty('--fondo', variable)
+          //pass
+        }
+        if (swatch == "DarkMuted"){
+          document.documentElement.style.setProperty('--lineas', variable)        
+          //pass
+        }
+      }
+    });
+  document.body.style.background = "url('" + image + "')";
 }
 
-//function randomgb() {
-//
-//  $.getJSON('https://raw.githubusercontent.com/dconnolly/chromecast-backgrounds/master/backgrounds.json', {format: "json"})
-//  .done(function(data) {
-//    var number = Math.floor(Math.random()*data.length);
-//    var url = data[number]["url"]
-//    console.log(number)
-//    console.log(url)
-//    document.body.style.background="url('"+url+"')";
-//  });
-//}
-
-window.onload = function() {
-  var full = window.location.hostname+(window.location.port ? ':' + window.location.port:'');
+window.onload = function () {
+  var full =
+    window.location.hostname +
+    (window.location.port ? ":" + window.location.port : "");
   ws = new WebSocket("ws://" + full + "/websocket");
 
   ws.onopen = function () {
-      console.log("WebSocket abierto");
-      ws.send("init");
+    console.log("WebSocket abierto");
+    ws.send("init");
   };
-  
+
   ws.onmessage = function (evt) {
-      atender(evt);
+    atender(evt);
   };
-  
+
   ws.onclose = function () {
-      console.log("WebSocket cerrado");
-      while(timer) {
-          window.clearInterval(timer--);
-      }
+    console.log("WebSocket cerrado");
+    while (timer) {
+      window.clearInterval(timer--);
+    }
   };
 
-  document.body.ondblclick = function() { randomgb(); }
-  randomgb()
-
+  document.body.ondblclick = function () {
+    randomgb();
+  };
+  randomgb();
 };
-
-//levantar fondos desde https://raw.githubusercontent.com/dconnolly/chromecast-backgrounds/master/backgrounds.json

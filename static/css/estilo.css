@@ -3,16 +3,17 @@
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
 @import url(https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap);
 
-/* https://coolors.co/1d3557-294b7a-a8dadc-f1faee-5590b4 */
 :root {
-  --fondo: 29, 54, 88;
-  --lineas: 41, 75, 122;
-  --acento: 168, 218, 220;
-  --texto-principal: 241, 250, 238;
-  --texto_secundario: 85, 144, 180;
+  /* redefinidas en js */
+  --fondo: 0, 0, 0;
+  --lineas: 0, 0, 0;
+  --acento: 0, 0, 0;
+  --texto-principal: 0, 0, 0;
+  --texto-secundario: 0, 0, 0;
+
   --alpha-body: 0.1;
   --alpha-fondo: 0.1;
-  --alpha-lineas: 0.50;
+  --alpha-lineas: 0.5;
   --alpha-acento: 0.75;
 }
 
@@ -20,18 +21,18 @@ html * {
   font-family: "Roboto", sans-serif;
   /*texto no seleccionable*/
   -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-      -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
-  }  
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                        supported by Chrome, Edge, Opera and Firefox */
+}
 
 body {
-  background-color: rgba(var(--fondo),var(--alpha-body)) !important;
-  background-position: center !important; 
-  background-repeat: no-repeat !important; 
+  background-color: rgba(var(--fondo), var(--alpha-body)) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
   background-size: cover !important;
 }
 
@@ -51,7 +52,7 @@ body {
     rgba(var(--fondo), var(--alpha-fondo)) 75%,
     rgba(0, 0, 0, var(--alpha-fondo))
   );
-  background-color: rgba(var(--fondo),var(--alpha-fondo));
+  background-color: rgba(var(--fondo), var(--alpha-fondo));
   backdrop-filter: blur(5px);
 }
 .mdl-card__media {
@@ -66,7 +67,7 @@ body {
   height: 250px;
   max-width: 250px;
   max-height: 250px;
-  border: 2px solid rgba(var(--lineas),var(--alpha-lineas));
+  border: 2px solid rgba(var(--lineas), var(--alpha-lineas));
   border-radius: 10px;
   background-size: cover;
   background-position: center;
@@ -92,19 +93,21 @@ body {
   top: 50%;
   transform: translateY(-50%);
   -webkit-transform: translateY(-50%);
-  color: rgb(var(--texto_secundario));
   width: 15px;
   text-align: center;
+  color: rgb(var(--texto-secundario));  
 }
 .volume i.fa-volume-down {
   position: absolute;
   left: 6px;
   margin: auto;
+  color: rgb(var(--texto-secundario));
 }
 .volume i.fa-volume-up {
   position: absolute;
   right: 6px;
   margin: auto;
+  color: rgb(var(--texto-secundario));
 }
 
 .volume .slider {
@@ -155,7 +158,7 @@ body {
   height: 17px;
   text-align: left;
   font-size: 12px;
-  color: rgb(var(--texto_secundario));
+  color: rgb(var(--texto-secundario));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -218,5 +221,5 @@ body {
   margin-left: 5px;
   margin-bottom: 5px;
   font-size: 18px;
-  color: rgba(var(--acento),var(--alpha-acento));
+  color: rgba(var(--acento), var(--alpha-acento));
 }
