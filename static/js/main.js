@@ -1,3 +1,9 @@
+requirejs(['Vibrant'],function  (vib) { 
+    function Vibrant (img, count, quali) {
+       return vib.Vibrant(img, count, quali)
+    };
+  });
+
 var ws = "";
 var timer = "";
 
@@ -311,24 +317,24 @@ function randomgb() {
         var rgb = swatches[swatch].getRgb()
         var variable = Math.floor(rgb[0])+","+Math.floor(rgb[1])+","+Math.floor(rgb[2])
         if (swatch == "Vibrant") {
-          document.documentElement.style.setProperty('--acento', variable)
-          //pass
+          document.documentElement.style.setProperty('--acento', variable);
+          
         }
         if (swatch == "DarkVibrant"){
-          //pass
+          document.documentElement.style.setProperty('--texto-principal', variable);
+          document.documentElement.style.setProperty('--texto-secundario', variable);          
+          
         }
         if (swatch == "LightVibrant"){
-          document.documentElement.style.setProperty('--texto-principal', variable)
-          document.documentElement.style.setProperty('--texto-secundario', variable)
-          //pass
+          
         }
         if (swatch == "Muted"){
-          document.documentElement.style.setProperty('--fondo', variable)
-          //pass
+          document.documentElement.style.setProperty('--fondo', variable);
+          
         }
         if (swatch == "DarkMuted"){
-          document.documentElement.style.setProperty('--lineas', variable)        
-          //pass
+          document.documentElement.style.setProperty('--lineas', variable);
+          
         }
       }
     });

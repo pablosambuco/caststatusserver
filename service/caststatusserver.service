@@ -5,7 +5,8 @@ Conflicts=getty@tty1.service
 
 [Service]
 Type=simplServere
-ExecStart=/usr/bin/python3 /home/pi/CastStatusServer/web.py
+#ExecStart=/usr/bin/python3 /home/pi/CastStatusServer/web.py
+ExecStart=/usr/local/bin/gunicorn --reload --chdir /home/pi/CastStatusServer --timeout 1000 web:SERVERy
 StandardInput=tty-force
 
 [Install]

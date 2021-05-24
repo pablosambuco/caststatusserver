@@ -646,7 +646,7 @@ module.exports = MMCQ.quantize
         i = i + quality;
       }
       cmap = this.quantize(allPixels, colorCount);
-      this._swatches = cmap.vboxes.map((function(this) {
+      this._swatches = cmap.vboxes.map((function(x) {
         return function(vbox) {
           return new Swatch(vbox.color, vbox.vbox.count());
         };
