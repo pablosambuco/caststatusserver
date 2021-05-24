@@ -2,3 +2,4 @@ pychromecast==7.5.1
 gevent-websocket==0.10.1
 bottle==0.12.19
 websockets==8.1
+werkzeug==2.0.1
