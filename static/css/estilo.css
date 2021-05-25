@@ -8,8 +8,8 @@
   --fondo: 0, 0, 0;
   --lineas: 0, 0, 0;
   --acento: 0, 0, 0;
-  --texto-principal: 0, 0, 0;
-  --texto-secundario: 0, 0, 0;
+  --texto-principal: 245, 245, 245;
+  --texto-secundario: 255, 255, 255;
 
   --alpha-body: 0.1;
   --alpha-fondo: 0.5;
@@ -48,10 +48,7 @@ body {
   height: 400px;
   border: 2px solid var(--lineas);
   border-radius: 20px;
-  background: linear-gradient(
-    rgba(var(--fondo), var(--alpha-fondo)) 75%,
-    rgba(0, 0, 0, var(--alpha-fondo))
-  );
+  background: rgba(var(--fondo), var(--alpha-fondo)) 75%;
   background-color: rgba(var(--fondo), var(--alpha-fondo));
   backdrop-filter: blur(5px);
 }
@@ -72,6 +69,7 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-size: 300px;
 }
 
 .mdl-card__supporting-text {
@@ -101,13 +99,13 @@ body {
   position: absolute;
   left: 6px;
   margin: auto;
-  color: rgb(var(--texto-secundario));
+  color: rgb(var(--lineas));
 }
 .volume i.fa-volume-up {
   position: absolute;
   right: 6px;
   margin: auto;
-  color: rgb(var(--texto-secundario));
+  color: rgb(var(--lineas));
 }
 
 .volume .slider {
@@ -131,7 +129,7 @@ body {
   cursor: ew-resize;
   color: rgb(var(--acento));
   border-radius: 50%;
-  border: rgb(var(---texto-principal));
+  border: rgb(var(  ));
   border-width: 1px;
 }
 
@@ -147,7 +145,7 @@ body {
   width: 100%;
   text-align: left;
   font-size: 16px;
-  font-weight: bold;
+  /*font-weight: bold;*/
   color: rgb(var(--texto-principal));
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -170,12 +168,20 @@ body {
   height: 50px;
 }
 .controls i {
-  color: rgb(var(--texto-principal));
+  /*  color: rgb(var(--texto-principal));*/
+
+  background: rgb(var(--texto-principal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
   cursor: pointer;
   line-height: 1;
 }
 .controls i:hover {
-  color: rgb(var(--acento));
+  background: rgb(var(--acento));
+  -webkit-background-clip: text;
+  background-clip: text; 
 }
 .controls i:active {
   transform: translateY(1px);
@@ -217,9 +223,9 @@ body {
 .cast {
   width: 100%;
   text-align: center;
-  margin-top: 5px;
+  margin-top: 10px;
   margin-left: 5px;
   margin-bottom: 5px;
   font-size: 18px;
-  color: rgba(var(--acento), var(--alpha-acento));
+  color: rgba(var(--texto-principal), 1);
 }

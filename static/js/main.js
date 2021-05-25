@@ -81,7 +81,7 @@ function setState(cast, valor) {
 
 function setImage(cast, valor) {
   var element = document.getElementById(`image-${cast}`);
-  if (element) element.style = `background: url(${valor}) 50% 50%`;
+  if (element) element.style = `background: url(${valor}) 50% 50%; background-size: 450px;`;
 }
 
 function setArtist(cast, valor) {
@@ -321,8 +321,8 @@ function randomgb() {
           
         }
         if (swatch == "DarkVibrant"){
-          document.documentElement.style.setProperty('--texto-principal', variable);
-          document.documentElement.style.setProperty('--texto-secundario', variable);          
+          //document.documentElement.style.setProperty('--texto-principal', variable);
+          //document.documentElement.style.setProperty('--texto-secundario', variable);          
           
         }
         if (swatch == "LightVibrant"){

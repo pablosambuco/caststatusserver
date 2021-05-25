@@ -23,7 +23,18 @@ class CastStatusServer:
 
     instance = None
 
+    def __call__(self):
+        """Prueba"""
+        if not CastStatusServer.instance:
+            CastStatusServer.instance = CastStatusServer.CastStatusSingleton()
+
+    def __init__(self):
+        """Prueba"""
+        if not CastStatusServer.instance:
+            CastStatusServer.instance = CastStatusServer.CastStatusSingleton()
+
     def __new__(cls):
+        """Singleton new"""
         if not CastStatusServer.instance:
             CastStatusServer.instance = CastStatusServer.CastStatusSingleton()
         return CastStatusServer.instance
@@ -105,7 +116,7 @@ class CastStatusServer:
 
             attr_lookup = get_attribs(listener.listener_type, status)
             for attr in attr_lookup:
-                if hasattr(status, attr) and attr_lookup[attr] is not None:
+                if attr_lookup[attr]:
                     self.status[cast][map_key(attr)] = attr_lookup[attr]
 
             self.set_substitutes(cast)
@@ -232,7 +243,8 @@ class CastStatusServer:
                 #  Si el reproductor esta en un estado desconocido, lo marco
                 if (
                     not chromecast
-                    or chromecast.media_controller.status.player_state == "UNKNOWN"
+                    or chromecast.media_controller.status.player_state
+                    == "UNKNOWN"
                     or chromecast.app_id is None
                 ):
                     self.status[cast]["state"] = "REMOVE"
@@ -259,19 +271,23 @@ class CastStatusServer:
                 cast (String): friendly_name del Cast
             """
             lookup = {
-                "image": "icon",
-                "title": "text",
-                "subtitle": "series",
-                "artist": "subtitle",
+                "image": ["icon"],
+                "title": ["text"],
+                "artist": ["episode", "subtitle"],
+                "subtitle": ["series"],
             }
             # Completo datos con sus reemplazos y borro claves si es necesario
             for orig in lookup:
                 subs = lookup[orig]
-                if subs in self.status[cast]:
-                    if orig not in self.status[cast]:
-                        self.status[cast][orig] = self.status[cast][subs]
-                    elif self.status[cast][orig] != self.status[cast][subs]:
-                        del self.status[cast][subs]
+                for sub in subs:
+                    if sub in self.status[cast]:
+                        if (
+                            orig not in self.status[cast]
+                            or not self.status[cast][orig]
+                        ):
+                            self.status[cast][orig] = self.status[cast][sub]
+                        elif self.status[cast][orig] != self.status[cast][sub]:
+                            del self.status[cast][sub]
 
         def send(self):
             """Metodo para enviar el estado actual a todos los websockets"""
@@ -399,5 +415,9 @@ def get_attribs(listener_type, status):
         lookup = {
             "player_state": status.status,
         }
+
+    for key in lookup:
+        if lookup[key] and str(lookup[key]).isspace():
+            lookup[key] = None
 
     return lookup
