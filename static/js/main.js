@@ -1,11 +1,11 @@
 require.config({
-        paths: { Vibrant: 'https://cdn.rawgit.com/jariz/vibrant.js/master/dist/Vibrant.js' }
+        paths: { vibrant: 'https://cdnjs.cloudflare.com/ajax/libs/vibrant.js/1.0.0/Vibrant' }
     });
 
-require(['Vibrant'],function  (vib) { 
-    function Vibrant (img, count, quali) {
+require(['vibrant'], function(vib) { 
+    function Vibrant(img, count, quali) {
        return vib.Vibrant(img, count, quali)
-    };
+    }
   });
 
 var ws = "";
