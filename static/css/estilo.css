@@ -66,10 +66,9 @@ body {
   max-height: 250px;
   border: 2px solid rgba(var(--lineas), var(--alpha-lineas));
   border-radius: 10px;
-  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 300px;
+  background-size: 450px;
 }
 
 .mdl-card__supporting-text {
