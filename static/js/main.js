@@ -1,4 +1,8 @@
-requirejs(['Vibrant'],function  (vib) { 
+require.config({
+        paths: { Vibrant: 'https://cdn.rawgit.com/jariz/vibrant.js/master/dist/Vibrant.js' }
+    });
+
+require(['Vibrant'],function  (vib) { 
     function Vibrant (img, count, quali) {
        return vib.Vibrant(img, count, quali)
     };
