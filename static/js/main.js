@@ -2,11 +2,9 @@ require.config({
         paths: { vibrant: 'https://cdnjs.cloudflare.com/ajax/libs/vibrant.js/1.0.0/Vibrant' }
     });
 
-require(['vibrant'], function(vib) { 
-    function Vibrant(img, count, quali) {
-       return vib.Vibrant(img, count, quali)
-    }
-  });
+require(['vibrant'], (Vibrant) => { 
+   consile.log("Vibrant cargado");  
+});
 
 var ws = "";
 var timer = "";
