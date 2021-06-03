@@ -2,7 +2,7 @@ require.config({
         paths: { vibrant: 'https://cdnjs.cloudflare.com/ajax/libs/vibrant.js/1.0.0/Vibrant' }
     });
 
-require(['vibrant'], (Vibrant) => { 
+require(['vibrant'], () => { 
    consile.log("Vibrant cargado");  
 });
 
