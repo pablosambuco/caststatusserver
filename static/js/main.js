@@ -328,7 +328,7 @@ function randomgb() {
           
         }
         if (swatch == "LightVibrant"){
-          
+          //No hago nada          
         }
         if (swatch == "Muted"){
           document.documentElement.style.setProperty('--fondo', variable);
