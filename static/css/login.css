@@ -61,7 +61,7 @@ body {
   background-position: center !important;
   background-repeat: no-repeat !important;
   background-size: cover !important;
-  font-family: "Lato", Arial, sans-serif;
+  font-family: "Roboto", Arial, sans-serif;
   font-size: 16px;
   line-height: 1.8;
   font-weight: normal;
@@ -69,6 +69,8 @@ body {
   position: relative;
   z-index: 0;
   padding: 0;
+  margin: 0;
+  text-align: left;
 }
 body:after {
   position: absolute;
@@ -107,19 +109,6 @@ main,
 nav,
 section {
   display: block;
-}
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #212529;
-  text-align: left;
-  background-color: #fff;
 }
 
 p {
