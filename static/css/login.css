@@ -1,16 +1,5 @@
 :root {
   /* redefinidas en js */
-  --fondo: 0, 0, 0;
-  --lineas: 0, 0, 0;
-  --acento: 0, 0, 0;
-  --texto-principal: 245, 245, 245;
-  --texto-secundario: 255, 255, 255;
-
-  --alpha-body: 0.1;
-  --alpha-fondo: 0.5;
-  --alpha-lineas: 0.5;
-  --alpha-acento: 0.75;
-
   --blue: #007bff;
   --indigo: #6610f2;
   --purple: #6f42c1;
@@ -57,7 +46,6 @@ html * {
 }
 
 body {
-  background-color: rgba(var(--fondo), var(--alpha-body)) !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
   background-size: cover !important;
@@ -73,7 +61,7 @@ body {
   text-align: left;
 }
 body:after {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -280,13 +268,15 @@ h3,
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
   background-clip: padding-box;
   border: 1px solid #ced4da;
   border-radius: 50px;
-  -webkit-transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  -webkit-transition: border-color 0.15s ease-in-out,
+    -webkit-box-shadow 0.15s ease-in-out;
   -o-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
+    -webkit-box-shadow 0.15s ease-in-out;
   color: white !important;
 }
 

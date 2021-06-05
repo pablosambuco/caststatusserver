@@ -3,7 +3,7 @@ require.config({
     });
 
 require(['vibrant'], () => { 
-   consile.log("Vibrant cargado");  
+   console.log("Vibrant cargado");  
 });
 
 var ws = "";
