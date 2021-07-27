@@ -1,307 +1,27 @@
 """Modulo conteniendo las clases necesarias para el manejo de chromecasts
 """
-# pylint: disable=line-too-long,fixme
+# pylint: disable=line-too-long,fixme,consider-using-dict-items
 
 import time
 import datetime
 import logging
 import json
 import zeroconf
-from geventwebsocket import WebSocketError
-import pychromecast
-
-
-class CastStatusServer:
-    """Clase con funcionalidades de busqueda y control de
-    Chromecasts en una red local
-
-    Esta clase contiene una instancia de tipo CastStatusSingleton.
-
-    Todos los metodos son derivados a esa instancia unica que atiende todos
-    los pedidos.
-    """
-
-    instance = None
-
-    def __call__(self):
-        """Prueba"""
-        if not CastStatusServer.instance:
-            CastStatusServer.instance = CastStatusServer.CastStatusSingleton()
-
-    def __init__(self):
-        """Prueba"""
-        if not CastStatusServer.instance:
-            CastStatusServer.instance = CastStatusServer.CastStatusSingleton()
-
-    def __new__(cls):
-        """Singleton new"""
-        if not CastStatusServer.instance:
-            CastStatusServer.instance = CastStatusServer.CastStatusSingleton()
-        return CastStatusServer.instance
-
-    def __getattr__(self, name):
-        """Singleton getattr"""
-        return getattr(self.instance, name)
-
-    def __setattr__(self, name, value):
-        """Singleton setattr"""
-        return setattr(self.instance, name, value)
-
-    class CastStatusSingleton:
-        """Singleton (?)"""
-
-        def __init__(self):
-            self.casts = {}
-            self.status = {}
-            self.wsocks = []
-
-            listener = pychromecast.CastListener()
-            zconf = zeroconf.Zeroconf()
-            browser = pychromecast.discovery.start_discovery(listener, zconf)
-            time.sleep(1)
-            for _, service in listener.services.items():
-                cast = pychromecast.get_chromecast_from_service(service, zconf)
-                if service[2] == "Chromecast":
-                    if service[3] not in self.casts:
-                        cast.wait()
-                        slist = GenericListener(self, cast, "status")
-                        cast.register_status_listener(slist)
-                        mlist = GenericListener(self, cast, "media")
-                        cast.media_controller.register_status_listener(mlist)
-                        clist = GenericListener(self, cast, "connection")
-                        cast.register_connection_listener(clist)
-                        self.casts[service[3]] = cast
-
-            pychromecast.stop_discovery(browser)
-
-        def __str__(self):
-            return str(self.casts)
-
-        def init(self):
-            """Devuelve el listado de nombres de chromecasts
-
-            Returns:
-                list listado de nombres de chromecasts
-            """
-            return self.casts
-
-        def update(self):
-            """Devuelve el listado de nombres de chromecasts
-
-            Returns:
-                list listado de nombres de chromecasts
-            """
-            lista = []
-            for cast in self.status:
-                aux = {}
-                aux["cast"] = cast
-                aux["contenido"] = self.status[cast]
-                lista.append(aux)
-            respuesta = {}
-            respuesta["chromecasts"] = lista
-
-            return respuesta
-
-        def update_status(self, listener, status):
-            """Actualiza el diccionario de estados
-
-            Args:
-                listener (Listener): objeto listener que llama a este metodo
-                status (MediaStatus): respuesta del cast con el cambio de estado
-            """
-            cast = str(listener.cast.device.friendly_name)
-            # si no existe la clave la creo como un diccionario vacio
-            if cast not in self.status:
-                self.status[cast] = {}
-
-            attr_lookup = get_attribs(listener.listener_type, status)
-            for attr in attr_lookup:
-                if attr_lookup[attr]:
-                    self.status[cast][map_key(attr)] = attr_lookup[attr]
-
-            self.set_substitutes(cast)
-
-            now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            self.status[cast]["timestamp"] = now
-
-            self.send()
-
-        def atender(self, wsock):
-            """Funcion para atender los mensajes del WebSocket
-
-            Args:
-                wsock (WebSocket): objeto donde se recibiran los mensajes
-
-            Raises:
-                exc: Si ocurre una excepcion de WebSocket se envia
-            """
-            logger = logging.getLogger()
-            try:
-                message = wsock.receive()
-                if message == "init":
-                    wsocks = []
-                    wsocks.append(wsock)
-                    for auxsock in self.wsocks:
-                        if not auxsock.closed:
-                            wsocks.append(auxsock)
-                    self.wsocks = list(set(wsocks))
-                    self.send()
-
-                elif message:
-                    log = message + " recibido"
-                    comando = message.split(",")
-                    if len(comando) == 2 and comando[0] == "play":
-                        self.play(cast=comando[1])
-                    elif comando[0] == "pause":
-                        self.pause(cast=comando[1])
-                    elif comando[0] == "back":
-                        self.back(cast=comando[1])
-                    elif comando[0] == "forward":
-                        self.forward(cast=comando[1])
-                    elif comando[0] == "volume":
-                        self.volume(cast=comando[1], value=comando[2])
-                    else:
-                        logger.info("%s", log)
-            except WebSocketError as exc:
-                raise exc
-
-        def back(self, cast):
-            """Back
-
-            Args:
-                cast (Chromecast): Cast en el que se aplica el back
-            """
-            try:
-                self.casts[cast].media_controller.queue_prev()
-                self.casts[cast].media_controller.rewind()
-            except AttributeError:
-                pass
-
-        def play(self, cast):
-            """Play
-
-            Args:
-                cast (Chromecast): Cast en el que se aplica el play
-            """
-            try:
-                self.casts[cast].media_controller.play()
-            except AttributeError:
-                pass
-            except KeyError:
-                pass
-
-        def pause(self, cast):
-            """Pause
-
-            Args:
-                cast (Chromecast): Cast en el que se aplica el pause
-            """
-            try:
-                self.casts[cast].media_controller.pause()
-            except AttributeError:
-                pass
-            except KeyError:
-                pass
-
-        def forward(self, cast):
-            """Forward
-
-            Args:
-                cast (Chromecast): Cast en el que se aplica el forward
-            """
-            try:
-                self.casts[cast].media_controller.seek(
-                    self.status[cast].get("duration", 9999)
-                )
-            except AttributeError:
-                pass
-            except KeyError:
-                pass
-
-        def volume(self, cast, value):
-            """Cambio de Volumen
-
-            Args:
-                cast (Chromecast): Cast en el que se aplica el volumen
-                value (int): Valor de 0 a 100 para aplicar
-            """
-            try:
-                self.casts[cast].set_volume(float(value) / 100)
-            except AttributeError:
-                pass
-            except KeyError:
-                pass
-
-        def set_state(self):
-            """Metodo para establecer el estado o borrar la tarjeta en el front"""
-            borrar = []
-            for cast in self.status:
-                try:
-                    chromecast = self.casts[cast]
-                except KeyError:
-                    chromecast = None
-                #  Si el reproductor esta en un estado desconocido, lo marco
-                if (
-                    not chromecast
-                    or chromecast.media_controller.status.player_state
-                    == "UNKNOWN"
-                    or chromecast.app_id is None
-                ):
-                    self.status[cast]["state"] = "REMOVE"
-                    borrar.append(cast)
-                else:
-                    lookup = {
-                        "IDLE": "PAUSED",  # podria ser tambien REMOVE
-                        "PLAYING": "PLAYING",
-                        "BUFFERING": "PLAYING",
-                        "PAUSED": "PAUSED",
-                    }
-
-                    self.status[cast]["state"] = lookup[
-                        self.status[cast]["state"]
-                    ]
-            for cast in borrar:
-                self.status.pop(cast, None)
-
-        def set_substitutes(self, cast):
-            """Metodo de reemplazo de atributos
-                Podria ser inutil si mejora la asignacion original
-
-            Args:
-                cast (String): friendly_name del Cast
-            """
-            lookup = {
-                "image": ["icon"],
-                "title": ["text"],
-                "artist": ["episode", "subtitle"],
-                "subtitle": ["series"],
-            }
-            # Completo datos con sus reemplazos y borro claves si es necesario
-            for orig in lookup:
-                subs = lookup[orig]
-                for sub in subs:
-                    if sub in self.status[cast]:
-                        if (
-                            orig not in self.status[cast]
-                            or not self.status[cast][orig]
-                        ):
-                            self.status[cast][orig] = self.status[cast][sub]
-                        elif self.status[cast][orig] != self.status[cast][sub]:
-                            del self.status[cast][sub]
-
-        def send(self):
-            """Metodo para enviar el estado actual a todos los websockets"""
-            self.set_state()
-            message = json.dumps(self.update())
-            for wsock in self.wsocks:
-                if not wsock.closed:
-                    wsock.send(message)
+from geventwebsocket import WebSocketError, WebSocketServer
+from pychromecast.controllers.media import MediaStatus
+from pychromecast import (
+    Chromecast,
+    get_chromecast_from_cast_info,
+    CastListener,
+    discovery,
+    stop_discovery,
+)
 
 
 class GenericListener:
     """Clase listener generica"""
 
-    def __init__(self, server, cast, listener_type):
+    def __init__(self, server, cast: Chromecast, listener_type):
         self.server = server
         self.cast = cast
         self.listener_type = listener_type
@@ -329,7 +49,345 @@ class GenericListener:
         self.server.update_status(self, status)
 
 
-def map_key(key):
+class CastStatusServerMeta(type):
+    """Clase con funcionalidades de busqueda y control de
+    Chromecasts en una red local
+
+    Esta clase contiene una instancia de tipo CastStatusSingleton.
+
+    Todos los metodos son derivados a esa instancia unica que atiende todos
+    los pedidos.
+    """
+
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        """Prueba"""
+        if cls not in cls._instances:
+            cls._instances[cls] = super().__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class CastStatusServer(metaclass=CastStatusServerMeta):
+    """Singleton (?)"""
+
+    def __init__(self):
+        self.casts = {}
+        self.status = {}
+        self.wsocks: list(WebSocketServer) = []
+
+        listener = CastListener()
+        zconf = zeroconf.Zeroconf()
+        browser = discovery.start_discovery(listener, zconf)
+        time.sleep(1)
+        for _, service in listener.services.items():
+            cast = get_chromecast_from_cast_info(service, zconf)
+            if service[2] == "Chromecast":
+                if service[3] not in self.casts:
+                    cast.wait()
+                    slist = GenericListener(self, cast, "status")
+                    cast.register_status_listener(slist)
+                    mlist = GenericListener(self, cast, "media")
+                    cast.media_controller.register_status_listener(mlist)
+                    clist = GenericListener(self, cast, "connection")
+                    cast.register_connection_listener(clist)
+                    self.casts[service[3]] = cast
+
+        stop_discovery(browser)
+
+    def __str__(self):
+        return str(self.casts)
+
+    def init(self):
+        """Devuelve el listado de nombres de chromecasts
+
+        Returns:
+            list listado de nombres de chromecasts
+        """
+        return self.casts
+
+    def update(self) -> dict:
+        """Devuelve el listado de nombres de chromecasts
+
+        Returns:
+            list listado de nombres de chromecasts
+        """
+        lista = []
+        for cast in self.status:
+            aux = {}
+            aux["cast"] = cast
+            aux["contenido"] = self.status[cast]
+            lista.append(aux)
+        respuesta = {}
+        respuesta["chromecasts"] = lista
+
+        return respuesta
+
+    def update_status(
+        self, listener: GenericListener, status: MediaStatus
+    ) -> None:
+        """Actualiza el diccionario de estados
+
+        Args:
+            listener (Listener): objeto listener que llama a este metodo
+            status (MediaStatus): respuesta del cast con el cambio de estado
+        """
+        cast = str(listener.cast.device.friendly_name)
+        # si no existe la clave la creo como un diccionario vacio
+        if cast not in self.status.keys():
+            self.status[cast] = {}
+            self.status[cast]["prev_volume"] = None
+
+        attr_lookup = get_attribs(listener.listener_type, status)
+        for attr in attr_lookup:
+            if attr_lookup[attr]:
+                self.status[cast][map_key(attr)] = attr_lookup[attr]
+
+        self.set_substitutes(cast)
+
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.status[cast]["timestamp"] = now
+
+        self.send()
+
+    def atender(self, wsock: WebSocketServer) -> None:
+        """Funcion para atender los mensajes del WebSocket
+
+        Args:
+            wsock (WebSocket): objeto donde se recibiran los mensajes
+
+        Raises:
+            exc: Si ocurre una excepcion de WebSocket se envia
+        """
+        logger = logging.getLogger()
+        try:
+            message = wsock.receive()
+            if message == "init":
+                wsocks: list(WebSocketServer) = []
+                wsocks.append(wsock)
+                for auxsock in self.wsocks:
+                    if not auxsock.closed:
+                        wsocks.append(auxsock)
+                self.wsocks = list(set(wsocks))
+                self.send()
+
+            elif message:
+                log = message + " recibido"
+                comando = message.split(",")
+                if len(comando) == 2 and comando[0] == "play":
+                    self.play(cast_name=comando[1])
+                elif comando[0] == "pause":
+                    self.pause(cast_name=comando[1])
+                elif comando[0] == "back":
+                    self.back(cast_name=comando[1])
+                elif comando[0] == "forward":
+                    self.forward(cast_name=comando[1])
+                elif comando[0] == "volume":
+                    self.volume(cast_name=comando[1], value=comando[2])
+                elif comando[0] == "mute":
+                    self.mute(cast_name=comando[1])
+                elif comando[0] == "unmute":
+                    self.unmute(cast_name=comando[1])
+                elif comando[0] == "forward10":
+                    self.forward10(cast_name=comando[1])
+                elif comando[0] == "back10":
+                    self.back10(cast_name=comando[1])
+                elif comando[0] == "position":
+                    self.position(cast_name=comando[1], value=comando[2])
+                else:
+                    logger.info("%s", log)
+        except WebSocketError as exc:
+            raise exc
+
+    def back(self, cast_name: str) -> None:
+        """Back
+
+        Args:
+            cast (Chromecast): Cast en el que se aplica el back
+        """
+        try:
+            self.casts[cast_name].media_controller.queue_prev()
+            self.casts[cast_name].media_controller.rewind()
+        except AttributeError:
+            pass
+
+    def play(self, cast_name: str) -> None:
+        """Play
+
+        Args:
+            cast (Chromecast): Cast en el que se aplica el play
+        """
+        try:
+            self.casts[cast_name].media_controller.play()
+        except (AttributeError, KeyError):
+            pass
+
+    def pause(self, cast_name: str) -> None:
+        """Pause
+
+        Args:
+            cast (Chromecast): Cast en el que se aplica el pause
+        """
+        try:
+            self.casts[cast_name].media_controller.pause()
+        except (AttributeError, KeyError):
+            pass
+
+    def forward(self, cast_name: str) -> None:
+        """Forward
+
+        Args:
+            cast (Chromecast): Cast en el que se aplica el forward
+        """
+        try:
+            self.casts[cast_name].media_controller.seek(
+                self.status[cast_name].get("duration", 9999)
+            )
+        except (AttributeError, KeyError):
+            pass
+
+    def forward10(self, cast_name: str) -> None:
+        """Forward 10
+        Args:
+            cast (Chromecast): Cast en el que se aplica el forward
+        """
+        try:
+            ctime = self.casts[cast_name].media_controller.status.current_time
+            self.casts[cast_name].media_controller.seek(ctime + 10)
+        except (AttributeError, KeyError):
+            pass
+
+    def back10(self, cast_name: str) -> None:
+        """Back 10
+        Args:
+            cast (Chromecast): Cast en el que se aplica el back
+        """
+        try:
+            ctime = self.casts[cast_name].media_controller.status.current_time
+            self.casts[cast_name].media_controller.seek(ctime - 10)
+        except (AttributeError, KeyError):
+            pass
+
+    def volume(self, cast_name: str, value: float) -> None:
+        """Cambio de Volumen
+
+        Args:
+            cast (Chromecast): Cast en el que se aplica el volumen
+            value (int): Valor de 0 a 100 para aplicar
+        """
+        try:
+            self.casts[cast_name].set_volume(float(value) / 100)
+            self.status[cast_name]["prev_volume"] = value
+        except (AttributeError, KeyError):
+            pass
+
+    def mute(self, cast_name: str) -> None:
+        """Mute
+
+        Args:
+            cast (Chromecast): Cast en el que se aplica el volumen
+        """
+        try:
+            self.casts[cast_name].set_volume(0)
+        except (AttributeError, KeyError):
+            pass
+
+    def unmute(self, cast_name: str) -> None:
+        """Unmute
+
+        Args:
+            cast (Chromecast): Cast en el que se aplica el volumen
+        """
+        try:
+            value = self.status[cast_name]["prev_volume"]
+            self.casts[cast_name].set_volume(float(value) / 100)
+        except (AttributeError, KeyError):
+            pass
+
+    def position(self, cast_name: str, value: float) -> None:
+        """Cambio de Posicion
+
+        Args:
+            cast (Chromecast): Cast en el que se aplica la posicion
+            value (int): Valor de 0 a 100 para aplicar
+        """
+        try:
+            duration = self.casts[cast_name].media_controller.status.duration
+            new_position = (float(value) / 100) * duration
+            self.casts[cast_name].media_controller.seek(new_position)
+
+        except (AttributeError, KeyError):
+            pass
+
+    def set_state(self) -> None:
+        """Metodo para establecer el estado o borrar la tarjeta en el front"""
+        borrar = []
+        for cast in self.status:
+            try:
+                chromecast = self.casts[cast]
+            except KeyError:
+                chromecast = None
+            #  Si el reproductor esta en un estado desconocido, lo marco
+            if (
+                not chromecast
+                or chromecast.media_controller.status.player_state == "UNKNOWN"
+                or chromecast.app_id is None
+            ):
+                self.status[cast]["state"] = "REMOVE"
+                borrar.append(cast)
+            else:
+                lookup = {
+                    "IDLE": "PAUSED",  # podria ser tambien REMOVE
+                    "PLAYING": "PLAYING",
+                    "BUFFERING": "PLAYING",
+                    "PAUSED": "PAUSED",
+                }
+
+                self.status[cast]["state"] = lookup[self.status[cast]["state"]]
+        for cast in borrar:
+            self.status.pop(cast, None)
+
+    def set_substitutes(self, cast_name: str) -> None:
+        """Metodo de reemplazo de atributos
+            Podria ser inutil si mejora la asignacion original
+
+        Args:
+            cast (String): friendly_name del Cast
+        """
+        lookup = {
+            "image": ["icon"],
+            "title": ["text"],
+            "artist": ["episode", "subtitle"],
+            "subtitle": ["series"],
+        }
+        # Completo datos con sus reemplazos y borro claves si es necesario
+        for orig in lookup:
+            subs = lookup[orig]
+            for sub in subs:
+                if sub in self.status[cast_name]:
+                    if (
+                        orig not in self.status[cast_name]
+                        or not self.status[cast_name][orig]
+                    ):
+                        self.status[cast_name][orig] = self.status[cast_name][
+                            sub
+                        ]
+                    elif (
+                        self.status[cast_name][orig]
+                        != self.status[cast_name][sub]
+                    ):
+                        del self.status[cast_name][sub]
+
+    def send(self) -> None:
+        """Metodo para enviar el estado actual a todos los websockets"""
+        self.set_state()
+        message = json.dumps(self.update())
+        for wsock in self.wsocks:
+            if not wsock.closed:
+                wsock.send(message)
+
+
+def map_key(key) -> str:
     """Funcion para mapear las claves"""
     lookup = {
         "volume_level": "volume",
@@ -348,11 +406,12 @@ def map_key(key):
         "icon_url": "icon",
         "duration": "duration",
         "app_id": "app_id",
+        "position": "position",
     }
     return lookup[key]
 
 
-def get_attribs(listener_type, status):
+def get_attribs(listener_type: str, status: MediaStatus) -> dict:
     """Parse de los atributos del estado
 
     Args:
@@ -373,18 +432,12 @@ def get_attribs(listener_type, status):
     #
     try:
         status_image = status.images[0].url
-    except AttributeError:
-        status_image = None
-    except KeyError:
-        status_image = None
-    except IndexError:
+    except (AttributeError, KeyError, IndexError):
         status_image = None
 
     try:
         app_id = status.app_id
-    except AttributeError:
-        app_id = None
-    except KeyError:
+    except (AttributeError, KeyError):
         app_id = None
 
     lookup = {}
@@ -402,6 +455,7 @@ def get_attribs(listener_type, status):
             "track": status.track,
             "images": status_image,
             "duration": status.duration,
+            "position": status.current_time / status.duration,
         }
     elif listener_type == "status":
         lookup = {

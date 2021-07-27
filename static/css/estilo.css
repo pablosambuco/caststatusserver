@@ -71,6 +71,53 @@ body {
   background-size: 450px;
 }
 
+.mdl-card__media .slider {
+  position: relative;
+  margin: auto;
+  width: 100%;
+  height: 6px;
+  top: 100%;
+  transform: translateY(-13px);
+  -webkit-appearance: none;
+  -webkit-transition: 0.2s;
+  transition: background 450ms ease-in;
+  border-radius: 3px;
+}
+.mdl-card__media .slider::-webkit-slider-thumb {
+  width: 12px;
+  height: 12px;
+  -webkit-appearance: none;
+  cursor: ew-resize;
+  color: rgb(var(--acento));
+  border-radius: 50%;
+  border: rgb(var(--lineas));
+  border-width: 1px;
+}
+
+.mdl-card__media .slider-title {
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+  padding-left: 5px;
+  padding-right: 5px;
+  height: 20px;
+  text-align: center;
+  border-radius: 5px;
+  top: 100%;
+  transform: translateY(-70px);  
+  display: none;
+  cursor: default;
+  top: 0;
+  left: 0;
+  color: rgb(var(--texto-principal));
+  background-color:rgb(var(--lineas));
+
+}
+
+.mdl-card__media .slider:hover > .slider-title {
+  display: block;
+}
+
 .mdl-card__supporting-text {
   position: relative;
   height: 110px;
@@ -94,19 +141,40 @@ body {
   text-align: center;
   color: rgb(var(--texto-secundario));
 }
-.volume i.fa-volume-down {
+.volume i.fa-volume-mute {
   position: absolute;
   left: 6px;
   margin: auto;
-  color: rgb(var(--lineas));
+  background: rgb(var(--texto-principal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  cursor: pointer;
+  line-height: 1;  
+}
+.volume i.fa-volume-mute:hover {
+  background: rgb(var(--acento));
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 .volume i.fa-volume-up {
   position: absolute;
-  right: 6px;
+  left: 7px;
   margin: auto;
-  color: rgb(var(--lineas));
-}
+  background: rgb(var(--texto-principal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 
+  cursor: pointer;
+  line-height: 1;  
+}
+.volume i.fa-volume-up:hover {
+  background: rgb(var(--acento));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
 .volume .slider {
   position: absolute;
   margin: auto;
@@ -128,7 +196,7 @@ body {
   cursor: ew-resize;
   color: rgb(var(--acento));
   border-radius: 50%;
-  border: rgb(var(  ));
+  border: rgb(var(--lineas));
   border-width: 1px;
 }
 
@@ -144,7 +212,6 @@ body {
   width: 100%;
   text-align: left;
   font-size: 16px;
-  /*font-weight: bold;*/
   color: rgb(var(--texto-principal));
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -163,12 +230,10 @@ body {
 .controls {
   position: relative;
   margin: auto;
-  width: 50%;
+  width: 70%;
   height: 50px;
 }
 .controls i {
-  /*  color: rgb(var(--texto-principal));*/
-
   background: rgb(var(--texto-principal));
   -webkit-background-clip: text;
   background-clip: text;
@@ -180,13 +245,15 @@ body {
 .controls i:hover {
   background: rgb(var(--acento));
   -webkit-background-clip: text;
-  background-clip: text; 
+  background-clip: text;
 }
 .controls i:active {
   transform: translateY(1px);
 }
+.controls i.fa-undo,
 .controls i.fa-step-backward,
-.controls i.fa-step-forward {
+.controls i.fa-step-forward,
+.controls i.fa-redo {
   position: absolute;
   width: 20px;
   top: 50%;
@@ -195,12 +262,21 @@ body {
   -webkit-transform: translateY(-50%);
   text-align: center;
 }
+.controls i.fa-undo {
+  left: 25px;
+}
 .controls i.fa-step-backward {
-  left: 0;
+  left: 0px;
 }
+
+.controls i.fa-redo {
+  right: 25px;
+}
+
 .controls i.fa-step-forward {
-  right: 0;
+  right: 0px;
 }
+
 
 .controls i.fa-play-circle,
 .controls i.fa-pause-circle {

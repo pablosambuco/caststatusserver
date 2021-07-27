@@ -4,10 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pychromecast = ">=7.5.1"
+pychromecast = ">=9.2.0"
 gevent-websocket = ">=0.10.1"
 bottle = ">=0.12.18"
-websockets = ">=8.1"
+websockets = ">=9.1"
 
 [dev-packages]
 

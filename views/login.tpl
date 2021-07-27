@@ -29,10 +29,10 @@
                             <h3 class="mb-4 text-center">Login</h3>
                             <form action="/" method="post" class="signin-form">
                                 <div class="form-group">
-                                    <input name="username" class="form-control" placeholder="user" type="text" />
+                                    <input name="username" class="form-control" placeholder="user" type="text" autocomplete="username"/>
                                 </div>
                                 <div class="form-group">
-                                    <input name="password" class="form-control" placeholder="pass" type="password" />
+                                    <input name="password" class="form-control" placeholder="pass" type="password" autocomplete="current-password" />
                                 </div>
                                 <div class="form-group">
                                     <input value="Login" class="form-control" type="submit" />

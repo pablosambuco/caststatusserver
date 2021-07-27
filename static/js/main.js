@@ -29,6 +29,13 @@ function f_back(cast) {
   ws.send(`back,${cast}`);
 }
 
+function f_back10(cast) {
+  ws.send(`back10,${cast}`);
+}
+
+function f_forward10(cast) {
+  ws.send(`forward10,${cast}`);
+}
 function f_forward(cast) {
   ws.send(`forward,${cast}`);
 }
@@ -37,10 +44,37 @@ function f_volumen(cast, valor) {
   ws.send(`volume,${cast},${valor}`);
 }
 
+function f_position(cast, valor) {
+  ws.send(`position,${cast},${valor}`);
+}
+
+function f_mute(cast) {
+  ws.send(`mute,${cast}`);
+}
+
+function f_unmute(cast) {
+  ws.send(`unmute,${cast}`);
+}
+
+function setPosition(cast, valor) {
+  var element = document.getElementById(`position-${cast}`);
+  element.value = valor;
+  element.style.background = `linear-gradient(to right, rgb(var(--acento)) ${element.value}%, rgb(var(--lineas)) ${element.value}%)`;
+}
+
+function setDuration(cast, valor) {
+  var element = document.getElementById(`position-${cast}`);
+  element.setAttribute("duration", valor);
+}
+
 function setVolume(cast, valor) {
   var element = document.getElementById(`volume-${cast}`);
   element.value = valor;
   element.style.background = `linear-gradient(to right, rgb(var(--acento)) ${element.value}%, rgb(var(--lineas)) ${element.value}%)`;
+  if (valor > 0)
+    setMute(cast, false);
+  else 
+    setMute(cast, true);
 }
 
 function setTitle(cast, valor) {
@@ -81,6 +115,19 @@ function setState(cast, valor) {
   }
 }
 
+function setMute(cast, valor) {
+  var mute = document.getElementById(`mute-${cast}`);
+  var unmute = document.getElementById(`unmute-${cast}`);
+
+  if (valor == true) {
+    mute.style.display = "none";
+    unmute.style.display = "inherit";
+  } else {
+    unmute.style.display = "none";
+    mute.style.display = "inherit";
+  }
+}
+
 function setImage(cast, valor) {
   var element = document.getElementById(`image-${cast}`);
   if (element) element.style = `background: url(${valor}) 50% 50%; background-size: 450px;`;
@@ -97,26 +144,99 @@ function setAlbum(cast, valor) {
 }
 
 function setHandlers(cast) {
-  var slider = document.getElementById(`volume-${cast}`);
+  var volumeSlider = document.getElementById(`volume-${cast}`);
+  var positionSlider = document.getElementById(`position-${cast}`);
+  //var slidertitle = document.getElementById(`positiontitle-${cast}`);
   var back = document.getElementById(`back-${cast}`);
+  var back10 = document.getElementById(`back10-${cast}`);
   var play = document.getElementById(`play-${cast}`);
   var pause = document.getElementById(`pause-${cast}`);
+  var forward10 = document.getElementById(`forward10-${cast}`);
   var forward = document.getElementById(`forward-${cast}`);
+  var mute = document.getElementById(`mute-${cast}`);
+  var unmute = document.getElementById(`unmute-${cast}`);
 
-  slider.oninput = function () {
+  positionSlider.oninput = function () {
     this.style.background = `linear-gradient(to right, rgb(var(--acento)) ${this.value}%, rgb(var(--lineas)) ${this.value}%)`;
   };
 
-  slider.onmouseup = function () {
+  positionSlider.onmouseup = function () {
+    f_position(cast, this.value);
+  };
+
+  positionSlider.ontouchend = function () {
+    f_position(cast, this.value);
+  };
+
+  positionSlider.onmousemove = function (event) { 
+    var parent = document.getElementById(`image-${cast}`);
+    var totalDuration = document.getElementById(`position-${cast}`).getAttribute("duration");
+    var slidertitle = document.getElementById(`positiontitle-${cast}`);
+    var sliderOffsetX = positionSlider.getBoundingClientRect().left - document.documentElement.getBoundingClientRect().left;
+    var sliderOffsetY = positionSlider.getBoundingClientRect().top - document.documentElement.getBoundingClientRect().top;
+    var sliderWidth = positionSlider.offsetWidth - 1;
+    var currentMouseXPos = (event.clientX + window.pageXOffset) - sliderOffsetX;
+
+    newPosX = 0;
+    titleWidth = slidertitle.offsetWidth;
+    if (currentMouseXPos + titleWidth / 2 > parent.offsetWidth - 6) {
+      newPosX = parent.offsetWidth - titleWidth - 6;
+    }
+    else {
+      if (currentMouseXPos - 2 < titleWidth / 2) {
+        newPosX = 2;
+      }
+      else { 
+        newPosX = currentMouseXPos - titleWidth / 2;
+      }
+    }
+    slidertitle.style.top = sliderOffsetY - 15 + 'px';
+    slidertitle.style.left = newPosX + 'px';
+
+    currentPosition = totalDuration * (currentMouseXPos / sliderWidth);
+    var positionSeconds = Math.floor(currentPosition % 60);
+    var positionMinutes = Math.floor(currentPosition / 60) % 60;
+    var positionHours = Math.floor(currentPosition / (60*60));
+    var totalHours = Math.floor(totalDuration / (60*60));
+
+    if(totalHours > 0) { 
+      format = "HH:MM:SS" 
+    }
+    else { 
+      format = "MM:SS" 
+    }
+
+    var texto = format.replace("HH",("100000" + positionHours).slice(-2))
+    texto =  texto.replace("MM",("100000" + positionMinutes).slice(-2))
+    texto =  texto.replace("SS",("100000" + positionSeconds).slice(-2));
+
+    slidertitle.innerHTML = texto;
+    slidertitle.style.display = "block";
+  };
+
+  positionSlider.onmouseleave = function (event) { 
+    var slidertitle = document.getElementById(`positiontitle-${cast}`);
+    slidertitle.style.display = "none";
+  }
+
+  volumeSlider.oninput = function () {
+    this.style.background = `linear-gradient(to right, rgb(var(--acento)) ${this.value}%, rgb(var(--lineas)) ${this.value}%)`;
+  };
+
+  volumeSlider.onmouseup = function () {
     f_volumen(cast, this.value);
   };
 
-  slider.ontouchend = function () {
+  volumeSlider.ontouchend = function () {
     f_volumen(cast, this.value);
   };
 
   back.onclick = function () {
     f_back(cast);
+  };
+
+  back10.onclick = function () {
+    f_back10(cast);
   };
 
   play.onclick = function () {
@@ -137,9 +257,32 @@ function setHandlers(cast) {
     pause.style.display = "none";
   };
 
+  forward10.onclick = function () {
+    f_forward10(cast);
+  };
+
   forward.onclick = function () {
     f_forward(cast);
   };
+
+  mute.onclick = function () {
+    f_mute(cast);
+
+    var mute = document.getElementById(`mute-${cast}`);
+    var unmute = document.getElementById(`unmute-${cast}`);
+    mute.style.display = "none";    
+    unmute.style.display = "inherit";
+  }
+  
+  unmute.onclick = function () {
+    f_unmute(cast);
+
+    var mute = document.getElementById(`mute-${cast}`);
+    var unmute = document.getElementById(`unmute-${cast}`);
+    unmute.style.display = "none";    
+    mute.style.display = "inherit";
+  }
+
 }
 
 function atender(message) {
@@ -161,6 +304,12 @@ function atender_recursivo(jsonObject, cast) {
       retorno = atender_recursivo(jsonObject[key], local_cast);
     } else {
       switch (key) {
+        case "position":
+          setPosition(local_cast, parseFloat(jsonObject[key]) * 100);
+          break;
+        case "duration":
+          setDuration(local_cast, parseFloat(jsonObject[key]));
+          break;
         case "volume":
           setVolume(local_cast, parseFloat(jsonObject[key]) * 100);
           break;
@@ -224,6 +373,18 @@ function createCard(cast) {
     image.setAttribute("class", "mdl-card__media");
     image.setAttribute("id", `image-${cast}`);
     image.setAttribute("style", "background: url('images/black.png') 50% 50%");
+
+    posSlider = document.createElement("input");
+    posSlider.setAttribute("class", "slider");
+    posSlider.setAttribute("type", "range");
+    posSlider.setAttribute("min", "0");
+    posSlider.setAttribute("max", "100");
+    posSlider.setAttribute("id", `position-${cast}`);
+    image.appendChild(posSlider);
+    posTitle = document.createElement("div");
+    posTitle.setAttribute("class", "slider-title");
+    posTitle.setAttribute("id", `positiontitle-${cast}`);
+    image.appendChild(posTitle);
     card.appendChild(image);
 
     support = document.createElement("div");
@@ -233,21 +394,23 @@ function createCard(cast) {
     volume = document.createElement("div");
     volume.setAttribute("class", "volume");
 
-    volumeDown = document.createElement("i");
-    volumeDown.setAttribute("class", "fas fa-volume-down");
-    volume.appendChild(volumeDown);
+    mute = document.createElement("i");
+    mute.setAttribute("class", "fas fa-volume-up");
+    mute.setAttribute("id", `mute-${cast}`);
+    volume.appendChild(mute);
+
+    unmute = document.createElement("i");
+    unmute.setAttribute("class", "fas fa-volume-mute");
+    unmute.setAttribute("id", `unmute-${cast}`);
+    volume.appendChild(unmute);
 
     volumeSlider = document.createElement("input");
     volumeSlider.setAttribute("class", "slider");
     volumeSlider.setAttribute("type", "range");
-    volumeSlider.setAttribute("min", "1");
+    volumeSlider.setAttribute("min", "0");
     volumeSlider.setAttribute("max", "100");
     volumeSlider.setAttribute("id", `volume-${cast}`);
     volume.appendChild(volumeSlider);
-
-    volumeUp = document.createElement("i");
-    volumeUp.setAttribute("class", "fas fa-volume-up");
-    volume.appendChild(volumeUp);
 
     support.appendChild(volume);
 
@@ -278,6 +441,11 @@ function createCard(cast) {
     back.setAttribute("id", `back-${cast}`);
     controls.appendChild(back);
 
+    back10 = document.createElement("i");
+    back10.setAttribute("class", "fas fa-undo");
+    back10.setAttribute("id", `back10-${cast}`);
+    controls.appendChild(back10);
+
     play = document.createElement("i");
     play.setAttribute("class", "fas fa-play-circle fa-3x");
     play.setAttribute("id", `play-${cast}`);
@@ -287,6 +455,11 @@ function createCard(cast) {
     pause.setAttribute("class", "fas fa-pause-circle fa-3x");
     pause.setAttribute("id", `pause-${cast}`);
     controls.appendChild(pause);
+
+    forward10 = document.createElement("i");
+    forward10.setAttribute("class", "fas fa-redo");
+    forward10.setAttribute("id", `forward10-${cast}`);
+    controls.appendChild(forward10);
 
     forward = document.createElement("i");
     forward.setAttribute("class", "fas fa-step-forward");
