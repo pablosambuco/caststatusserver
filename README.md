@@ -7,9 +7,9 @@
 [![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/pablosambuco/CastStatusServer?logo=python&logoColor=white)](https://www.python.org/)
 [![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/CastStatusServer/bottle/master)](https://bottlepy.org/) 
 [![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/CastStatusServer/pychromecast/master?logo=google-chrome&logoColor=white)](https://github.com/home-assistant-libs/pychromecast)
-[![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/CastStatusServer/gevent-websocket/master)]()
-[![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/CastStatusServer/gevent/master)]()
-[![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/CastStatusServer/websockets/master)]()
+[![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/CastStatusServer/gevent-websocket/master)](https://gitlab.com/noppo/gevent-websocket)
+[![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/CastStatusServer/gevent/master)](http://www.gevent.org/)
+[![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/CastStatusServer/websockets/master)](https://github.com/aaugustin/websockets)
 
 [![Raspberry Pi](https://img.shields.io/badge/gadget-Raspberry%20Pi-red.svg?logo=raspberry-pi&logoColor=white)](https://www.raspberrypi.org)
 
