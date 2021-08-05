@@ -9,7 +9,7 @@ require(["vibrant"], () => {
 });
 
 var ws = "";
-var timer = "";
+var actualizar = "";
 
 Number.prototype.pad = function (size) {
   var s = String(this);
@@ -541,7 +541,7 @@ window.onload = function () {
   ws.onopen = function () {
     console.log("WebSocket abierto");
     ws.send("init");
-    var actualizar = setInterval(function() {ws.send("update")}, 1000);
+    actualizar = setInterval(function() {ws.send("update")}, 1000);
   };
 
   ws.onmessage = function (evt) {
