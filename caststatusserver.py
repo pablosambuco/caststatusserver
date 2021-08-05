@@ -1,10 +1,11 @@
 """Modulo conteniendo las clases necesarias para el manejo de chromecasts
 """
-# pylint: disable=line-too-long,fixme,consider-using-dict-items
+# pylint: disable=line-too-long,fixme,consider-using-dict-items,unused-argument
 
 import time
 import datetime
-import logging
+
+# import logging
 import json
 import zeroconf
 from geventwebsocket import WebSocketError, WebSocketServer
@@ -106,7 +107,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         """
         return self.casts
 
-    def update(self) -> dict:
+    def update_list(self) -> dict:
         """Devuelve el listado de nombres de chromecasts
 
         Returns:
@@ -159,7 +160,6 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         Raises:
             exc: Si ocurre una excepcion de WebSocket se envia
         """
-        logger = logging.getLogger()
         try:
             message = wsock.receive()
             if message == "init":
@@ -170,36 +170,47 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
                         wsocks.append(auxsock)
                 self.wsocks = list(set(wsocks))
                 self.send()
+                return
 
-            elif message:
-                log = message + " recibido"
+            if message == "update":
+                self.update(wsock)
+                return
+
+            if message:
                 comando = message.split(",")
-                if len(comando) == 2 and comando[0] == "play":
-                    self.play(cast_name=comando[1])
-                elif comando[0] == "pause":
-                    self.pause(cast_name=comando[1])
-                elif comando[0] == "back":
-                    self.back(cast_name=comando[1])
-                elif comando[0] == "forward":
-                    self.forward(cast_name=comando[1])
-                elif comando[0] == "volume":
-                    self.volume(cast_name=comando[1], value=comando[2])
-                elif comando[0] == "mute":
-                    self.mute(cast_name=comando[1])
-                elif comando[0] == "unmute":
-                    self.unmute(cast_name=comando[1])
-                elif comando[0] == "forward10":
-                    self.forward10(cast_name=comando[1])
-                elif comando[0] == "back10":
-                    self.back10(cast_name=comando[1])
-                elif comando[0] == "position":
-                    self.position(cast_name=comando[1], value=comando[2])
-                else:
-                    logger.info("%s", log)
+                metodo = getattr(self, comando[0], None)
+                cast_name = comando[1]
+                parametros = None
+                if len(comando) > 2:
+                    parametros = comando[2]
+
+                if metodo:
+                    metodo(cast_name, parametros)
+
+                # TODO: agregar comandos para activar o descativar los subtitulos
+
         except WebSocketError as exc:
             raise exc
 
-    def back(self, cast_name: str) -> None:
+    def update(self, wsock: WebSocketServer) -> None:
+        """Actualiza el listado de chromecasts
+
+        Args:
+            wsock (WebSocket): objeto donde se recibiran los mensajes
+        """
+        for cast_name in self.status:
+            controller = self.casts[cast_name].media_controller
+
+            duration = controller.status.duration
+            current_time = controller.status.adjusted_current_time
+
+            self.status[cast_name]["position"] = 0
+            if duration and current_time:
+                self.status[cast_name]["position"] = current_time / duration
+
+        self.send(wsock)
+
+    def back(self, cast_name: str, value=None) -> None:
         """Back
 
         Args:
@@ -211,7 +222,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         except AttributeError:
             pass
 
-    def play(self, cast_name: str) -> None:
+    def play(self, cast_name: str, value=None) -> None:
         """Play
 
         Args:
@@ -222,7 +233,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         except (AttributeError, KeyError):
             pass
 
-    def pause(self, cast_name: str) -> None:
+    def pause(self, cast_name: str, value=None) -> None:
         """Pause
 
         Args:
@@ -233,20 +244,18 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         except (AttributeError, KeyError):
             pass
 
-    def forward(self, cast_name: str) -> None:
+    def forward(self, cast_name: str, value=None) -> None:
         """Forward
 
         Args:
             cast (Chromecast): Cast en el que se aplica el forward
         """
         try:
-            self.casts[cast_name].media_controller.seek(
-                self.status[cast_name].get("duration", 9999)
-            )
+            self.casts[cast_name].media_controller.skip()
         except (AttributeError, KeyError):
             pass
 
-    def forward10(self, cast_name: str) -> None:
+    def forward10(self, cast_name: str, value=None) -> None:
         """Forward 10
         Args:
             cast (Chromecast): Cast en el que se aplica el forward
@@ -257,7 +266,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         except (AttributeError, KeyError):
             pass
 
-    def back10(self, cast_name: str) -> None:
+    def back10(self, cast_name: str, value=None) -> None:
         """Back 10
         Args:
             cast (Chromecast): Cast en el que se aplica el back
@@ -281,7 +290,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         except (AttributeError, KeyError):
             pass
 
-    def mute(self, cast_name: str) -> None:
+    def mute(self, cast_name: str, value=None) -> None:
         """Mute
 
         Args:
@@ -292,7 +301,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         except (AttributeError, KeyError):
             pass
 
-    def unmute(self, cast_name: str) -> None:
+    def unmute(self, cast_name: str, value=None) -> None:
         """Unmute
 
         Args:
@@ -300,6 +309,9 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         """
         try:
             value = self.status[cast_name]["prev_volume"]
+            # si ya estaba reproduciendo y no tengo idea del volumen, uso 50%
+            if not value:
+                value = 50
             self.casts[cast_name].set_volume(float(value) / 100)
         except (AttributeError, KeyError):
             pass
@@ -378,13 +390,16 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
                     ):
                         del self.status[cast_name][sub]
 
-    def send(self) -> None:
+    def send(self, wsock: WebSocketServer = None) -> None:
         """Metodo para enviar el estado actual a todos los websockets"""
         self.set_state()
-        message = json.dumps(self.update())
-        for wsock in self.wsocks:
-            if not wsock.closed:
-                wsock.send(message)
+        message = json.dumps(self.update_list())
+        if wsock and not wsock.closed:
+            wsock.send(message)
+            return
+        for iwsock in self.wsocks:
+            if not iwsock.closed:
+                iwsock.send(message)
 
 
 def map_key(key) -> str:

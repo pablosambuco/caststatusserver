@@ -1,9 +1,11 @@
 require.config({
-        paths: { vibrant: 'https://cdnjs.cloudflare.com/ajax/libs/vibrant.js/1.0.0/Vibrant' }
-    });
+  paths: {
+    vibrant: "https://cdnjs.cloudflare.com/ajax/libs/vibrant.js/1.0.0/Vibrant",
+  },
+});
 
-require(['vibrant'], () => { 
-   console.log("Vibrant cargado");  
+require(["vibrant"], () => {
+  console.log("Vibrant cargado");
 });
 
 var ws = "";
@@ -71,10 +73,8 @@ function setVolume(cast, valor) {
   var element = document.getElementById(`volume-${cast}`);
   element.value = valor;
   element.style.background = `linear-gradient(to right, rgb(var(--acento)) ${element.value}%, rgb(var(--lineas)) ${element.value}%)`;
-  if (valor > 0)
-    setMute(cast, false);
-  else 
-    setMute(cast, true);
+  if (valor > 0) setMute(cast, false);
+  else setMute(cast, true);
 }
 
 function setTitle(cast, valor) {
@@ -130,7 +130,8 @@ function setMute(cast, valor) {
 
 function setImage(cast, valor) {
   var element = document.getElementById(`image-${cast}`);
-  if (element) element.style = `background: url(${valor}) 50% 50%; background-size: 450px;`;
+  if (element)
+    element.style = `background: url(${valor}) 50% 50%; background-size: 450px;`;
 }
 
 function setArtist(cast, valor) {
@@ -168,56 +169,66 @@ function setHandlers(cast) {
     f_position(cast, this.value);
   };
 
-  positionSlider.onmousemove = function (event) { 
+  positionSlider.onmousemove = function (event) {
     var parent = document.getElementById(`image-${cast}`);
-    var totalDuration = document.getElementById(`position-${cast}`).getAttribute("duration");
+    var totalDuration = document
+      .getElementById(`position-${cast}`)
+      .getAttribute("duration");
     var slidertitle = document.getElementById(`positiontitle-${cast}`);
-    var sliderOffsetX = positionSlider.getBoundingClientRect().left - document.documentElement.getBoundingClientRect().left;
-    var sliderOffsetY = positionSlider.getBoundingClientRect().top - document.documentElement.getBoundingClientRect().top;
+    var sliderOffsetX =
+      positionSlider.getBoundingClientRect().left -
+      document.documentElement.getBoundingClientRect().left;
+    var sliderOffsetY =
+      positionSlider.getBoundingClientRect().top -
+      document.documentElement.getBoundingClientRect().top;
     var sliderWidth = positionSlider.offsetWidth - 1;
-    var currentMouseXPos = (event.clientX + window.pageXOffset) - sliderOffsetX;
+    var currentMouseXPos = event.clientX + window.pageXOffset - sliderOffsetX;
 
     newPosX = 0;
     titleWidth = slidertitle.offsetWidth;
     if (currentMouseXPos + titleWidth / 2 > parent.offsetWidth - 6) {
       newPosX = parent.offsetWidth - titleWidth - 6;
-    }
-    else {
+    } else {
       if (currentMouseXPos - 2 < titleWidth / 2) {
         newPosX = 2;
-      }
-      else { 
+      } else {
         newPosX = currentMouseXPos - titleWidth / 2;
       }
     }
-    slidertitle.style.top = sliderOffsetY - 15 + 'px';
-    slidertitle.style.left = newPosX + 'px';
+    slidertitle.style.top = sliderOffsetY - 15 + "px";
+    slidertitle.style.left = newPosX + "px";
 
     currentPosition = totalDuration * (currentMouseXPos / sliderWidth);
+    if (currentPosition < 0) {
+      currentPosition = 0;
+    }
+    if (currentPosition > totalDuration) {
+      currentPosition = totalDuration;
+    }
+
     var positionSeconds = Math.floor(currentPosition % 60);
     var positionMinutes = Math.floor(currentPosition / 60) % 60;
-    var positionHours = Math.floor(currentPosition / (60*60));
-    var totalHours = Math.floor(totalDuration / (60*60));
+    var positionHours = Math.floor(currentPosition / (60 * 60));
+    var totalHours = Math.floor(totalDuration / (60 * 60));
 
-    if(totalHours > 0) { 
-      format = "HH:MM:SS" 
-    }
-    else { 
-      format = "MM:SS" 
+    if (totalHours > 0) {
+      format = "HH:MM:SS";
+    } else {
+      format = "MM:SS";
     }
 
-    var texto = format.replace("HH",("100000" + positionHours).slice(-2))
-    texto =  texto.replace("MM",("100000" + positionMinutes).slice(-2))
-    texto =  texto.replace("SS",("100000" + positionSeconds).slice(-2));
+    texto = format.replace("HH", ("100000" + positionHours).slice(-2));
+    texto = texto.replace("MM", ("100000" + positionMinutes).slice(-2));
+    texto = texto.replace("SS", ("100000" + positionSeconds).slice(-2));
 
     slidertitle.innerHTML = texto;
     slidertitle.style.display = "block";
   };
 
-  positionSlider.onmouseleave = function (event) { 
+  positionSlider.onmouseleave = function () {
     var slidertitle = document.getElementById(`positiontitle-${cast}`);
     slidertitle.style.display = "none";
-  }
+  };
 
   volumeSlider.oninput = function () {
     this.style.background = `linear-gradient(to right, rgb(var(--acento)) ${this.value}%, rgb(var(--lineas)) ${this.value}%)`;
@@ -270,19 +281,18 @@ function setHandlers(cast) {
 
     var mute = document.getElementById(`mute-${cast}`);
     var unmute = document.getElementById(`unmute-${cast}`);
-    mute.style.display = "none";    
+    mute.style.display = "none";
     unmute.style.display = "inherit";
-  }
-  
+  };
+
   unmute.onclick = function () {
     f_unmute(cast);
 
     var mute = document.getElementById(`mute-${cast}`);
     var unmute = document.getElementById(`unmute-${cast}`);
-    unmute.style.display = "none";    
+    unmute.style.display = "none";
     mute.style.display = "inherit";
-  }
-
+  };
 }
 
 function atender(message) {
@@ -303,46 +313,52 @@ function atender_recursivo(jsonObject, cast) {
     if (jsonObject[key] instanceof Object) {
       retorno = atender_recursivo(jsonObject[key], local_cast);
     } else {
-      switch (key) {
-        case "position":
-          setPosition(local_cast, parseFloat(jsonObject[key]) * 100);
-          break;
-        case "duration":
-          setDuration(local_cast, parseFloat(jsonObject[key]));
-          break;
-        case "volume":
-          setVolume(local_cast, parseFloat(jsonObject[key]) * 100);
-          break;
-        case "title":
-          setTitle(local_cast, jsonObject[key]);
-          break;
-        case "subtitle":
-          setSubTitle(local_cast, jsonObject[key]);
-          break;
-        case "series":
-          setSeries(local_cast, jsonObject[key]);
-          break;
-        case "season":
-          setSeason(local_cast, jsonObject[key]);
-          break;
-        case "episode":
-          setEpisode(local_cast, jsonObject[key]);
-          break;
-        case "state":
-          retorno = `${jsonObject[key]},${local_cast}`;
-          setState(local_cast, jsonObject[key]);
-          break;
-        case "image":
-          setImage(local_cast, jsonObject[key]);
-          break;
-        case "artist":
-          setArtist(local_cast, jsonObject[key]);
-          break;
-        case "album":
-          setAlbum(local_cast, jsonObject[key]);
-          break;
-      }
+      retorno = atender_final(key, jsonObject[key], local_cast);
     }
+  }
+  return retorno;
+}
+
+function atender_final(key, value, cast) {
+  var retorno = "";
+  switch (key) {
+    case "position":
+      setPosition(cast, parseFloat(value) * 100);
+      break;
+    case "duration":
+      setDuration(cast, parseFloat(value));
+      break;
+    case "volume":
+      setVolume(cast, parseFloat(value) * 100);
+      break;
+    case "title":
+      setTitle(cast, value);
+      break;
+    case "subtitle":
+      setSubTitle(cast, value);
+      break;
+    case "series":
+      setSeries(cast, value);
+      break;
+    case "season":
+      setSeason(cast, value);
+      break;
+    case "episode":
+      setEpisode(cast, value);
+      break;
+    case "state":
+      retorno = `${value},${cast}`;
+      setState(cast, value);
+      break;
+    case "image":
+      setImage(cast, value);
+      break;
+    case "artist":
+      setArtist(cast, value);
+      break;
+    case "album":
+      setAlbum(cast, value);
+      break;
   }
   return retorno;
 }
@@ -487,32 +503,32 @@ function randomgb() {
     var vibrant = new Vibrant(img);
     var swatches = vibrant.swatches();
     for (var swatch in swatches)
-      if (swatches.hasOwnProperty(swatch) && swatches[swatch])
-      {
-        var rgb = swatches[swatch].getRgb()
-        var variable = Math.floor(rgb[0])+","+Math.floor(rgb[1])+","+Math.floor(rgb[2])
+      if (swatches.hasOwnProperty(swatch) && swatches[swatch]) {
+        var rgb = swatches[swatch].getRgb();
+        var variable =
+          Math.floor(rgb[0]) +
+          "," +
+          Math.floor(rgb[1]) +
+          "," +
+          Math.floor(rgb[2]);
         if (swatch == "Vibrant") {
-          document.documentElement.style.setProperty('--acento', variable);
-          
+          document.documentElement.style.setProperty("--acento", variable);
         }
-        if (swatch == "DarkVibrant"){
+        if (swatch == "DarkVibrant") {
           //document.documentElement.style.setProperty('--texto-principal', variable);
-          //document.documentElement.style.setProperty('--texto-secundario', variable);          
-          
+          //document.documentElement.style.setProperty('--texto-secundario', variable);
         }
-        if (swatch == "LightVibrant"){
-          //No hago nada          
+        if (swatch == "LightVibrant") {
+          //No hago nada
         }
-        if (swatch == "Muted"){
-          document.documentElement.style.setProperty('--fondo', variable);
-          
+        if (swatch == "Muted") {
+          document.documentElement.style.setProperty("--fondo", variable);
         }
-        if (swatch == "DarkMuted"){
-          document.documentElement.style.setProperty('--lineas', variable);
-          
+        if (swatch == "DarkMuted") {
+          document.documentElement.style.setProperty("--lineas", variable);
         }
       }
-    });
+  });
   document.body.style.background = "url('" + image + "')";
 }
 
@@ -525,6 +541,7 @@ window.onload = function () {
   ws.onopen = function () {
     console.log("WebSocket abierto");
     ws.send("init");
+    var actualizar = setInterval(function() {ws.send("update")}, 1000);
   };
 
   ws.onmessage = function (evt) {
@@ -533,8 +550,8 @@ window.onload = function () {
 
   ws.onclose = function () {
     console.log("WebSocket cerrado");
-    while (timer) {
-      window.clearInterval(timer--);
+    while (actualizar) {
+      window.clearInterval(actualizar);
     }
   };
 
