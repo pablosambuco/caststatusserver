@@ -16,7 +16,7 @@ from bottle import Bottle, static_file, request, abort, template
 from werkzeug.debug import DebuggedApplication
 from caststatusserver import CastStatusServer
 
-debug = True
+DEBUG = True
 CASTSTATUS = CastStatusServer()
 
 Path("logs").mkdir(parents=True, exist_ok=True)
@@ -45,7 +45,7 @@ def send_css(filename):
     Returns:
         string Ruta del css redirigido
     """
-    if debug:
+    if DEBUG:
         print("send_css", filename)
     root = DIRNAME + "/static/css"
     return static_file(filename, root=root)
@@ -61,7 +61,7 @@ def send_js(filename):
     Returns:
         string Ruta del js redirigido
     """
-    if debug:
+    if DEBUG:
         print("send_js", filename)
     root = DIRNAME + "/static/js"
     return static_file(filename, root=root)
@@ -77,7 +77,7 @@ def send_image(filename):
     Returns:
         string Ruta de la imagen redirigida
     """
-    if debug:
+    if DEBUG:
         print("send_image", filename)
     root = DIRNAME + "/static/images"
     return static_file(filename, root=root)
@@ -93,7 +93,7 @@ def index(filename):
     """
     # TODO Separar 100% el webserver del CastStatusServer. Ofrecer websocket desde el Cast.
     #  Esto implica sacar las variables del template de index, y crear una funcion en js para dibujar todo desde cero. ver a que nivel hay que insertar los objetos
-    if debug:
+    if DEBUG:
         print("index")
     root = DIRNAME + "/static/html"
     return static_file(filename, root=root)
@@ -106,7 +106,7 @@ def handle_websocket():
     Ruta utilizada para la comunicacion entre JavaScript (AJAX/JQuery) y Python
 
     """
-    if debug:
+    if DEBUG:
         print("handle_websocket")
     wsock = request.environ.get("wsgi.websocket")
     if not wsock:
@@ -128,7 +128,7 @@ def handle_doc_root():
     Returns:
         HTML: contenido procesado a partir del template
     """
-    if debug:
+    if DEBUG:
         print("handle_doc_root")
     return handle_doc("/")
 
@@ -139,7 +139,7 @@ def handle_doc(filename="index.html"):
     """Ruta Doxygen docs
     Ruta utilizada para la documentacion
     """
-    if debug:
+    if DEBUG:
         print("handle_doc", filename)
     return static_file(filename, root=DIRNAME + "/html")
 
@@ -158,7 +158,7 @@ def do_login():
     password = request.forms.get("password")
     filename = request.forms.get("fn")
 
-    if debug:
+    if DEBUG:
         print("do_login", username, password, filename)
     if check_login(username, password):
         return index(filename)
@@ -169,7 +169,7 @@ def check_login(username, password):
     """Valida el login contra user.pass si existe"""
     params = bytes(username + ":" + password, encoding="UTF-8")
 
-    if debug:
+    if DEBUG:
         print("check_login", username, password)
     userpass = "dXNlcjpwYXNz"  # default: user:pass
     if os.path.isfile(PASSFILE):
