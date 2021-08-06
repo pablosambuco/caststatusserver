@@ -12,11 +12,10 @@ from base64 import b64decode
 from gevent.pywsgi import WSGIServer
 from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
-from bottle import Bottle, static_file, request, abort, template
+from bottle import Bottle, redirect, static_file, request, abort, template
 from werkzeug.debug import DebuggedApplication
 from caststatusserver import CastStatusServer
 
-DEBUG = True
 CASTSTATUS = CastStatusServer()
 
 Path("logs").mkdir(parents=True, exist_ok=True)
@@ -45,8 +44,6 @@ def send_css(filename):
     Returns:
         string Ruta del css redirigido
     """
-    if DEBUG:
-        print("send_css", filename)
     root = DIRNAME + "/static/css"
     return static_file(filename, root=root)
 
@@ -61,8 +58,6 @@ def send_js(filename):
     Returns:
         string Ruta del js redirigido
     """
-    if DEBUG:
-        print("send_js", filename)
     root = DIRNAME + "/static/js"
     return static_file(filename, root=root)
 
@@ -77,8 +72,6 @@ def send_image(filename):
     Returns:
         string Ruta de la imagen redirigida
     """
-    if DEBUG:
-        print("send_image", filename)
     root = DIRNAME + "/static/images"
     return static_file(filename, root=root)
 
@@ -93,8 +86,6 @@ def index(filename):
     """
     # TODO Separar 100% el webserver del CastStatusServer. Ofrecer websocket desde el Cast.
     #  Esto implica sacar las variables del template de index, y crear una funcion en js para dibujar todo desde cero. ver a que nivel hay que insertar los objetos
-    if DEBUG:
-        print("index")
     root = DIRNAME + "/static/html"
     return static_file(filename, root=root)
 
@@ -106,8 +97,6 @@ def handle_websocket():
     Ruta utilizada para la comunicacion entre JavaScript (AJAX/JQuery) y Python
 
     """
-    if DEBUG:
-        print("handle_websocket")
     wsock = request.environ.get("wsgi.websocket")
     if not wsock:
         abort(400, "Expected WebSocket request.")
@@ -118,30 +107,21 @@ def handle_websocket():
         except WebSocketError:
             break
 
-
 @APP.route("/doc")
 def handle_doc_root():
     """Ruta /doc
-
-    Correspode a la pagina principal de la aplicacion
-
-    Returns:
-        HTML: contenido procesado a partir del template
     """
-    if DEBUG:
-        print("handle_doc_root")
-    return handle_doc("/")
+    redirect("/doc/index.html")
 
 
-@APP.route("/doc")
-@APP.route("/doc/<filename>")
+@APP.route("/")
+@APP.route("/doc/<filename:path>")
 def handle_doc(filename="index.html"):
     """Ruta Doxygen docs
     Ruta utilizada para la documentacion
     """
-    if DEBUG:
-        print("handle_doc", filename)
-    return static_file(filename, root=DIRNAME + "/html")
+    root = DIRNAME + "/doc"
+    return static_file(filename, root=root)
 
 
 @APP.get("/")
@@ -158,8 +138,6 @@ def do_login():
     password = request.forms.get("password")
     filename = request.forms.get("fn")
 
-    if DEBUG:
-        print("do_login", username, password, filename)
     if check_login(username, password):
         return index(filename)
     return login(filename, error="Invalid username/password")
@@ -169,8 +147,6 @@ def check_login(username, password):
     """Valida el login contra user.pass si existe"""
     params = bytes(username + ":" + password, encoding="UTF-8")
 
-    if DEBUG:
-        print("check_login", username, password)
     userpass = "dXNlcjpwYXNz"  # default: user:pass
     if os.path.isfile(PASSFILE):
         with open(PASSFILE, "r") as passfile:
