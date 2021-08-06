@@ -16,7 +16,7 @@ from bottle import Bottle, static_file, request, abort, template
 from werkzeug.debug import DebuggedApplication
 from caststatusserver import CastStatusServer
 
-
+debug = True
 CASTSTATUS = CastStatusServer()
 
 Path("logs").mkdir(parents=True, exist_ok=True)
@@ -45,6 +45,8 @@ def send_css(filename):
     Returns:
         string Ruta del css redirigido
     """
+    if debug:
+        print("send_css", filename)
     root = DIRNAME + "/static/css"
     return static_file(filename, root=root)
 
@@ -59,34 +61,24 @@ def send_js(filename):
     Returns:
         string Ruta del js redirigido
     """
+    if debug:
+        print("send_js", filename)
     root = DIRNAME + "/static/js"
     return static_file(filename, root=root)
 
 
-@APP.get(r"/images/<filename:re:.*\.jpg>")
-def send_jpg(filename):
-    """Redireccion de images/*.jpg a static/images/*.jpg
+@APP.get(r"/images/<filename>")
+def send_image(filename):
+    """Redireccion de images/*.* a static/images/*.*
 
     Args:
-        filename (string): Ruta del jpg a redirigir
+        filename (string): Ruta de la imagen a redirigir
 
     Returns:
-        string Ruta del jpg redirigido
+        string Ruta de la imagen redirigida
     """
-    root = DIRNAME + "/static/images"
-    return static_file(filename, root=root)
-
-
-@APP.get(r"/images/<filename:re:.*\.png>")
-def send_png(filename):
-    """Redireccion de images/*.png a static/images/*.png
-
-    Args:
-        filename (string): Ruta del png a redirigir
-
-    Returns:
-        string Ruta del png redirigido
-    """
+    if debug:
+        print("send_image", filename)
     root = DIRNAME + "/static/images"
     return static_file(filename, root=root)
 
@@ -101,6 +93,8 @@ def index(filename):
     """
     # TODO Separar 100% el webserver del CastStatusServer. Ofrecer websocket desde el Cast.
     #  Esto implica sacar las variables del template de index, y crear una funcion en js para dibujar todo desde cero. ver a que nivel hay que insertar los objetos
+    if debug:
+        print("index")
     root = DIRNAME + "/static/html"
     return static_file(filename, root=root)
 
@@ -112,6 +106,8 @@ def handle_websocket():
     Ruta utilizada para la comunicacion entre JavaScript (AJAX/JQuery) y Python
 
     """
+    if debug:
+        print("handle_websocket")
     wsock = request.environ.get("wsgi.websocket")
     if not wsock:
         abort(400, "Expected WebSocket request.")
@@ -123,14 +119,29 @@ def handle_websocket():
             break
 
 
-# @APP.route('/doc')
-# def handle_doc():
-#     '''Ruta Doxygen docs
+@APP.route("/doc")
+def handle_doc_root():
+    """Ruta /doc
 
-#     Ruta utilizada para la documentacion
+    Correspode a la pagina principal de la aplicacion
 
-#     '''
-#     return static_file('index.html', root=DIRNAME+'/html')
+    Returns:
+        HTML: contenido procesado a partir del template
+    """
+    if debug:
+        print("handle_doc_root")
+    return handle_doc("/")
+
+
+@APP.route("/doc")
+@APP.route("/doc/<filename>")
+def handle_doc(filename="index.html"):
+    """Ruta Doxygen docs
+    Ruta utilizada para la documentacion
+    """
+    if debug:
+        print("handle_doc", filename)
+    return static_file(filename, root=DIRNAME + "/html")
 
 
 @APP.get("/")
@@ -146,6 +157,9 @@ def do_login():
     username = request.forms.get("username")
     password = request.forms.get("password")
     filename = request.forms.get("fn")
+
+    if debug:
+        print("do_login", username, password, filename)
     if check_login(username, password):
         return index(filename)
     return login(filename, error="Invalid username/password")
@@ -155,6 +169,8 @@ def check_login(username, password):
     """Valida el login contra user.pass si existe"""
     params = bytes(username + ":" + password, encoding="UTF-8")
 
+    if debug:
+        print("check_login", username, password)
     userpass = "dXNlcjpwYXNz"  # default: user:pass
     if os.path.isfile(PASSFILE):
         with open(PASSFILE, "r") as passfile:
