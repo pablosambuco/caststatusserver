@@ -18,7 +18,7 @@ from pychromecast import (
     stop_discovery,
 )
 
-
+#TODO Convertir el GenericListener en abstracto con ABC
 class GenericListener:
     """Clase listener generica"""
 
@@ -49,7 +49,7 @@ class GenericListener:
         """
         self.server.update_status(self, status)
 
-
+#TODO Tratar de crear un módulo para dejar de usar singleton
 class CastStatusServerMeta(type):
     """Clase con funcionalidades de busqueda y control de
     Chromecasts en una red local
