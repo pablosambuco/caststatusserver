@@ -458,7 +458,7 @@ def get_attribs(listener_type: str, status: MediaStatus) -> dict:
     lookup = {}
     if listener_type == "media":
         lookup = {
-            "volume_level": "{:.2f}".format(status.volume_level),
+            "volume_level": f"{status.volume_level:.2f}",
             "title": status.title,
             "subtitle": status.media_metadata.get("subtitle"),
             "series_title": status.series_title,
@@ -474,7 +474,7 @@ def get_attribs(listener_type: str, status: MediaStatus) -> dict:
         }
     elif listener_type == "status":
         lookup = {
-            "volume_level": "{:.2f}".format(status.volume_level),
+            "volume_level": f"{status.volume_level:.2f}",
             "volume_muted": status.volume_muted,
             "status_text": status.status_text,
             "icon_url": status.icon_url,
