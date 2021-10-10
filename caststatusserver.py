@@ -1,5 +1,4 @@
-"""Modulo conteniendo las clases necesarias para el manejo de chromecasts
-"""
+"""Modulo conteniendo las clases necesarias para el manejo de chromecasts"""
 # pylint: disable=line-too-long,fixme,consider-using-dict-items,unused-argument
 
 import time
