@@ -2,6 +2,7 @@
 [![Pylint](https://github.com/pablosambuco/CastStatusServer/workflows/Pylint/badge.svg)](https://github.com/pablosambuco/CastStatusServer/actions?query=workflow%3APylint)
 [![CodeQL](https://github.com/pablosambuco/CastStatusServer/workflows/CodeQL/badge.svg)](https://github.com/pablosambuco/CastStatusServer/actions?query=workflow%3ACodeQL)
 [![CodeFactor](https://www.codefactor.io/repository/github/pablosambuco/caststatusserver/badge)](https://www.codefactor.io/repository/github/pablosambuco/caststatusserver)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/544303f117224475bbc92364a2d389c9)](https://www.codacy.com/gh/pablosambuco/CastStatusServer/dashboard)
 [![GitHub issues](https://img.shields.io/github/issues/pablosambuco/CastStatusServer)](https://github.com/pablosambuco/CastStatusServer/issues)
 
 [![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/pablosambuco/CastStatusServer?logo=python&logoColor=white)](https://www.python.org/)
