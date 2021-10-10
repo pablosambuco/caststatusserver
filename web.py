@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-"""Web.py: servidor principal de CastStatus
-"""
+"""Web.py: servidor principal de CastStatus"""
 
 # pylint: disable=line-too-long,fixme,E1101
 
@@ -110,6 +109,9 @@ def handle_websocket():
 @APP.route("/doc")
 def handle_doc_root():
     """Ruta /doc
+
+    Ruta para la documentación generada con doxygen
+
     """
     redirect("/doc/index.html")
 
