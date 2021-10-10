@@ -149,7 +149,7 @@ def check_login(username, password):
 
     userpass = "dXNlcjpwYXNz"  # default: user:pass
     if os.path.isfile(PASSFILE):
-        with open(PASSFILE, "r") as passfile:
+        with open(PASSFILE, "r", encoding="utf-8") as passfile:
             userpass = str(passfile.readline())  # solo leo la primera linea
     return params == b64decode(userpass)
 
