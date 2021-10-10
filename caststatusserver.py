@@ -83,16 +83,15 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         time.sleep(1)
         for _, service in listener.services.items():
             cast = get_chromecast_from_cast_info(service, zconf)
-            if service[2] == "Chromecast":
-                if service[3] not in self.casts:
-                    cast.wait()
-                    slist = GenericListener(self, cast, "status")
-                    cast.register_status_listener(slist)
-                    mlist = GenericListener(self, cast, "media")
-                    cast.media_controller.register_status_listener(mlist)
-                    clist = GenericListener(self, cast, "connection")
-                    cast.register_connection_listener(clist)
-                    self.casts[service[3]] = cast
+            if service[2] == "Chromecast" and service[3] not in self.casts:
+                cast.wait()
+                slist = GenericListener(self, cast, "status")
+                cast.register_status_listener(slist)
+                mlist = GenericListener(self, cast, "media")
+                cast.media_controller.register_status_listener(mlist)
+                clist = GenericListener(self, cast, "connection")
+                cast.register_connection_listener(clist)
+                self.casts[service[3]] = cast
 
         stop_discovery(browser)
 
