@@ -1,3 +1,9 @@
+Console = {
+    log: function(message) {
+        console.log(message);
+    }
+}
+
 require.config({
   paths: {
     vibrant: "https://cdnjs.cloudflare.com/ajax/libs/vibrant.js/1.0.0/Vibrant",
@@ -5,7 +11,7 @@ require.config({
 });
 
 require(["vibrant"], () => {
-  console.log("Vibrant cargado");
+  Console.log("Vibrant cargado");
 });
 
 var ws = "";
@@ -539,7 +545,7 @@ window.onload = function () {
   ws = new WebSocket("ws://" + full + "/websocket");
 
   ws.onopen = function () {
-    console.log("WebSocket abierto");
+    Console.log("WebSocket abierto");
     ws.send("init");
     actualizar = setInterval(function() {ws.send("update")}, 1000);
   };
@@ -549,7 +555,7 @@ window.onload = function () {
   };
 
   ws.onclose = function () {
-    console.log("WebSocket cerrado");
+    Console.log("WebSocket cerrado");
     while (actualizar) {
       window.clearInterval(actualizar);
     }
