@@ -1,8 +1,8 @@
 Console = {
-    log: function(message) {
-        console.log(message);
-    }
-}
+  log: function (message) {
+    console.log(message);
+  },
+};
 
 require.config({
   paths: {
@@ -16,6 +16,20 @@ require(["vibrant"], () => {
 
 var ws;
 var actualizar = "";
+
+function escapeHTML(str) {
+  return str.replace(
+    /[&<>'"]/g,
+    (tag) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#39;",
+        '"': "&quot;",
+      }[tag] || tag)
+  );
+}
 
 Number.prototype.pad = function (size) {
   var s = String(this);
@@ -79,7 +93,7 @@ function setMute(cast, valor) {
   var mute = document.getElementById(`mute-${cast}`);
   var unmute = document.getElementById(`unmute-${cast}`);
 
-  if (valor == true) {
+  if (valor === true) {
     mute.style.display = "none";
     unmute.style.display = "inherit";
   } else {
@@ -92,33 +106,46 @@ function setVolume(cast, valor) {
   var element = document.getElementById(`volume-${cast}`);
   element.value = valor;
   element.style.background = `linear-gradient(to right, rgb(var(--acento)) ${element.value}%, rgb(var(--lineas)) ${element.value}%)`;
-  if (valor > 0) setMute(cast, false);
-  else setMute(cast, true);
+  if (valor > 0) {
+    setMute(cast, false);
+  } else {
+    setMute(cast, true);
+  }
 }
 
 function setTitle(cast, valor) {
   var element = document.getElementById(`title-${cast}`);
-  if (element) element.innerHTML = valor;
+  if (element) {
+    element.innerHTML = escapeHTML`${valor}`;
+  }
 }
 
 function setSubTitle(cast, valor) {
   var element = document.getElementById(`subtitle-${cast}`);
-  if (element) element.innerHTML = valor;
+  if (element) {
+    element.innerHTML = escapeHTML`${valor}`;
+  }
 }
 
 function setSeries(cast, valor) {
   var element = document.getElementById(`series-${cast}`);
-  if (element) element.innerHTML = valor;
+  if (element) {
+    element.innerHTML = escapeHTML(valor);
+  }
 }
 
 function setSeason(cast, valor) {
   var element = document.getElementById(`season-${cast}`);
-  if (element) element.innerHTML = valor;
+  if (element) {
+    element.innerHTML = escapeHTML`${valor}`;
+  }
 }
 
 function setEpisode(cast, valor) {
   var element = document.getElementById(`episode-${cast}`);
-  if (element) element.innerHTML = valor;
+  if (element) {
+    element.innerHTML = escapeHTML`${valor}`;
+  }
 }
 
 function setState(cast, valor) {
@@ -136,18 +163,23 @@ function setState(cast, valor) {
 
 function setImage(cast, valor) {
   var element = document.getElementById(`image-${cast}`);
-  if (element)
+  if (element) {
     element.style = `background: url(${valor}) 50% 50%; background-size: 450px;`;
+  }
 }
 
 function setArtist(cast, valor) {
   var element = document.getElementById(`subtitle-${cast}`);
-  if (element) element.innerHTML = valor;
+  if (element) {
+    element.innerHTML = escapeHTML`${valor}`;
+  }
 }
 
 function setAlbum(cast, valor) {
   var element = document.getElementById(`album-${cast}`);
-  if (element) element.innerHTML = valor;
+  if (element) {
+    element.innerHTML = escapeHTML`${valor}`;
+  }
 }
 
 function setHandlers(cast) {
@@ -190,8 +222,8 @@ function setHandlers(cast) {
     var sliderWidth = positionSlider.offsetWidth - 1;
     var currentMouseXPos = event.clientX + window.pageXOffset - sliderOffsetX;
 
-    newPosX = 0;
-    titleWidth = slidertitle.offsetWidth;
+    var newPosX = 0;
+    var titleWidth = slidertitle.offsetWidth;
     if (currentMouseXPos + titleWidth / 2 > parent.offsetWidth - 6) {
       newPosX = parent.offsetWidth - titleWidth - 6;
     } else {
@@ -204,7 +236,7 @@ function setHandlers(cast) {
     slidertitle.style.top = sliderOffsetY - 15 + "px";
     slidertitle.style.left = newPosX + "px";
 
-    currentPosition = totalDuration * (currentMouseXPos / sliderWidth);
+    var currentPosition = totalDuration * (currentMouseXPos / sliderWidth);
     if (currentPosition < 0) {
       currentPosition = 0;
     }
@@ -223,11 +255,11 @@ function setHandlers(cast) {
       format = "MM:SS";
     }
 
-    texto = format.replace("HH", ("100000" + positionHours).slice(-2));
+    var texto = format.replace("HH", ("100000" + positionHours).slice(-2));
     texto = texto.replace("MM", ("100000" + positionMinutes).slice(-2));
     texto = texto.replace("SS", ("100000" + positionSeconds).slice(-2));
 
-    slidertitle.innerHTML = texto;
+    slidertitle.innerHTML = escapeHTML`${texto}`;
     slidertitle.style.display = "block";
   };
 
@@ -301,11 +333,135 @@ function setHandlers(cast) {
   };
 }
 
-function atender(message) {
-  jsonObject = JSON.parse(message.data);
-  var resultado = atenderRecursivo(jsonObject, "");
-  var aux = resultado.split(",");
-  if (aux[0] == "REMOVE") removeCard(aux[1]);
+function removeCard(cast) {
+  var card = document.getElementById(cast);
+  if (card) {
+    card.parentNode.removeChild(card);
+  }
+}
+
+function createCard(cast) {
+  var newDiv = document.getElementById(cast);
+  var grid = document.getElementById("grid");
+  if (!newDiv) {
+    var card = document.createElement("div");
+    card.setAttribute(
+      "class",
+      "mdl-card mdl-cell mdl-cell--6-col mdl-cell--4-col-tablet mdl-shadow--2dp"
+    );
+    card.setAttribute("id", cast);
+
+    var header = document.createElement("div");
+    header.setAttribute("class", "cast");
+    header.setAttribute("id", `cast-${cast}`);
+    header.innerHTML = escapeHTML`${cast}`;
+    card.appendChild(header);
+
+    var image = document.createElement("div");
+    image.setAttribute("class", "mdl-card__media");
+    image.setAttribute("id", `image-${cast}`);
+    image.setAttribute("style", "background: url('images/black.png') 50% 50%");
+
+    var posSlider = document.createElement("input");
+    posSlider.setAttribute("class", "slider");
+    posSlider.setAttribute("type", "range");
+    posSlider.setAttribute("min", "0");
+    posSlider.setAttribute("max", "100");
+    posSlider.setAttribute("id", `position-${cast}`);
+    image.appendChild(posSlider);
+    posTitle = document.createElement("div");
+    posTitle.setAttribute("class", "slider-title");
+    posTitle.setAttribute("id", `positiontitle-${cast}`);
+    image.appendChild(posTitle);
+    card.appendChild(image);
+
+    var support = document.createElement("div");
+    support.setAttribute("class", "mdl-card__supporting-text");
+    support.setAttribute("id", `text-${cast}`);
+
+    var volume = document.createElement("div");
+    volume.setAttribute("class", "volume");
+
+    var mute = document.createElement("i");
+    mute.setAttribute("class", "fas fa-volume-up");
+    mute.setAttribute("id", `mute-${cast}`);
+    volume.appendChild(mute);
+
+    var unmute = document.createElement("i");
+    unmute.setAttribute("class", "fas fa-volume-mute");
+    unmute.setAttribute("id", `unmute-${cast}`);
+    volume.appendChild(unmute);
+
+    var volumeSlider = document.createElement("input");
+    volumeSlider.setAttribute("class", "slider");
+    volumeSlider.setAttribute("type", "range");
+    volumeSlider.setAttribute("min", "0");
+    volumeSlider.setAttribute("max", "100");
+    volumeSlider.setAttribute("id", `volume-${cast}`);
+    volume.appendChild(volumeSlider);
+
+    support.appendChild(volume);
+
+    var content = document.createElement("div");
+    content.setAttribute("class", "content");
+    content.setAttribute("id", `content-${cast}`);
+
+    var title = document.createElement("div");
+    title.setAttribute("class", "title");
+    title.setAttribute("id", `title-${cast}`);
+
+    content.appendChild(title);
+
+    var subtitle = document.createElement("div");
+    subtitle.setAttribute("class", "subtitle");
+    subtitle.setAttribute("id", `subtitle-${cast}`);
+
+    content.appendChild(subtitle);
+
+    support.appendChild(content);
+
+    var controls = document.createElement("div");
+    controls.setAttribute("class", "controls");
+    controls.setAttribute("id", `controls-${cast}`);
+
+    var back = document.createElement("i");
+    back.setAttribute("class", "fas fa-step-backward");
+    back.setAttribute("id", `back-${cast}`);
+    controls.appendChild(back);
+
+    var back10 = document.createElement("i");
+    back10.setAttribute("class", "fas fa-undo");
+    back10.setAttribute("id", `back10-${cast}`);
+    controls.appendChild(back10);
+
+    var play = document.createElement("i");
+    play.setAttribute("class", "fas fa-play-circle fa-3x");
+    play.setAttribute("id", `play-${cast}`);
+    controls.appendChild(play);
+
+    var pause = document.createElement("i");
+    pause.setAttribute("class", "fas fa-pause-circle fa-3x");
+    pause.setAttribute("id", `pause-${cast}`);
+    controls.appendChild(pause);
+
+    var forward10 = document.createElement("i");
+    forward10.setAttribute("class", "fas fa-redo");
+    forward10.setAttribute("id", `forward10-${cast}`);
+    controls.appendChild(forward10);
+
+    var forward = document.createElement("i");
+    forward.setAttribute("class", "fas fa-step-forward");
+    forward.setAttribute("id", `forward-${cast}`);
+    controls.appendChild(forward);
+
+    support.appendChild(controls);
+
+    card.appendChild(support);
+
+    grid.appendChild(card);
+
+    setHandlers(cast);
+  }
 }
 
 function atenderRecursivo(jsonObject, cast) {
@@ -369,138 +525,18 @@ function atenderFinal(key, value, cast) {
   return retorno;
 }
 
-function removeCard(cast) {
-  var card = document.getElementById(cast);
-  if (card) card.parentNode.removeChild(card);
-}
-
-function createCard(cast) {
-  newDiv = document.getElementById(cast);
-  grid = document.getElementById("grid");
-  if (!newDiv) {
-    card = document.createElement("div");
-    card.setAttribute(
-      "class",
-      "mdl-card mdl-cell mdl-cell--6-col mdl-cell--4-col-tablet mdl-shadow--2dp"
-    );
-    card.setAttribute("id", cast);
-
-    header = document.createElement("div");
-    header.setAttribute("class", "cast");
-    header.setAttribute("id", `cast-${cast}`);
-    header.innerHTML = cast;
-    card.appendChild(header);
-
-    image = document.createElement("div");
-    image.setAttribute("class", "mdl-card__media");
-    image.setAttribute("id", `image-${cast}`);
-    image.setAttribute("style", "background: url('images/black.png') 50% 50%");
-
-    posSlider = document.createElement("input");
-    posSlider.setAttribute("class", "slider");
-    posSlider.setAttribute("type", "range");
-    posSlider.setAttribute("min", "0");
-    posSlider.setAttribute("max", "100");
-    posSlider.setAttribute("id", `position-${cast}`);
-    image.appendChild(posSlider);
-    posTitle = document.createElement("div");
-    posTitle.setAttribute("class", "slider-title");
-    posTitle.setAttribute("id", `positiontitle-${cast}`);
-    image.appendChild(posTitle);
-    card.appendChild(image);
-
-    support = document.createElement("div");
-    support.setAttribute("class", "mdl-card__supporting-text");
-    support.setAttribute("id", `text-${cast}`);
-
-    volume = document.createElement("div");
-    volume.setAttribute("class", "volume");
-
-    mute = document.createElement("i");
-    mute.setAttribute("class", "fas fa-volume-up");
-    mute.setAttribute("id", `mute-${cast}`);
-    volume.appendChild(mute);
-
-    unmute = document.createElement("i");
-    unmute.setAttribute("class", "fas fa-volume-mute");
-    unmute.setAttribute("id", `unmute-${cast}`);
-    volume.appendChild(unmute);
-
-    volumeSlider = document.createElement("input");
-    volumeSlider.setAttribute("class", "slider");
-    volumeSlider.setAttribute("type", "range");
-    volumeSlider.setAttribute("min", "0");
-    volumeSlider.setAttribute("max", "100");
-    volumeSlider.setAttribute("id", `volume-${cast}`);
-    volume.appendChild(volumeSlider);
-
-    support.appendChild(volume);
-
-    content = document.createElement("div");
-    content.setAttribute("class", "content");
-    content.setAttribute("id", `content-${cast}`);
-
-    title = document.createElement("div");
-    title.setAttribute("class", "title");
-    title.setAttribute("id", `title-${cast}`);
-
-    content.appendChild(title);
-
-    subtitle = document.createElement("div");
-    subtitle.setAttribute("class", "subtitle");
-    subtitle.setAttribute("id", `subtitle-${cast}`);
-
-    content.appendChild(subtitle);
-
-    support.appendChild(content);
-
-    controls = document.createElement("div");
-    controls.setAttribute("class", "controls");
-    controls.setAttribute("id", `controls-${cast}`);
-
-    back = document.createElement("i");
-    back.setAttribute("class", "fas fa-step-backward");
-    back.setAttribute("id", `back-${cast}`);
-    controls.appendChild(back);
-
-    back10 = document.createElement("i");
-    back10.setAttribute("class", "fas fa-undo");
-    back10.setAttribute("id", `back10-${cast}`);
-    controls.appendChild(back10);
-
-    play = document.createElement("i");
-    play.setAttribute("class", "fas fa-play-circle fa-3x");
-    play.setAttribute("id", `play-${cast}`);
-    controls.appendChild(play);
-
-    pause = document.createElement("i");
-    pause.setAttribute("class", "fas fa-pause-circle fa-3x");
-    pause.setAttribute("id", `pause-${cast}`);
-    controls.appendChild(pause);
-
-    forward10 = document.createElement("i");
-    forward10.setAttribute("class", "fas fa-redo");
-    forward10.setAttribute("id", `forward10-${cast}`);
-    controls.appendChild(forward10);
-
-    forward = document.createElement("i");
-    forward.setAttribute("class", "fas fa-step-forward");
-    forward.setAttribute("id", `forward-${cast}`);
-    controls.appendChild(forward);
-
-    support.appendChild(controls);
-
-    card.appendChild(support);
-
-    grid.appendChild(card);
-
-    setHandlers(cast);
+function atender(message) {
+  var jsonObject = JSON.parse(message.data);
+  var resultado = atenderRecursivo(jsonObject, "");
+  var aux = resultado.split(",");
+  if (aux[0] == "REMOVE") {
+    removeCard(aux[1]);
   }
 }
 
 function randomgb() {
-  number = Math.floor(Math.random() * 449 + 1).pad(3);
-  image = "/images/image_" + number + ".jpg";
+  var number = Math.floor(Math.random() * 449 + 1).pad(3);
+  var image = "/images/image_" + number + ".jpg";
 
   var img = document.createElement("img");
   img.setAttribute("src", image);
@@ -547,7 +583,9 @@ window.onload = function () {
   ws.onopen = function () {
     Console.log("WebSocket abierto");
     ws.send("init");
-    actualizar = setInterval(function() {ws.send("update")}, 1000);
+    actualizar = setInterval(function () {
+      ws.send("update");
+    }, 1000);
   };
 
   ws.onmessage = function (evt) {
