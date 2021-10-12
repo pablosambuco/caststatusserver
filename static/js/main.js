@@ -15,7 +15,7 @@ require(["vibrant"], () => {
 });
 
 var ws;
-var actualizar = "";
+var actualizar;
 
 function escapeHTML(str) {
   return str.replace(
@@ -130,7 +130,7 @@ function setSubTitle(cast, valor) {
 function setSeries(cast, valor) {
   var element = document.getElementById(`series-${cast}`);
   if (element) {
-    element.innerHTML = escapeHTML(valor);
+    element.innerHTML = escapeHTML`${valor}`;
   }
 }
 
@@ -152,7 +152,7 @@ function setState(cast, valor) {
   var play = document.getElementById(`play-${cast}`);
   var pause = document.getElementById(`pause-${cast}`);
 
-  if (valor == "PLAYING") {
+  if (valor === "PLAYING") {
     play.style.display = "none";
     pause.style.display = "inherit";
   } else {
@@ -249,6 +249,7 @@ function setHandlers(cast) {
     var positionHours = Math.floor(currentPosition / (60 * 60));
     var totalHours = Math.floor(totalDuration / (60 * 60));
 
+    var format;
     if (totalHours > 0) {
       format = "HH:MM:SS";
     } else {
@@ -464,23 +465,6 @@ function createCard(cast) {
   }
 }
 
-function atenderRecursivo(jsonObject, cast) {
-  var local_cast = cast;
-  var retorno = "";
-  for (var key in jsonObject) {
-    if (key == "cast") {
-      local_cast = jsonObject[key];
-      createCard(local_cast);
-    }
-    if (jsonObject[key] instanceof Object) {
-      retorno = atenderRecursivo(jsonObject[key], local_cast);
-    } else {
-      retorno = atenderFinal(key, jsonObject[key], local_cast);
-    }
-  }
-  return retorno;
-}
-
 function atenderFinal(key, value, cast) {
   var retorno = "";
   switch (key) {
@@ -525,11 +509,28 @@ function atenderFinal(key, value, cast) {
   return retorno;
 }
 
+function atenderRecursivo(jsonObject, cast) {
+  var local_cast = cast;
+  var retorno = "";
+  for (var key in jsonObject) {
+    if (key === "cast") {
+      local_cast = jsonObject[key];
+      createCard(local_cast);
+    }
+    if (jsonObject[key] instanceof Object) {
+      retorno = atenderRecursivo(jsonObject[key], local_cast);
+    } else {
+      retorno = atenderFinal(key, jsonObject[key], local_cast);
+    }
+  }
+  return retorno;
+}
+
 function atender(message) {
   var jsonObject = JSON.parse(message.data);
   var resultado = atenderRecursivo(jsonObject, "");
   var aux = resultado.split(",");
-  if (aux[0] == "REMOVE") {
+  if (aux[0] === "REMOVE") {
     removeCard(aux[1]);
   }
 }
@@ -553,20 +554,20 @@ function randomgb() {
           Math.floor(rgb[1]) +
           "," +
           Math.floor(rgb[2]);
-        if (swatch == "Vibrant") {
+        if (swatch === "Vibrant") {
           document.documentElement.style.setProperty("--acento", variable);
         }
-        if (swatch == "DarkVibrant") {
+        if (swatch === "DarkVibrant") {
           //document.documentElement.style.setProperty('--texto-principal', variable);
           //document.documentElement.style.setProperty('--texto-secundario', variable);
         }
-        if (swatch == "LightVibrant") {
+        if (swatch === "LightVibrant") {
           //No hago nada
         }
-        if (swatch == "Muted") {
+        if (swatch === "Muted") {
           document.documentElement.style.setProperty("--fondo", variable);
         }
-        if (swatch == "DarkMuted") {
+        if (swatch === "DarkMuted") {
           document.documentElement.style.setProperty("--lineas", variable);
         }
       }
