@@ -14,7 +14,7 @@ require(["vibrant"], () => {
   Console.log("Vibrant cargado");
 });
 
-var ws = "";
+var ws;
 var actualizar = "";
 
 Number.prototype.pad = function (size) {
@@ -25,42 +25,42 @@ Number.prototype.pad = function (size) {
   return s;
 };
 
-function f_play(cast) {
+function fPlay(cast) {
   ws.send(`play,${cast}`);
 }
 
-function f_pause(cast) {
+function fPause(cast) {
   ws.send(`pause,${cast}`);
 }
 
-function f_back(cast) {
+function fBack(cast) {
   ws.send(`back,${cast}`);
 }
 
-function f_back10(cast) {
+function fBack10(cast) {
   ws.send(`back10,${cast}`);
 }
 
-function f_forward10(cast) {
+function fForward10(cast) {
   ws.send(`forward10,${cast}`);
 }
-function f_forward(cast) {
+function fForward(cast) {
   ws.send(`forward,${cast}`);
 }
 
-function f_volumen(cast, valor) {
+function fVolumen(cast, valor) {
   ws.send(`volume,${cast},${valor}`);
 }
 
-function f_position(cast, valor) {
+function fPosition(cast, valor) {
   ws.send(`position,${cast},${valor}`);
 }
 
-function f_mute(cast) {
+function fMute(cast) {
   ws.send(`mute,${cast}`);
 }
 
-function f_unmute(cast) {
+function fUnMute(cast) {
   ws.send(`unmute,${cast}`);
 }
 
@@ -73,6 +73,19 @@ function setPosition(cast, valor) {
 function setDuration(cast, valor) {
   var element = document.getElementById(`position-${cast}`);
   element.setAttribute("duration", valor);
+}
+
+function setMute(cast, valor) {
+  var mute = document.getElementById(`mute-${cast}`);
+  var unmute = document.getElementById(`unmute-${cast}`);
+
+  if (valor == true) {
+    mute.style.display = "none";
+    unmute.style.display = "inherit";
+  } else {
+    unmute.style.display = "none";
+    mute.style.display = "inherit";
+  }
 }
 
 function setVolume(cast, valor) {
@@ -121,19 +134,6 @@ function setState(cast, valor) {
   }
 }
 
-function setMute(cast, valor) {
-  var mute = document.getElementById(`mute-${cast}`);
-  var unmute = document.getElementById(`unmute-${cast}`);
-
-  if (valor == true) {
-    mute.style.display = "none";
-    unmute.style.display = "inherit";
-  } else {
-    unmute.style.display = "none";
-    mute.style.display = "inherit";
-  }
-}
-
 function setImage(cast, valor) {
   var element = document.getElementById(`image-${cast}`);
   if (element)
@@ -168,11 +168,11 @@ function setHandlers(cast) {
   };
 
   positionSlider.onmouseup = function () {
-    f_position(cast, this.value);
+    fPosition(cast, this.value);
   };
 
   positionSlider.ontouchend = function () {
-    f_position(cast, this.value);
+    fPosition(cast, this.value);
   };
 
   positionSlider.onmousemove = function (event) {
@@ -241,23 +241,23 @@ function setHandlers(cast) {
   };
 
   volumeSlider.onmouseup = function () {
-    f_volumen(cast, this.value);
+    fVolumen(cast, this.value);
   };
 
   volumeSlider.ontouchend = function () {
-    f_volumen(cast, this.value);
+    fVolumen(cast, this.value);
   };
 
   back.onclick = function () {
-    f_back(cast);
+    fBack(cast);
   };
 
   back10.onclick = function () {
-    f_back10(cast);
+    fBack10(cast);
   };
 
   play.onclick = function () {
-    f_play(cast);
+    fPlay(cast);
 
     var play = document.getElementById(`play-${cast}`);
     var pause = document.getElementById(`pause-${cast}`);
@@ -266,7 +266,7 @@ function setHandlers(cast) {
   };
 
   pause.onclick = function () {
-    f_pause(cast);
+    fPause(cast);
 
     var play = document.getElementById(`play-${cast}`);
     var pause = document.getElementById(`pause-${cast}`);
@@ -275,15 +275,15 @@ function setHandlers(cast) {
   };
 
   forward10.onclick = function () {
-    f_forward10(cast);
+    fForward10(cast);
   };
 
   forward.onclick = function () {
-    f_forward(cast);
+    fForward(cast);
   };
 
   mute.onclick = function () {
-    f_mute(cast);
+    fMute(cast);
 
     var mute = document.getElementById(`mute-${cast}`);
     var unmute = document.getElementById(`unmute-${cast}`);
@@ -292,7 +292,7 @@ function setHandlers(cast) {
   };
 
   unmute.onclick = function () {
-    f_unmute(cast);
+    fUnMute(cast);
 
     var mute = document.getElementById(`mute-${cast}`);
     var unmute = document.getElementById(`unmute-${cast}`);
@@ -303,12 +303,12 @@ function setHandlers(cast) {
 
 function atender(message) {
   jsonObject = JSON.parse(message.data);
-  var resultado = atender_recursivo(jsonObject, "");
+  var resultado = atenderRecursivo(jsonObject, "");
   var aux = resultado.split(",");
   if (aux[0] == "REMOVE") removeCard(aux[1]);
 }
 
-function atender_recursivo(jsonObject, cast) {
+function atenderRecursivo(jsonObject, cast) {
   var local_cast = cast;
   var retorno = "";
   for (var key in jsonObject) {
@@ -317,15 +317,15 @@ function atender_recursivo(jsonObject, cast) {
       createCard(local_cast);
     }
     if (jsonObject[key] instanceof Object) {
-      retorno = atender_recursivo(jsonObject[key], local_cast);
+      retorno = atenderRecursivo(jsonObject[key], local_cast);
     } else {
-      retorno = atender_final(key, jsonObject[key], local_cast);
+      retorno = atenderFinal(key, jsonObject[key], local_cast);
     }
   }
   return retorno;
 }
 
-function atender_final(key, value, cast) {
+function atenderFinal(key, value, cast) {
   var retorno = "";
   switch (key) {
     case "position":
