@@ -17,7 +17,8 @@ from pychromecast import (
     stop_discovery,
 )
 
-#TODO Convertir el GenericListener en abstracto con ABC
+
+# TODO Convertir el GenericListener en abstracto con ABC
 class GenericListener:
     """Clase listener generica"""
 
@@ -48,7 +49,8 @@ class GenericListener:
         """
         self.server.update_status(self, status)
 
-#TODO Tratar de crear un módulo para dejar de usar singleton
+
+# TODO Tratar de crear un módulo para dejar de usar singleton
 class CastStatusServerMeta(type):
     """Clase con funcionalidades de busqueda y control de
     Chromecasts en una red local
@@ -185,7 +187,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
                 if metodo:
                     metodo(cast_name, parametros)
 
-                # TODO: agregar comandos para activar o descativar los subtitulos
+                # TODO: agregar comandos para activar o descativar los
+                # subtitulos
 
         except WebSocketError as exc:
             raise exc
@@ -431,8 +434,10 @@ def get_attribs(listener_type: str, status: MediaStatus) -> dict:
         listener_type (string): tipo de listener que detecta el cambio
         status (MediaStatus): Objeto con el estado actual
     """
-    # TODO Tener en cuenta el metadataType (https://developers.google.com/cast/docs/reference/messages#MediaStatus)
-    #  con este dato se puede decidir què atributos buscar y simplificar el diccionario de estados
+    # TODO Tener en cuenta el metadataType
+    # https://developers.google.com/cast/docs/reference/messages#MediaStatus
+    #  con este dato se puede decidir què atributos buscar y simplificar el
+    #  diccionario de estados
     #  0: GenericMediaMetadata: title, subtitle, images
     #  1: MovieMediaMetadata: title, subtitle, images, studio
     #  2: TvShowMediaMetadata: seriesTitle, subtitle, season, episode, images
@@ -440,8 +445,10 @@ def get_attribs(listener_type: str, status: MediaStatus) -> dict:
     #  4: PhotoMediaMetadata: title, artist, location
     #
 
-    # TODO Determinar que comandos estan permitidos (atributo supportedMediaCommands) para enviar al frontend que botones deben estar disponibles
-    #  MediaStatus: playerState, supportedMediaCommands, volume
+    # TODO Determinar que comandos estan permitidos (atributo
+    # supportedMediaCommands) para enviar al frontend que botones deben estar
+    # disponibles
+    # MediaStatus: playerState, supportedMediaCommands, volume
     #
     try:
         status_image = status.images[0].url
