@@ -1,5 +1,4 @@
 :root {
-  /* redefinidas en js */
   --blue: #007bff;
   --indigo: #6610f2;
   --purple: #6f42c1;
@@ -26,23 +25,25 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
-  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+*,
+*::before,
+*::after {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html * {
   font-family: "Roboto", sans-serif;
-  /*texto no seleccionable*/
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently
-                        supported by Chrome, Edge, Opera and Firefox */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 body {
@@ -60,6 +61,7 @@ body {
   margin: 0;
   text-align: left;
 }
+
 body:after {
   position: fixed;
   top: 0;
@@ -70,13 +72,6 @@ body:after {
   background: #000;
   opacity: 0.3;
   z-index: -1;
-}
-
-*,
-*::before,
-*::after {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
 }
 
 html {
@@ -253,6 +248,7 @@ h3,
   flex: 0 0 50%;
   max-width: 50%;
 }
+
 .col-lg-4 {
   -webkit-box-flex: 0;
   -ms-flex: 0 0 33.33333%;
@@ -272,11 +268,9 @@ h3,
   background-clip: padding-box;
   border: 1px solid #ced4da;
   border-radius: 50px;
-  -webkit-transition: border-color 0.15s ease-in-out,
-    -webkit-box-shadow 0.15s ease-in-out;
+  -webkit-transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
   -o-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
-    -webkit-box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
   color: white !important;
 }
 
@@ -284,6 +278,7 @@ h3,
   color: rgba(255, 255, 255, 0.8) !important;
   opacity: 1;
 }
+
 .form-control::placeholder {
   color: #6c757d;
   opacity: 1;
@@ -313,6 +308,7 @@ h3,
 .my-5 {
   margin-bottom: 3rem !important;
 }
+
 .p-0 {
   padding: 0 !important;
 }
@@ -350,6 +346,7 @@ h5,
   position: relative;
   color: rgba(255, 255, 255, 0.9);
 }
+
 .login-wrap h3 {
   font-weight: 300;
   color: #fff;
