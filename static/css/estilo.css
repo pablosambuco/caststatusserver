@@ -4,7 +4,6 @@
 @import url(https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap);
 
 :root {
-  /* redefinidas en js */
   --fondo: 0, 0, 0;
   --lineas: 0, 0, 0;
   --acento: 0, 0, 0;
@@ -168,7 +167,7 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   cursor: pointer;
-  line-height: 1;  
+  line-height: 1;
 }
 
 .volume i.fa-volume-up:hover {
