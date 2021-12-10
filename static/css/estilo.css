@@ -10,7 +10,6 @@
   --acento: 0, 0, 0;
   --texto-principal: 245, 245, 245;
   --texto-secundario: 255, 255, 255;
-
   --alpha-body: 0.1;
   --alpha-fondo: 0.5;
   --alpha-lineas: 0.5;
@@ -19,14 +18,12 @@
 
 html * {
   font-family: "Roboto", sans-serif;
-  /*texto no seleccionable*/
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently
-                        supported by Chrome, Edge, Opera and Firefox */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 body {
@@ -40,6 +37,7 @@ body {
   max-width: 600px;
   border-radius: 20px;
 }
+
 .mdl-card {
   margin: auto;
   max-width: 90%;
@@ -52,6 +50,7 @@ body {
   background-color: rgba(var(--fondo), var(--alpha-fondo));
   backdrop-filter: blur(5px);
 }
+
 .mdl-card__media {
   top: 20px;
   bottom: 20px;
@@ -83,6 +82,7 @@ body {
   transition: background 450ms ease-in;
   border-radius: 3px;
 }
+
 .mdl-card__media .slider::-webkit-slider-thumb {
   width: 12px;
   height: 12px;
@@ -110,7 +110,6 @@ body {
   left: 0;
   color: rgb(var(--texto-principal));
   background-color:rgb(var(--lineas));
-
 }
 
 .mdl-card__media .slider:hover > .slider-title {
@@ -131,6 +130,7 @@ body {
   position: relative;
   margin: auto;
 }
+
 .volume i {
   position: absolute;
   top: 50%;
@@ -140,6 +140,7 @@ body {
   text-align: center;
   color: rgb(var(--texto-secundario));
 }
+
 .volume i.fa-volume-mute {
   position: absolute;
   left: 6px;
@@ -148,15 +149,16 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-
   cursor: pointer;
   line-height: 1;  
 }
+
 .volume i.fa-volume-mute:hover {
   background: rgb(var(--acento));
   -webkit-background-clip: text;
   background-clip: text;
 }
+
 .volume i.fa-volume-up {
   position: absolute;
   left: 7px;
@@ -165,15 +167,16 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-
   cursor: pointer;
   line-height: 1;  
 }
+
 .volume i.fa-volume-up:hover {
   background: rgb(var(--acento));
   -webkit-background-clip: text;
   background-clip: text;
 }
+
 .volume .slider {
   position: absolute;
   margin: auto;
@@ -188,6 +191,7 @@ body {
   -webkit-transition: 0.2s;
   transition: background 450ms ease-in;
 }
+
 .volume .slider::-webkit-slider-thumb {
   width: 12px;
   height: 12px;
@@ -215,6 +219,7 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .content .subtitle {
   position: relative;
   width: 100%;
@@ -232,23 +237,26 @@ body {
   width: 70%;
   height: 50px;
 }
+
 .controls i {
   background: rgb(var(--texto-principal));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-
   cursor: pointer;
   line-height: 1;
 }
+
 .controls i:hover {
   background: rgb(var(--acento));
   -webkit-background-clip: text;
   background-clip: text;
 }
+
 .controls i:active {
   transform: translateY(1px);
 }
+
 .controls i.fa-undo,
 .controls i.fa-step-backward,
 .controls i.fa-step-forward,
@@ -261,9 +269,11 @@ body {
   -webkit-transform: translateY(-50%);
   text-align: center;
 }
+
 .controls i.fa-undo {
   left: 25px;
 }
+
 .controls i.fa-step-backward {
   left: 0;
 }
@@ -276,7 +286,6 @@ body {
   right: 0;
 }
 
-
 .controls i.fa-play-circle,
 .controls i.fa-pause-circle {
   position: absolute;
@@ -287,9 +296,11 @@ body {
   width: 50px;
   text-align: center;
 }
+
 .controls i.fa-play-circle {
   display: block;
 }
+
 .controls i.fa-pause-circle {
   display: none;
 }
