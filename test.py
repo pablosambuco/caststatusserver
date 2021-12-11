@@ -1,5 +1,5 @@
 # coding: utf-8
-"""prueba"""
+"""prueba."""
 # pylint: disable=redefined-builtin
 import time
 from pprint import pprint as print
