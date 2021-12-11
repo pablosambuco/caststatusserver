@@ -47,9 +47,9 @@ html * {
 }
 
 body {
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-size: cover !important;
+  background-position: center; /* !important; */
+  background-repeat: no-repeat; /* !important; */
+  background-size: cover; /* !important; */
   font-family: "Roboto", Arial, sans-serif;
   font-size: 16px;
   line-height: 1.8;
@@ -271,11 +271,11 @@ h3,
   -webkit-transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
   -o-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-  color: white !important;
+  color: white; /* !important; */
 }
 
 .form-control::-webkit-input-placeholder {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: rgba(255, 255, 255, 0.8); /* !important; */
   opacity: 1;
 }
 
@@ -290,31 +290,31 @@ h3,
 }
 
 .justify-content-center {
-  -webkit-box-pack: center !important;
-  -ms-flex-pack: center !important;
-  justify-content: center !important;
+  -webkit-box-pack: center; /* !important; */
+  -ms-flex-pack: center; /* !important; */
+  justify-content: center; /* !important; */
 }
 
 .w-100 {
-  width: 100% !important;
+  width: 100%; /* !important; */
 }
 
 .mb-4,
 .my-4 {
-  margin-bottom: 1.5rem !important;
+  margin-bottom: 1.5rem; /* !important; */
 }
 
 .mb-5,
 .my-5 {
-  margin-bottom: 3rem !important;
+  margin-bottom: 3rem; /* !important; */
 }
 
 .p-0 {
-  padding: 0 !important;
+  padding: 0; /* !important; */
 }
 
 .text-center {
-  text-align: center !important;
+  text-align: center; /* !important; */
 }
 
 h1,
