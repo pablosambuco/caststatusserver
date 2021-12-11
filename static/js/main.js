@@ -1,4 +1,4 @@
-Console = {
+var Console = {
   log: function (message) {
     console.log(message);
   },
