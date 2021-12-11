@@ -370,7 +370,7 @@ function createCard(cast) {
     posSlider.setAttribute("max", "100");
     posSlider.setAttribute("id", `position-${cast}`);
     image.appendChild(posSlider);
-    posTitle = document.createElement("div");
+    var posTitle = document.createElement("div");
     posTitle.setAttribute("class", "slider-title");
     posTitle.setAttribute("id", `positiontitle-${cast}`);
     image.appendChild(posTitle);
@@ -510,17 +510,19 @@ function atenderFinal(key, value, cast) {
 }
 
 function atenderRecursivo(jsonObject, cast) {
-  var local_cast = cast;
+  var localCast = cast;
   var retorno = "";
   for (var key in jsonObject) {
-    if (key === "cast") {
-      local_cast = jsonObject[key];
-      createCard(local_cast);
-    }
-    if (jsonObject[key] instanceof Object) {
-      retorno = atenderRecursivo(jsonObject[key], local_cast);
-    } else {
-      retorno = atenderFinal(key, jsonObject[key], local_cast);
+    if (jsonObject.hasOwnProperty(key)) {
+      if (key === "cast") {
+        localCast = jsonObject[key];
+        createCard(localCast);
+      }
+      if (jsonObject[key] instanceof Object) {
+        retorno = atenderRecursivo(jsonObject[key], localCast);
+      } else {
+        retorno = atenderFinal(key, jsonObject[key], localCast);
+      }
     }
   }
   return retorno;
@@ -545,7 +547,7 @@ function randomgb() {
   img.addEventListener("load", function () {
     var vibrant = new Vibrant(img);
     var swatches = vibrant.swatches();
-    for (var swatch in swatches)
+    for (var swatch in swatches) {
       if (swatches.hasOwnProperty(swatch) && swatches[swatch]) {
         var rgb = swatches[swatch].getRgb();
         var variable =
@@ -571,6 +573,7 @@ function randomgb() {
           document.documentElement.style.setProperty("--lineas", variable);
         }
       }
+    }
   });
   document.body.style.background = "url('" + image + "')";
 }
