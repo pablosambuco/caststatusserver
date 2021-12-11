@@ -1,4 +1,4 @@
-"""Modulo conteniendo las clases necesarias para el manejo de chromecasts"""
+"""Modulo conteniendo las clases necesarias para el manejo de chromecasts."""
 # pylint: disable=line-too-long,fixme,consider-using-dict-items,unused-argument
 
 import time
@@ -20,7 +20,7 @@ from pychromecast import (
 
 # TODO Convertir el GenericListener en abstracto con ABC
 class GenericListener:
-    """Clase listener generica"""
+    """Clase listener generica."""
 
     def __init__(self, server, cast: Chromecast, listener_type):
         self.server = server
@@ -36,14 +36,14 @@ class GenericListener:
         self.server.update_status(self, status)
 
     def new_media_status(self, status):
-        """Metodo para enviar cambios de medios
+        """Metodo para enviar cambios de medios.
         Args:
             status (Response): Estado que se envia al diccionario de estados
         """
         self.server.update_status(self, status)
 
     def new_connection_status(self, status):
-        """Metodo para enviar cambios de medios
+        """Metodo para enviar cambios de medios.
         Args:
             status (Response): Estado que se envia al diccionario de estados
         """
@@ -52,8 +52,7 @@ class GenericListener:
 
 # TODO Tratar de crear un módulo para dejar de usar singleton
 class CastStatusServerMeta(type):
-    """Clase con funcionalidades de busqueda y control de
-    Chromecasts en una red local
+    """Clase con funcionalidades de busqueda y control de Chromecasts en una red local.
 
     Esta clase contiene una instancia de tipo CastStatusSingleton.
 
@@ -64,14 +63,14 @@ class CastStatusServerMeta(type):
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
-        """Prueba"""
+        """Prueba."""
         if cls not in cls._instances:
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
 
 class CastStatusServer(metaclass=CastStatusServerMeta):
-    """Singleton (?)"""
+    """Singleton (?)."""
 
     def __init__(self):
         self.casts = {}
@@ -100,7 +99,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         return str(self.casts)
 
     def init(self):
-        """Devuelve el listado de nombres de chromecasts
+        """Devuelve el listado de nombres de chromecasts.
 
         Returns:
             list listado de nombres de chromecasts
@@ -108,7 +107,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         return self.casts
 
     def update_list(self) -> dict:
-        """Devuelve el listado de nombres de chromecasts
+        """Devuelve el listado de nombres de chromecasts.
 
         Returns:
             list listado de nombres de chromecasts
@@ -127,7 +126,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
     def update_status(
         self, listener: GenericListener, status: MediaStatus
     ) -> None:
-        """Actualiza el diccionario de estados
+        """Actualiza el diccionario de estados.
 
         Args:
             listener (Listener): objeto listener que llama a este metodo
@@ -152,7 +151,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         self.send()
 
     def atender(self, wsock: WebSocketServer) -> None:
-        """Funcion para atender los mensajes del WebSocket
+        """Funcion para atender los mensajes del WebSocket.
 
         Args:
             wsock (WebSocket): objeto donde se recibiran los mensajes
@@ -194,7 +193,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             raise exc
 
     def update(self, wsock: WebSocketServer) -> None:
-        """Actualiza el listado de chromecasts
+        """Actualiza el listado de chromecasts.
 
         Args:
             wsock (WebSocket): objeto donde se recibiran los mensajes
@@ -212,7 +211,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         self.send(wsock)
 
     def back(self, cast_name: str, value=None) -> None:
-        """Back
+        """Back.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el back
@@ -224,7 +223,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def play(self, cast_name: str, value=None) -> None:
-        """Play
+        """Play.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el play
@@ -235,7 +234,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def pause(self, cast_name: str, value=None) -> None:
-        """Pause
+        """Pause.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el pause
@@ -246,7 +245,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def forward(self, cast_name: str, value=None) -> None:
-        """Forward
+        """Forward.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el forward
@@ -257,7 +256,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def forward10(self, cast_name: str, value=None) -> None:
-        """Forward 10
+        """Forward 10.
         Args:
             cast (Chromecast): Cast en el que se aplica el forward
         """
@@ -268,7 +267,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def back10(self, cast_name: str, value=None) -> None:
-        """Back 10
+        """Back 10.
         Args:
             cast (Chromecast): Cast en el que se aplica el back
         """
@@ -279,7 +278,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def volume(self, cast_name: str, value: float) -> None:
-        """Cambio de Volumen
+        """Cambio de Volumen.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el volumen
@@ -292,7 +291,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def mute(self, cast_name: str, value=None) -> None:
-        """Mute
+        """Mute.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el volumen
@@ -303,7 +302,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def unmute(self, cast_name: str, value=None) -> None:
-        """Unmute
+        """Unmute.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el volumen
@@ -318,7 +317,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def position(self, cast_name: str, value: float) -> None:
-        """Cambio de Posicion
+        """Cambio de Posicion.
 
         Args:
             cast (Chromecast): Cast en el que se aplica la posicion
@@ -328,7 +327,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             duration = self.casts[cast_name].media_controller.status.duration
             new_position = (float(value) / 100) * duration
             self.casts[cast_name].media_controller.seek(new_position)
-
+Es deLO¢²¢
         except (AttributeError, KeyError):
             pass
 
