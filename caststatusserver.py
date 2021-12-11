@@ -478,7 +478,7 @@ def get_attribs(listener_type: str, status: MediaStatus) -> dict:
         }
 
     for key, value in lookup.items():
-        if lookup[key] and str(value).isspace():
+        if value and str(value).isspace():
             lookup[key] = None
 
     return lookup
