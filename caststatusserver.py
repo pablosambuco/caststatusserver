@@ -327,7 +327,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             duration = self.casts[cast_name].media_controller.status.duration
             new_position = (float(value) / 100) * duration
             self.casts[cast_name].media_controller.seek(new_position)
-Es deLO¢²¢
+
         except (AttributeError, KeyError):
             pass
 
