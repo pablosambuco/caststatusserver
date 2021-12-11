@@ -27,7 +27,7 @@ html * {
 
 body {
   background-color: rgba(var(--fondo), var(--alpha-body)); /* !important; */
-  background-position: center; */ !important; */
+  background-position: center; /* !important; */
   background-repeat: no-repeat; /* !important; */
   background-size: cover; /* !important; */
 }
