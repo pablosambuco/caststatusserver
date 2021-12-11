@@ -30,8 +30,7 @@ class GenericListener:
         self.listener_type = listener_type
 
     def new_cast_status(self, status):
-        """
-        Metodo para enviar cambios de estado
+        """Metodo para enviar cambios de estado.
 
         Args:
             status (Response): Estado que se envia al diccionario de estados
@@ -39,8 +38,7 @@ class GenericListener:
         self.server.update_status(self, status)
 
     def new_media_status(self, status):
-        """
-        Metodo para enviar cambios de medios.
+        """Metodo para enviar cambios de medios.
 
         Args:
             status (Response): Estado que se envia al diccionario de estados
@@ -48,8 +46,7 @@ class GenericListener:
         self.server.update_status(self, status)
 
     def new_connection_status(self, status):
-        """
-        Metodo para enviar cambios de medios.
+        """Metodo para enviar cambios de medios.
 
         Args:
             status (Response): Estado que se envia al diccionario de estados
@@ -267,7 +264,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
     def forward10(self, cast_name: str, value=None) -> None:
         """
         Forward 10.
-        
+
         Args:
             cast (Chromecast): Cast en el que se aplica el forward
         """
@@ -280,7 +277,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
     def back10(self, cast_name: str, value=None) -> None:
         """
         Back 10.
-        
+
         Args:
             cast (Chromecast): Cast en el que se aplica el back
         """
