@@ -124,9 +124,8 @@ def check_login(username, password):
 
 
 SERVER = WSGIServer(
-    ("192.168.1.40", 8083),
+    ("0.0.0.0", 8083),
     DebuggedApplication(APP),
     handler_class=WebSocketHandler,
 )
 SERVER.serve_forever()
-# APP.run(host='192.168.1.40', port=8083)
