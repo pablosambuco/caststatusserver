@@ -20,15 +20,18 @@ from pychromecast import (
 
 # TODO Convertir el GenericListener en abstracto con ABC
 class GenericListener:
+
     """Clase listener generica."""
 
     def __init__(self, server, cast: Chromecast, listener_type):
+        """Constructor de la clase."""
         self.server = server
         self.cast = cast
         self.listener_type = listener_type
 
     def new_cast_status(self, status):
-        """Metodo para enviar cambios de estado
+        """
+        Metodo para enviar cambios de estado
 
         Args:
             status (Response): Estado que se envia al diccionario de estados
@@ -36,14 +39,18 @@ class GenericListener:
         self.server.update_status(self, status)
 
     def new_media_status(self, status):
-        """Metodo para enviar cambios de medios.
+        """
+        Metodo para enviar cambios de medios.
+
         Args:
             status (Response): Estado que se envia al diccionario de estados
         """
         self.server.update_status(self, status)
 
     def new_connection_status(self, status):
-        """Metodo para enviar cambios de medios.
+        """
+        Metodo para enviar cambios de medios.
+
         Args:
             status (Response): Estado que se envia al diccionario de estados
         """
@@ -52,6 +59,7 @@ class GenericListener:
 
 # TODO Tratar de crear un módulo para dejar de usar singleton
 class CastStatusServerMeta(type):
+
     """Clase con funcionalidades de busqueda y control de Chromecasts en una red local.
 
     Esta clase contiene una instancia de tipo CastStatusSingleton.
@@ -70,9 +78,11 @@ class CastStatusServerMeta(type):
 
 
 class CastStatusServer(metaclass=CastStatusServerMeta):
+
     """Singleton (?)."""
 
     def __init__(self):
+        """Constructor de la clase."""
         self.casts = {}
         self.status = {}
         self.wsocks: list(WebSocketServer) = []
@@ -96,10 +106,12 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         stop_discovery(browser)
 
     def __str__(self):
+        """Funcion para convertir en cadena."""
         return str(self.casts)
 
     def init(self):
-        """Devuelve el listado de nombres de chromecasts.
+        """
+        Devuelve el listado de nombres de chromecasts.
 
         Returns:
             list listado de nombres de chromecasts
@@ -107,7 +119,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         return self.casts
 
     def update_list(self) -> dict:
-        """Devuelve el listado de nombres de chromecasts.
+        """
+        Devuelve el listado de nombres de chromecasts.
 
         Returns:
             list listado de nombres de chromecasts
@@ -121,7 +134,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
     def update_status(
         self, listener: GenericListener, status: MediaStatus
     ) -> None:
-        """Actualiza el diccionario de estados.
+        """
+        Actualiza el diccionario de estados.
 
         Args:
             listener (Listener): objeto listener que llama a este metodo
@@ -130,7 +144,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         cast = str(listener.cast.device.friendly_name)
         # si no existe la clave la creo como un diccionario vacio
         if cast not in self.status:
-            self.status[cast] = {'prev_volume': None}
+            self.status[cast] = {"prev_volume": None}
         attr_lookup = get_attribs(listener.listener_type, status)
         for attr in attr_lookup:
             if attr_lookup[attr]:
@@ -144,7 +158,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         self.send()
 
     def atender(self, wsock: WebSocketServer) -> None:
-        """Funcion para atender los mensajes del WebSocket.
+        """
+        Funcion para atender los mensajes del WebSocket.
 
         Args:
             wsock (WebSocket): objeto donde se recibiran los mensajes
@@ -175,14 +190,15 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
                 if metodo:
                     metodo(cast_name, parametros)
 
-                        # TODO: agregar comandos para activar o descativar los
-                        # subtitulos
+                    # TODO: agregar comandos para activar o descativar los
+                    # subtitulos
 
         except WebSocketError as exc:
             raise exc
 
     def update(self, wsock: WebSocketServer) -> None:
-        """Actualiza el listado de chromecasts.
+        """
+        Actualiza el listado de chromecasts.
 
         Args:
             wsock (WebSocket): objeto donde se recibiran los mensajes
@@ -200,7 +216,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         self.send(wsock)
 
     def back(self, cast_name: str, value=None) -> None:
-        """Back.
+        """
+        Back.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el back
@@ -212,7 +229,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def play(self, cast_name: str, value=None) -> None:
-        """Play.
+        """
+        Play.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el play
@@ -223,7 +241,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def pause(self, cast_name: str, value=None) -> None:
-        """Pause.
+        """
+        Pause.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el pause
@@ -234,7 +253,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def forward(self, cast_name: str, value=None) -> None:
-        """Forward.
+        """
+        Forward.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el forward
@@ -245,7 +265,9 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def forward10(self, cast_name: str, value=None) -> None:
-        """Forward 10.
+        """
+        Forward 10.
+        
         Args:
             cast (Chromecast): Cast en el que se aplica el forward
         """
@@ -256,7 +278,9 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def back10(self, cast_name: str, value=None) -> None:
-        """Back 10.
+        """
+        Back 10.
+        
         Args:
             cast (Chromecast): Cast en el que se aplica el back
         """
@@ -267,7 +291,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def volume(self, cast_name: str, value: float) -> None:
-        """Cambio de Volumen.
+        """
+        Cambio de Volumen.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el volumen
@@ -280,7 +305,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def mute(self, cast_name: str, value=None) -> None:
-        """Mute.
+        """
+        Mute.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el volumen
@@ -291,7 +317,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def unmute(self, cast_name: str, value=None) -> None:
-        """Unmute.
+        """
+        Unmute.
 
         Args:
             cast (Chromecast): Cast en el que se aplica el volumen
@@ -306,7 +333,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def position(self, cast_name: str, value: float) -> None:
-        """Cambio de Posicion.
+        """
+        Cambio de Posicion.
 
         Args:
             cast (Chromecast): Cast en el que se aplica la posicion
@@ -321,7 +349,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             pass
 
     def set_state(self) -> None:
-        """Metodo para establecer el estado o borrar la tarjeta en el front"""
+        """Metodo para establecer el estado o borrar la tarjeta en el front."""
         borrar = []
         for cast in self.status:
             try:
@@ -349,8 +377,9 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             self.status.pop(cast, None)
 
     def set_substitutes(self, cast_name: str) -> None:
-        """Metodo de reemplazo de atributos
-            Podria ser inutil si mejora la asignacion original
+        """
+        Metodo de reemplazo de atributos.
+        Podria ser inutil si mejora la asignacion original
 
         Args:
             cast (String): friendly_name del Cast
@@ -379,7 +408,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
                         del self.status[cast_name][sub]
 
     def send(self, wsock: WebSocketServer = None) -> None:
-        """Metodo para enviar el estado actual a todos los websockets"""
+        """Metodo para enviar el estado actual a todos los websockets."""
         self.set_state()
         message = json.dumps(self.update_list())
         if wsock and not wsock.closed:
@@ -391,7 +420,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
 
 
 def map_key(key) -> str:
-    """Funcion para mapear las claves"""
+    """Funcion para mapear las claves."""
     lookup = {
         "volume_level": "volume",
         "title": "title",
@@ -415,7 +444,8 @@ def map_key(key) -> str:
 
 
 def get_attribs(listener_type: str, status: MediaStatus) -> dict:
-    """Parse de los atributos del estado
+    """
+    Parse de los atributos del estado.
 
     Args:
         listener_type (string): tipo de listener que detecta el cambio
