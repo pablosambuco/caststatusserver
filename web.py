@@ -20,7 +20,7 @@ CASTSTATUS = CastStatusServer()
 Path("logs").mkdir(parents=True, exist_ok=True)
 LOGGER = logging.getLogger()
 HANDLER = RotatingFileHandler(
-    "logs/web.log", maxBytes=1024 * 1024, backupCount=5
+    "logs/web.log", maxBytes=1024 ** 2, backupCount=5
 )
 FORMATTER = logging.Formatter("%(levelname)s %(asctime)s %(message)s")
 HANDLER.setFormatter(FORMATTER)

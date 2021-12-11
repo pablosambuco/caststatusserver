@@ -114,14 +114,9 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         """
         lista = []
         for cast in self.status:
-            aux = {}
-            aux["cast"] = cast
-            aux["contenido"] = self.status[cast]
+            aux = {"cast": cast, "contenido": self.status[cast]}
             lista.append(aux)
-        respuesta = {}
-        respuesta["chromecasts"] = lista
-
-        return respuesta
+        return {"chromecasts": lista}
 
     def update_status(
         self, listener: GenericListener, status: MediaStatus
@@ -134,10 +129,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         """
         cast = str(listener.cast.device.friendly_name)
         # si no existe la clave la creo como un diccionario vacio
-        if cast not in self.status.keys():
-            self.status[cast] = {}
-            self.status[cast]["prev_volume"] = None
-
+        if cast not in self.status:
+            self.status[cast] = {'prev_volume': None}
         attr_lookup = get_attribs(listener.listener_type, status)
         for attr in attr_lookup:
             if attr_lookup[attr]:
@@ -162,8 +155,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         try:
             message = wsock.receive()
             if message == "init":
-                wsocks: list(WebSocketServer) = []
-                wsocks.append(wsock)
+                wsocks: list(WebSocketServer) = [wsock]
                 for auxsock in self.wsocks:
                     if not auxsock.closed:
                         wsocks.append(auxsock)
@@ -179,15 +171,12 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
                 comando = message.split(",")
                 metodo = getattr(self, comando[0], None)
                 cast_name = comando[1]
-                parametros = None
-                if len(comando) > 2:
-                    parametros = comando[2]
-
+                parametros = comando[2] if len(comando) > 2 else None
                 if metodo:
                     metodo(cast_name, parametros)
 
-                # TODO: agregar comandos para activar o descativar los
-                # subtitulos
+                        # TODO: agregar comandos para activar o descativar los
+                        # subtitulos
 
         except WebSocketError as exc:
             raise exc
@@ -373,8 +362,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             "subtitle": ["series"],
         }
         # Completo datos con sus reemplazos y borro claves si es necesario
-        for orig in lookup:
-            subs = lookup[orig]
+        for orig, subs in lookup.items():
             for sub in subs:
                 if sub in self.status[cast_name]:
                     if (
@@ -489,8 +477,8 @@ def get_attribs(listener_type: str, status: MediaStatus) -> dict:
             "player_state": status.status,
         }
 
-    for key in lookup:
-        if lookup[key] and str(lookup[key]).isspace():
+    for key, value in lookup.items():
+        if lookup[key] and str(value).isspace():
             lookup[key] = None
 
     return lookup
