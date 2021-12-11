@@ -35,54 +35,27 @@ PASSFILE = os.path.join(DIRNAME, "user.pass")
 
 @APP.get(r"/static/<filename:re:.*\.css>")
 def send_css(filename):
-    """Redireccion de static/*.css a static/css/*.css.
-
-    Args:
-        filename (string): Ruta del css a redirigir
-
-    Returns:
-        string Ruta del css redirigido
-    """
+    """Redireccion de static/*.css a static/css/*.css."""
     root = DIRNAME + "/static/css"
     return static_file(filename, root=root)
 
 
 @APP.get(r"/static/<filename:re:.*\.js>")
 def send_js(filename):
-    """Redireccion de static/*.js a static/js/*.js.
-
-    Args:
-        filename (string): Ruta del js a redirigir
-
-    Returns:
-        string Ruta del js redirigido
-    """
+    """Redireccion de static/*.js a static/js/*.js."""
     root = DIRNAME + "/static/js"
     return static_file(filename, root=root)
 
 
 @APP.get(r"/images/<filename>")
 def send_image(filename):
-    """Redireccion de images/*.* a static/images/*.*.
-
-    Args:
-        filename (string): Ruta de la imagen a redirigir
-
-    Returns:
-        string Ruta de la imagen redirigida
-    """
+    """Redireccion de images/*.* a static/images/*.*."""
     root = DIRNAME + "/static/images"
     return static_file(filename, root=root)
 
 
 def index(filename):
-    """Ruta /.
-
-    Correspode a la pagina principal de la aplicacion
-
-    Returns:
-        HTML: contenido procesado a partir del template
-    """
+    """Ruta /."""
     # TODO Separar 100% el webserver del CastStatusServer.
     # Ofrecer websocket desde el Cast.
     # Esto implica sacar las variables del template de index, y
@@ -94,11 +67,7 @@ def index(filename):
 
 @APP.route("/websocket")
 def handle_websocket():
-    """Ruta WS /websocket.
-
-    Ruta utilizada para la comunicacion entre JavaScript (AJAX/JQuery) y Python
-
-    """
+    """Ruta WS /websocket."""
     wsock = request.environ.get("wsgi.websocket")
     if not wsock:
         abort(400, "Expected WebSocket request.")
@@ -112,21 +81,14 @@ def handle_websocket():
 
 @APP.route("/doc")
 def handle_doc_root():
-    """Ruta /doc.
-
-    Ruta para la documentación generada con doxygen
-
-    """
+    """Ruta /doc."""
     redirect("/doc/index.html")
 
 
 @APP.route("/")
 @APP.route("/doc/<filename:path>")
 def handle_doc(filename="index.html"):
-    """Ruta Doxygen docs.
-
-    Ruta utilizada para la documentacion
-    """
+    """Ruta Doxygen docs."""
     root = DIRNAME + "/doc"
     return static_file(filename, root=root)
 
