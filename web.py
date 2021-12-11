@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Web.py: servidor principal de CastStatus"""
+"""Web.py: servidor principal de CastStatus."""
 
 # pylint: disable=line-too-long,fixme,E1101
 
@@ -35,8 +35,7 @@ PASSFILE = os.path.join(DIRNAME, "user.pass")
 
 @APP.get(r"/static/<filename:re:.*\.css>")
 def send_css(filename):
-    """
-    Redireccion de static/*.css a static/css/*.css
+    """Redireccion de static/*.css a static/css/*.css.
 
     Args:
         filename (string): Ruta del css a redirigir
@@ -50,8 +49,7 @@ def send_css(filename):
 
 @APP.get(r"/static/<filename:re:.*\.js>")
 def send_js(filename):
-    """
-    Redireccion de static/*.js a static/js/*.js
+    """Redireccion de static/*.js a static/js/*.js.
 
     Args:
         filename (string): Ruta del js a redirigir
@@ -65,8 +63,7 @@ def send_js(filename):
 
 @APP.get(r"/images/<filename>")
 def send_image(filename):
-    """
-    Redireccion de images/*.* a static/images/*.*
+    """Redireccion de images/*.* a static/images/*.*.
 
     Args:
         filename (string): Ruta de la imagen a redirigir
@@ -79,8 +76,7 @@ def send_image(filename):
 
 
 def index(filename):
-    """
-    Ruta /
+    """Ruta /.
 
     Correspode a la pagina principal de la aplicacion
 
@@ -98,8 +94,7 @@ def index(filename):
 
 @APP.route("/websocket")
 def handle_websocket():
-    """
-    Ruta WS /websocket
+    """Ruta WS /websocket.
 
     Ruta utilizada para la comunicacion entre JavaScript (AJAX/JQuery) y Python
 
@@ -117,8 +112,7 @@ def handle_websocket():
 
 @APP.route("/doc")
 def handle_doc_root():
-    """
-    Ruta /doc
+    """Ruta /doc.
 
     Ruta para la documentación generada con doxygen
 
@@ -129,8 +123,7 @@ def handle_doc_root():
 @APP.route("/")
 @APP.route("/doc/<filename:path>")
 def handle_doc(filename="index.html"):
-    """
-    Ruta Doxygen docs
+    """Ruta Doxygen docs.
 
     Ruta utilizada para la documentacion
     """
@@ -141,13 +134,13 @@ def handle_doc(filename="index.html"):
 @APP.get("/")
 @APP.get("/<filename>")
 def login(filename="index.html", *, error=""):
-    """Ruta raiz,  formulario de login"""
+    """Ruta raiz,  formulario de login."""
     return template("login", filename=filename, error=error)
 
 
 @APP.post("/")
 def do_login():
-    """Post para el login"""
+    """Post para el login."""
     username = request.forms.get("username")
     password = request.forms.get("password")
     filename = request.forms.get("fn")
@@ -158,7 +151,7 @@ def do_login():
 
 
 def check_login(username, password):
-    """Valida el login contra user.pass si existe"""
+    """Valida el login contra user.pass si existe."""
     params = bytes(username + ":" + password, encoding="UTF-8")
 
     userpass = "dXNlcjpwYXNz"  # default: user:pass
