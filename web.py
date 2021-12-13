@@ -120,7 +120,7 @@ def check_login(username, password):
 
 
 SERVER = WSGIServer(
-    ("0.0.0.0", 8085),
+    ("0.0.0.0", 8083),
     DebuggedApplication(APP),
     handler_class=WebSocketHandler,
 )
