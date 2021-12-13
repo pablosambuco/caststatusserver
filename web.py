@@ -57,10 +57,6 @@ def send_image(filename):
 def index(filename):
     """Ruta /."""
     # TODO Separar 100% el webserver del CastStatusServer.
-    # Ofrecer websocket desde el Cast.
-    # Esto implica sacar las variables del template de index, y
-    # crear una funcion en js para dibujar todo desde cero. ver a que nivel
-    # hay que insertar los objetos
     root = DIRNAME + "/static/html"
     return static_file(filename, root=root)
 
@@ -116,7 +112,7 @@ def check_login(username, password):
     """Valida el login contra user.pass si existe."""
     params = bytes(username + ":" + password, encoding="UTF-8")
 
-    userpass = "dXNlcjpwYXNz"  # default: user:pass
+    userpass = "Og=="  # default: blank user and pass
     if os.path.isfile(PASSFILE):
         with open(PASSFILE, "r", encoding="utf-8") as passfile:
             userpass = str(passfile.readline())  # solo leo la primera linea
@@ -124,7 +120,7 @@ def check_login(username, password):
 
 
 SERVER = WSGIServer(
-    ("0.0.0.0", 8083),
+    ("0.0.0.0", 8085),
     DebuggedApplication(APP),
     handler_class=WebSocketHandler,
 )

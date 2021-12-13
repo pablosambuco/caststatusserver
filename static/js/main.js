@@ -1,43 +1,5 @@
-var Console = {
-  log: function (message) {
-    console.log(message);
-  },
-};
-
-require.config({
-  paths: {
-    vibrant: "https://cdnjs.cloudflare.com/ajax/libs/vibrant.js/1.0.0/Vibrant",
-  },
-});
-
-require(["vibrant"], () => {
-  Console.log("Vibrant cargado");
-});
-
 var ws;
 var actualizar;
-
-function escapeHTML(str) {
-  return str.replace(
-    /[&<>'"]/g,
-    (tag) =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        "'": "&#39;",
-        '"': "&quot;",
-      }[tag] || tag)
-  );
-}
-
-Number.prototype.pad = function (size) {
-  var s = String(this);
-  while (s.length < (size || 2)) {
-    s = "0" + s;
-  }
-  return s;
-};
 
 function fPlay(cast) {
   ws.send(`play,${cast}`);
@@ -185,7 +147,6 @@ function setAlbum(cast, valor) {
 function setHandlers(cast) {
   var volumeSlider = document.getElementById(`volume-${cast}`);
   var positionSlider = document.getElementById(`position-${cast}`);
-  //var slidertitle = document.getElementById(`positiontitle-${cast}`);
   var back = document.getElementById(`back-${cast}`);
   var back10 = document.getElementById(`back10-${cast}`);
   var play = document.getElementById(`play-${cast}`);
@@ -537,47 +498,6 @@ function atender(message) {
   }
 }
 
-function randomgb() {
-  var number = Math.floor(Math.random() * 449 + 1).pad(3);
-  var image = "/images/image_" + number + ".jpg";
-
-  var img = document.createElement("img");
-  img.setAttribute("src", image);
-
-  img.addEventListener("load", function () {
-    var vibrant = new Vibrant(img);
-    var swatches = vibrant.swatches();
-    for (var swatch in swatches) {
-      if (swatches.hasOwnProperty(swatch) && swatches[swatch]) {
-        var rgb = swatches[swatch].getRgb();
-        var variable =
-          Math.floor(rgb[0]) +
-          "," +
-          Math.floor(rgb[1]) +
-          "," +
-          Math.floor(rgb[2]);
-        if (swatch === "Vibrant") {
-          document.documentElement.style.setProperty("--acento", variable);
-        }
-        if (swatch === "DarkVibrant") {
-          //document.documentElement.style.setProperty('--texto-principal', variable);
-          //document.documentElement.style.setProperty('--texto-secundario', variable);
-        }
-        if (swatch === "LightVibrant") {
-          //No hago nada
-        }
-        if (swatch === "Muted") {
-          document.documentElement.style.setProperty("--fondo", variable);
-        }
-        if (swatch === "DarkMuted") {
-          document.documentElement.style.setProperty("--lineas", variable);
-        }
-      }
-    }
-  });
-  document.body.style.background = "url('" + image + "')";
-}
-
 window.onload = function () {
   var full =
     window.location.hostname +
@@ -590,6 +510,11 @@ window.onload = function () {
     actualizar = setInterval(function () {
       ws.send("update");
     }, 1000);
+
+    document.body.ondblclick = function () {
+      randomgb();
+    };
+    randomgb();
   };
 
   ws.onmessage = function (evt) {
@@ -602,9 +527,4 @@ window.onload = function () {
       window.clearInterval(actualizar);
     }
   };
-
-  document.body.ondblclick = function () {
-    randomgb();
-  };
-  randomgb();
 };

@@ -10,8 +10,10 @@
     <meta name="author" content="Pablo Sambuco" />
     <link rel="icon" type="image/png" href="/images/favicon.png" />
     <link rel="stylesheet" type="text/css" href="/static/login.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
-    <script src="static/main.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vibrant.js/1.0.0/Vibrant.js"></script>
+    <script src="static/common.js"></script>
+    <script src="static/visuals.js"></script>
 </head>
 
 <body>
