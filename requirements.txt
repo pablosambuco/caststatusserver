@@ -1,5 +1,5 @@
-pychromecast==9.2.0
+pychromecast==13.0.2
 gevent-websocket==0.10.1
-bottle==0.12.19
-websockets==9.1
-werkzeug==2.0.1
+bottle==0.12.23
+websockets==10.4
+werkzeug==2.2.2
