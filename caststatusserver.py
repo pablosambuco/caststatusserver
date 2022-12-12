@@ -1,6 +1,7 @@
 """Modulo conteniendo las clases necesarias para el manejo de chromecasts."""
 
 import contextlib
+
 # pylint: disable=line-too-long,fixme,consider-using-dict-items,unused-argument
 
 import time
@@ -106,7 +107,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
                 self.casts[service[3]] = cast
 
         stop_discovery(browser)
-        print(self.casts.keys())
+        #print(self.casts.keys())
 
     def __str__(self):
         """Funcion para convertir en cadena."""

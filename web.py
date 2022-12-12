@@ -121,8 +121,8 @@ def check_login(username, password):
 
 def get_port():
     port=0
-    if os.path.exists('port.cfg'):
-        with open('port.cfg') as f:
+    if os.path.exists("port.cfg"):
+        with open("port.cfg", encoding="utf-8") as f:
             port = int(f.read())
     return port
 
