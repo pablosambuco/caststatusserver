@@ -1,4 +1,6 @@
 """Modulo conteniendo las clases necesarias para el manejo de chromecasts."""
+
+import contextlib
 # pylint: disable=line-too-long,fixme,consider-using-dict-items,unused-argument
 
 import time
@@ -104,6 +106,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
                 self.casts[service[3]] = cast
 
         stop_discovery(browser)
+        print(self.casts.keys())
 
     def __str__(self):
         """Funcion para convertir en cadena."""
@@ -222,11 +225,9 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         Args:
             cast (Chromecast): Cast en el que se aplica el back
         """
-        try:
+        with contextlib.suppress(AttributeError):
             self.casts[cast_name].media_controller.queue_prev()
             self.casts[cast_name].media_controller.rewind()
-        except AttributeError:
-            pass
 
     def play(self, cast_name: str, value=None) -> None:
         """
@@ -235,10 +236,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         Args:
             cast (Chromecast): Cast en el que se aplica el play
         """
-        try:
+        with contextlib.suppress(AttributeError, KeyError):
             self.casts[cast_name].media_controller.play()
-        except (AttributeError, KeyError):
-            pass
 
     def pause(self, cast_name: str, value=None) -> None:
         """
@@ -247,10 +246,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         Args:
             cast (Chromecast): Cast en el que se aplica el pause
         """
-        try:
+        with contextlib.suppress(AttributeError, KeyError):
             self.casts[cast_name].media_controller.pause()
-        except (AttributeError, KeyError):
-            pass
 
     def forward(self, cast_name: str, value=None) -> None:
         """
@@ -259,10 +256,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         Args:
             cast (Chromecast): Cast en el que se aplica el forward
         """
-        try:
+        with contextlib.suppress(AttributeError, KeyError):
             self.casts[cast_name].media_controller.skip()
-        except (AttributeError, KeyError):
-            pass
 
     def forward10(self, cast_name: str, value=None) -> None:
         """
@@ -271,11 +266,9 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         Args:
             cast (Chromecast): Cast en el que se aplica el forward
         """
-        try:
+        with contextlib.suppress(AttributeError, KeyError):
             ctime = self.casts[cast_name].media_controller.status.current_time
             self.casts[cast_name].media_controller.seek(ctime + 10)
-        except (AttributeError, KeyError):
-            pass
 
     def back10(self, cast_name: str, value=None) -> None:
         """
@@ -284,11 +277,9 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         Args:
             cast (Chromecast): Cast en el que se aplica el back
         """
-        try:
+        with contextlib.suppress(AttributeError, KeyError):
             ctime = self.casts[cast_name].media_controller.status.current_time
             self.casts[cast_name].media_controller.seek(ctime - 10)
-        except (AttributeError, KeyError):
-            pass
 
     def volume(self, cast_name: str, value: float) -> None:
         """
@@ -298,11 +289,9 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             cast (Chromecast): Cast en el que se aplica el volumen
             value (int): Valor de 0 a 100 para aplicar
         """
-        try:
-            self.casts[cast_name].set_volume(float(value) / 100)
+        with contextlib.suppress(AttributeError, KeyError):
+            self.casts[cast_name].set_volume(value / 100)
             self.status[cast_name]["prev_volume"] = value
-        except (AttributeError, KeyError):
-            pass
 
     def mute(self, cast_name: str, value=None) -> None:
         """
@@ -311,10 +300,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         Args:
             cast (Chromecast): Cast en el que se aplica el volumen
         """
-        try:
+        with contextlib.suppress(AttributeError, KeyError):
             self.casts[cast_name].set_volume(0)
-        except (AttributeError, KeyError):
-            pass
 
     def unmute(self, cast_name: str, value=None) -> None:
         """
@@ -323,14 +310,9 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         Args:
             cast (Chromecast): Cast en el que se aplica el volumen
         """
-        try:
-            value = self.status[cast_name]["prev_volume"]
-            # si ya estaba reproduciendo y no tengo idea del volumen, uso 50%
-            if not value:
-                value = 50
+        with contextlib.suppress(AttributeError, KeyError):
+            value = self.status[cast_name]["prev_volume"] or 50
             self.casts[cast_name].set_volume(float(value) / 100)
-        except (AttributeError, KeyError):
-            pass
 
     def position(self, cast_name: str, value: float) -> None:
         """
@@ -340,13 +322,10 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             cast (Chromecast): Cast en el que se aplica la posicion
             value (int): Valor de 0 a 100 para aplicar
         """
-        try:
+        with contextlib.suppress(AttributeError, KeyError):
             duration = self.casts[cast_name].media_controller.status.duration
-            new_position = (float(value) / 100) * duration
+            new_position = value / 100 * duration
             self.casts[cast_name].media_controller.seek(new_position)
-
-        except (AttributeError, KeyError):
-            pass
 
     def set_state(self) -> None:
         """Metodo para establecer el estado o borrar la tarjeta en el front."""

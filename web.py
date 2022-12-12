@@ -119,8 +119,15 @@ def check_login(username, password):
     return params == b64decode(userpass)
 
 
+def get_port():
+    port=0
+    if os.path.exists('port.cfg'):
+        with open('port.cfg') as f:
+            port = int(f.read())
+    return port
+
 SERVER = WSGIServer(
-    ("0.0.0.0", 8083),
+    ("0.0.0.0", get_port()),
     DebuggedApplication(APP),
     handler_class=WebSocketHandler,
 )
