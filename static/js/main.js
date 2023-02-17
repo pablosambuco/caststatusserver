@@ -13,7 +13,7 @@ function escapeHTML(unsafe) {
 }
 
 function encode(value){
-  return $('<textarea/>').text(value).html();
+  return $("<textarea/>").text(value).html();
 }
 
 Number.prototype.pad = function (size) {
@@ -158,7 +158,7 @@ function setElement(item, cast, valor) {
 
   var element = document.getElementById(`${item}-${cast}`);
   if (element) {
-    element.innerHTML = encode(valor);
+    element.innerText = encode(valor);
   }
 }
 
@@ -259,7 +259,7 @@ function setHandlers(cast) {
     texto = texto.replace("MM", ("100000" + positionMinutes).slice(-2));
     texto = texto.replace("SS", ("100000" + positionSeconds).slice(-2));
 
-    slidertitle.innerHTML = encode(texto);
+    slidertitle.innerText = encode(texto);
     slidertitle.style.display = "block";
   };
 
@@ -354,7 +354,7 @@ function createCard(cast) {
     var header = document.createElement("div");
     header.setAttribute("class", "cast");
     header.setAttribute("id", `cast-${cast}`);
-    header.innerHTML = encode(cast);
+    header.innerText = encode(cast);
     card.appendChild(header);
 
     var image = document.createElement("div");
