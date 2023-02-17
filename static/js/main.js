@@ -76,8 +76,10 @@ function setVolume(cast, valor) {
 }
 
 function setElement(item, cast, valor) {
-  if(item == "artist") item = "subtitle"
-  
+  if (item === "artist") {
+    item = "subtitle";
+  }
+
   var element = document.getElementById(`${item}-${cast}`);
   if (element) {
     element.innerHTML = escapeHTML(valor);
