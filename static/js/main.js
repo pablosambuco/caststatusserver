@@ -1,10 +1,4 @@
 //Common.js
-var Console = {
-  log(message) {
-    console.log(message);
-  },
-};
-
 function escapeHTML(unsafe) {
   if (typeof unsafe === "string" || unsafe instanceof String)
   {
@@ -527,7 +521,6 @@ window.onload = function () {
   ws = new WebSocket("ws://" + full + "/websocket");
 
   ws.onopen = function () {
-    Console.log("WebSocket abierto");
     ws.send("init");
     actualizar = setInterval(function () {
       ws.send("update");
@@ -544,7 +537,6 @@ window.onload = function () {
   };
 
   ws.onclose = function () {
-    Console.log("WebSocket cerrado");
     while (actualizar) {
       window.clearInterval(actualizar);
     }
