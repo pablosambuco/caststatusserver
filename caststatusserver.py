@@ -145,7 +145,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             listener (Listener): objeto listener que llama a este metodo
             status (MediaStatus): respuesta del cast con el cambio de estado
         """
-        cast = str(listener.cast.device.friendly_name)
+        cast = str(listener.cast.name)
         # si no existe la clave la creo como un diccionario vacio
         if cast not in self.status:
             self.status[cast] = {"prev_volume": None}
@@ -362,7 +362,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         Podria ser inutil si mejora la asignacion original
 
         Args:
-            cast (String): friendly_name del Cast
+            cast (String): name del Cast
         """
         lookup = {
             "image": ["icon"],
