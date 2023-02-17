@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """Web.py: servidor principal de CastStatus."""
 
-# pylint: disable=line-too-long,fixme,E1101
+# pylint: disable=line-too-long,fixme,E1101,no-name-in-module
 
 import os
 from pathlib import Path
@@ -13,7 +13,7 @@ from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 from bottle import Bottle, redirect, static_file, request, abort, template
 from werkzeug.debug import DebuggedApplication
-from caststatusserver import instance as CASTSTATUS  # pylint: disable=no-member
+from caststatusserver import instance as CASTSTATUS 
 
 Path("logs").mkdir(parents=True, exist_ok=True)
 LOGGER = logging.getLogger()

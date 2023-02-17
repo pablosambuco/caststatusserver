@@ -1,8 +1,8 @@
 # coding: utf-8
 """prueba."""
-# pylint: disable=redefined-builtin
+# pylint: disable=redefined-builtin,no-name-in-module
 import time
-from caststatusserver import instance as cast  # pylint: disable=no-member
+from caststatusserver import instance as cast
 
 cast.init()
 print(cast.casts)
