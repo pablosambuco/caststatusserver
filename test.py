@@ -2,7 +2,7 @@
 """prueba."""
 # pylint: disable=redefined-builtin
 import time
-from caststatusserver import instance as cast
+from caststatusserver import instance as cast  # pylint: disable=no-member
 
 cast.init()
 print(cast.casts)
