@@ -2,9 +2,8 @@
 """prueba."""
 # pylint: disable=redefined-builtin
 import time
-import caststatusserver
+from caststatusserver import instance as cast
 
-cast = caststatusserver.instance
 cast.init()
 print(cast.casts)
 
