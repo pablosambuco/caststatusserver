@@ -122,7 +122,7 @@ def get_interface():
     interface = 0
     if os.path.exists("interface.cfg"):
         with open("interface.cfg", encoding="utf-8") as ifacefile:
-            interface = int(ifacefile.read())
+            interface = ifacefile.read()
     return interface
 
 
