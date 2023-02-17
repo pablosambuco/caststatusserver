@@ -13,7 +13,7 @@ from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 from bottle import Bottle, redirect, static_file, request, abort, template
 from werkzeug.debug import DebuggedApplication
-from caststatusserver import instance as CASTSTATUS 
+from caststatusserver import instance as CASTSTATUS
 
 Path("logs").mkdir(parents=True, exist_ok=True)
 LOGGER = logging.getLogger()
