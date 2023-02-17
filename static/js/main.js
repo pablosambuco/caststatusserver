@@ -38,27 +38,17 @@ function randomgb() {
     for (var swatch in swatches) {
       if (swatches.hasOwnProperty(swatch) && swatches[swatch]) {
         var rgb = swatches[swatch].getRgb();
-        var variable =
-          Math.floor(rgb[0]) +
-          "," +
-          Math.floor(rgb[1]) +
-          "," +
-          Math.floor(rgb[2]);
-        if (swatch === "Vibrant") {
-          document.documentElement.style.setProperty("--acento", variable);
-        }
-        if (swatch === "DarkVibrant") {
-          //document.documentElement.style.setProperty('--texto-principal', variable);
-          //document.documentElement.style.setProperty('--texto-secundario', variable);
-        }
-        if (swatch === "LightVibrant") {
-          //No hago nada
-        }
-        if (swatch === "Muted") {
-          document.documentElement.style.setProperty("--fondo", variable);
-        }
-        if (swatch === "DarkMuted") {
-          document.documentElement.style.setProperty("--lineas", variable);
+        var variable = Math.floor(rgb[0]) + "," + Math.floor(rgb[1]) + "," + Math.floor(rgb[2]);
+        switch (swatch) {
+          case "Vibrant":
+            document.documentElement.style.setProperty("--acento", variable);
+            break;
+          case "Muted":
+            document.documentElement.style.setProperty("--fondo", variable);
+            break;
+          case "DarkMuted":
+            document.documentElement.style.setProperty("--lineas", variable);
+            break;
         }
       }
     }
