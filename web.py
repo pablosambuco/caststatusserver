@@ -18,7 +18,7 @@ from caststatusserver import instance as CASTSTATUS
 Path("logs").mkdir(parents=True, exist_ok=True)
 LOGGER = logging.getLogger()
 HANDLER = RotatingFileHandler(
-    "logs/web.log", maxBytes=1024 ** 2, backupCount=5
+    "logs/web.log", maxBytes=1024**2, backupCount=5
 )
 FORMATTER = logging.Formatter("%(levelname)s %(asctime)s %(message)s")
 HANDLER.setFormatter(FORMATTER)
@@ -116,17 +116,26 @@ def check_login(username, password):
             userpass = str(passfile.readline())  # solo leo la primera linea
     return params == b64decode(userpass)
 
+def get_interface():
+    """Obtiene la interfaz donde debe levantarse el servidor."""
+    port = 0
+    if os.path.exists("interface.cfg"):
+        with open("interface.cfg", encoding="utf-8") as ifacefile:
+            interface = int(ifacefile.read())
+    return interface
+
 
 def get_port():
     """Obtiene el puerto donde debe levantarse el servidor."""
-    port=0
+    port = 0
     if os.path.exists("port.cfg"):
         with open("port.cfg", encoding="utf-8") as portfile:
             port = int(portfile.read())
     return port
 
+
 SERVER = WSGIServer(
-    ("0.0.0.0", get_port()),
+    (get_interface(), get_port()),
     DebuggedApplication(APP),
     handler_class=WebSocketHandler,
 )

@@ -53,24 +53,26 @@ class AbstractListener(ABC):
 
 class MediaListener(AbstractListener):
     """Media"""
+
     def __init__(self, server, cast: Chromecast):
         super().__init__(server, cast, "media")
 
 
 class StatusListener(AbstractListener):
     """Status"""
+
     def __init__(self, server, cast: Chromecast):
         super().__init__(server, cast, "status")
 
 
 class ConnectionListener(AbstractListener):
     """Connection"""
+
     def __init__(self, server, cast: Chromecast):
         super().__init__(server, cast, "connection")
 
 
 class CastStatusServer:
-
     """Server"""
 
     def __init__(self):
