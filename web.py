@@ -116,6 +116,7 @@ def check_login(username, password):
             userpass = str(passfile.readline())  # solo leo la primera linea
     return params == b64decode(userpass)
 
+
 def get_interface():
     """Obtiene la interfaz donde debe levantarse el servidor."""
     port = 0
