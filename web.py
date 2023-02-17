@@ -13,9 +13,9 @@ from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 from bottle import Bottle, redirect, static_file, request, abort, template
 from werkzeug.debug import DebuggedApplication
-from caststatusserver import CastStatusServer
+import caststatusserver
 
-CASTSTATUS = CastStatusServer()
+CASTSTATUS = caststatusserver.instance
 
 Path("logs").mkdir(parents=True, exist_ok=True)
 LOGGER = logging.getLogger()
@@ -120,10 +120,11 @@ def check_login(username, password):
 
 
 def get_port():
+    """Obtiene el puerto donde debe levantarse el servidor."""
     port=0
     if os.path.exists("port.cfg"):
-        with open("port.cfg", encoding="utf-8") as f:
-            port = int(f.read())
+        with open("port.cfg", encoding="utf-8") as portfile:
+            port = int(portfile.read())
     return port
 
 SERVER = WSGIServer(

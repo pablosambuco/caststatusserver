@@ -75,38 +75,12 @@ function setVolume(cast, valor) {
   }
 }
 
-function setTitle(cast, valor) {
-  var element = document.getElementById(`title-${cast}`);
+function setElement(item, cast, valor) {
+  if(item == "artist") item = "subtitle"
+  
+  var element = document.getElementById(`${item}-${cast}`);
   if (element) {
-    element.innerHTML = escapeHTML`${valor}`;
-  }
-}
-
-function setSubTitle(cast, valor) {
-  var element = document.getElementById(`subtitle-${cast}`);
-  if (element) {
-    element.innerHTML = escapeHTML`${valor}`;
-  }
-}
-
-function setSeries(cast, valor) {
-  var element = document.getElementById(`series-${cast}`);
-  if (element) {
-    element.innerHTML = escapeHTML`${valor}`;
-  }
-}
-
-function setSeason(cast, valor) {
-  var element = document.getElementById(`season-${cast}`);
-  if (element) {
-    element.innerHTML = escapeHTML`${valor}`;
-  }
-}
-
-function setEpisode(cast, valor) {
-  var element = document.getElementById(`episode-${cast}`);
-  if (element) {
-    element.innerHTML = escapeHTML`${valor}`;
+    element.innerHTML = escapeHTML(valor);
   }
 }
 
@@ -127,20 +101,6 @@ function setImage(cast, valor) {
   var element = document.getElementById(`image-${cast}`);
   if (element) {
     element.style = `background: url(${valor}) 50% 50%; background-size: 450px;`;
-  }
-}
-
-function setArtist(cast, valor) {
-  var element = document.getElementById(`subtitle-${cast}`);
-  if (element) {
-    element.innerHTML = escapeHTML`${valor}`;
-  }
-}
-
-function setAlbum(cast, valor) {
-  var element = document.getElementById(`album-${cast}`);
-  if (element) {
-    element.innerHTML = escapeHTML`${valor}`;
   }
 }
 
@@ -221,7 +181,7 @@ function setHandlers(cast) {
     texto = texto.replace("MM", ("100000" + positionMinutes).slice(-2));
     texto = texto.replace("SS", ("100000" + positionSeconds).slice(-2));
 
-    slidertitle.innerHTML = escapeHTML`${texto}`;
+    slidertitle.innerHTML = escapeHTML(texto);
     slidertitle.style.display = "block";
   };
 
@@ -316,7 +276,7 @@ function createCard(cast) {
     var header = document.createElement("div");
     header.setAttribute("class", "cast");
     header.setAttribute("id", `cast-${cast}`);
-    header.innerHTML = escapeHTML`${cast}`;
+    header.innerHTML = escapeHTML(cast);
     card.appendChild(header);
 
     var image = document.createElement("div");
@@ -438,21 +398,6 @@ function atenderFinal(key, value, cast) {
     case "volume":
       setVolume(cast, parseFloat(value) * 100);
       break;
-    case "title":
-      setTitle(cast, value);
-      break;
-    case "subtitle":
-      setSubTitle(cast, value);
-      break;
-    case "series":
-      setSeries(cast, value);
-      break;
-    case "season":
-      setSeason(cast, value);
-      break;
-    case "episode":
-      setEpisode(cast, value);
-      break;
     case "state":
       retorno = `${value},${cast}`;
       setState(cast, value);
@@ -460,11 +405,8 @@ function atenderFinal(key, value, cast) {
     case "image":
       setImage(cast, value);
       break;
-    case "artist":
-      setArtist(cast, value);
-      break;
-    case "album":
-      setAlbum(cast, value);
+    default:
+      setElement(key, cast, value);
       break;
   }
   return retorno;

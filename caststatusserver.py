@@ -1,30 +1,21 @@
 """Modulo conteniendo las clases necesarias para el manejo de chromecasts."""
 
-import contextlib
-
 # pylint: disable=line-too-long,fixme,consider-using-dict-items,unused-argument
-
-import time
+import contextlib
 import datetime
-
-# import logging
 import json
-import zeroconf
 from geventwebsocket import WebSocketError, WebSocketServer
 from pychromecast.controllers.media import MediaStatus
 from pychromecast import (
     Chromecast,
-    get_chromecast_from_cast_info,
-    CastListener,
-    discovery,
-    stop_discovery,
+    get_chromecasts,
 )
+from abc import ABC
 
 
 # TODO Convertir el GenericListener en abstracto con ABC
-class GenericListener:
-
-    """Clase listener generica."""
+class AbstractListener(ABC):
+    """Clase listener abstracta."""
 
     def __init__(self, server, cast: Chromecast, listener_type):
         """Constructor de la clase."""
@@ -60,29 +51,24 @@ class GenericListener:
         self.server.update_status(self, status)
 
 
-# TODO Tratar de crear un módulo para dejar de usar singleton
-class CastStatusServerMeta(type):
-
-    """Clase con funcionalidades de busqueda y control de Chromecasts en una red local.
-
-    Esta clase contiene una instancia de tipo CastStatusSingleton.
-
-    Todos los metodos son derivados a esa instancia unica que atiende todos
-    los pedidos.
-    """
-
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        """Prueba."""
-        if cls not in cls._instances:
-            cls._instances[cls] = super().__call__(*args, **kwargs)
-        return cls._instances[cls]
+class MediaListener(AbstractListener):
+    def __init__(self, server, cast: Chromecast):
+        super().__init__(server, cast, "media")
 
 
-class CastStatusServer(metaclass=CastStatusServerMeta):
+class StatusListener(AbstractListener):
+    def __init__(self, server, cast: Chromecast):
+        super().__init__(server, cast, "status")
 
-    """Singleton (?)."""
+
+class ConnectionListener(AbstractListener):
+    def __init__(self, server, cast: Chromecast):
+        super().__init__(server, cast, "connection")
+
+
+class CastStatusServer:
+
+    """Server"""
 
     def __init__(self):
         """Constructor de la clase."""
@@ -90,24 +76,16 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         self.status = {}
         self.wsocks: list(WebSocketServer) = []
 
-        listener = CastListener()
-        zconf = zeroconf.Zeroconf()
-        browser = discovery.start_discovery(listener, zconf)
-        time.sleep(1)
-        for _, service in listener.services.items():
-            cast = get_chromecast_from_cast_info(service, zconf)
-            if service[2] == "Chromecast" and service[3] not in self.casts:
-                cast.wait()
-                slist = GenericListener(self, cast, "status")
-                cast.register_status_listener(slist)
-                mlist = GenericListener(self, cast, "media")
-                cast.media_controller.register_status_listener(mlist)
-                clist = GenericListener(self, cast, "connection")
-                cast.register_connection_listener(clist)
-                self.casts[service[3]] = cast
-
-        stop_discovery(browser)
-        #print(self.casts.keys())
+        casts = get_chromecasts()[0]
+        for cast in casts:
+            cast.wait()
+            slist = StatusListener(self, cast)
+            cast.register_status_listener(slist)
+            mlist = MediaListener(self, cast)
+            cast.media_controller.register_status_listener(mlist)
+            clist = ConnectionListener(self, cast)
+            cast.register_connection_listener(clist)
+            self.casts[cast.name] = cast
 
     def __str__(self):
         """Funcion para convertir en cadena."""
@@ -136,7 +114,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         return {"chromecasts": lista}
 
     def update_status(
-        self, listener: GenericListener, status: MediaStatus
+        self, listener: AbstractListener, status: MediaStatus
     ) -> None:
         """
         Actualiza el diccionario de estados.
@@ -282,7 +260,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             ctime = self.casts[cast_name].media_controller.status.current_time
             self.casts[cast_name].media_controller.seek(ctime - 10)
 
-    def volume(self, cast_name: str, value: float) -> None:
+    def volume(self, cast_name: str, value: str) -> None:
         """
         Cambio de Volumen.
 
@@ -291,8 +269,8 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             value (int): Valor de 0 a 100 para aplicar
         """
         with contextlib.suppress(AttributeError, KeyError):
-            self.casts[cast_name].set_volume(value / 100)
-            self.status[cast_name]["prev_volume"] = value
+            self.casts[cast_name].set_volume(float(value) / 100)
+            self.status[cast_name]["prev_volume"] = float(value)
 
     def mute(self, cast_name: str, value=None) -> None:
         """
@@ -315,7 +293,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
             value = self.status[cast_name]["prev_volume"] or 50
             self.casts[cast_name].set_volume(float(value) / 100)
 
-    def position(self, cast_name: str, value: float) -> None:
+    def position(self, cast_name: str, value: str) -> None:
         """
         Cambio de Posicion.
 
@@ -325,7 +303,7 @@ class CastStatusServer(metaclass=CastStatusServerMeta):
         """
         with contextlib.suppress(AttributeError, KeyError):
             duration = self.casts[cast_name].media_controller.status.duration
-            new_position = value / 100 * duration
+            new_position = float(value) / 100 * duration
             self.casts[cast_name].media_controller.seek(new_position)
 
     def set_state(self) -> None:
@@ -472,7 +450,9 @@ def get_attribs(listener_type: str, status: MediaStatus) -> dict:
             "track": status.track,
             "images": status_image,
             "duration": status.duration,
-            "position": status.current_time / status.duration,
+            "position": status.current_time / status.duration
+            if status.duration
+            else 0,
         }
     elif listener_type == "status":
         lookup = {
@@ -492,3 +472,6 @@ def get_attribs(listener_type: str, status: MediaStatus) -> dict:
             lookup[key] = None
 
     return lookup
+
+
+instance = CastStatusServer()
