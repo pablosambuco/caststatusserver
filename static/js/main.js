@@ -12,6 +12,10 @@ function escapeHTML(unsafe) {
   return unsafe;
 }
 
+function encode(value){
+  return $('<textarea/>').text(value).html();
+}
+
 Number.prototype.pad = function (size) {
   var s = String(this);
   while (s.length < (size || 2)) {
@@ -154,7 +158,7 @@ function setElement(item, cast, valor) {
 
   var element = document.getElementById(`${item}-${cast}`);
   if (element) {
-    element.innerHTML = escapeHTML(valor);
+    element.innerHTML = encode(valor);
   }
 }
 
@@ -255,7 +259,7 @@ function setHandlers(cast) {
     texto = texto.replace("MM", ("100000" + positionMinutes).slice(-2));
     texto = texto.replace("SS", ("100000" + positionSeconds).slice(-2));
 
-    slidertitle.innerHTML = escapeHTML(texto);
+    slidertitle.innerHTML = encode(texto);
     slidertitle.style.display = "block";
   };
 
@@ -350,7 +354,7 @@ function createCard(cast) {
     var header = document.createElement("div");
     header.setAttribute("class", "cast");
     header.setAttribute("id", `cast-${cast}`);
-    header.innerHTML = escapeHTML(cast);
+    header.innerHTML = encode(cast);
     card.appendChild(header);
 
     var image = document.createElement("div");
