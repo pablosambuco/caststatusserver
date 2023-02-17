@@ -1,11 +1,11 @@
 var Console = {
-  log: function (message) {
+  log(message) {
     console.log(message);
   },
 };
 
 function escapeHTML(unsafe) {
-  if (typeof unsafe === 'string' || unsafe instanceof String)
+  if (typeof unsafe === "string" || unsafe instanceof String)
   {
     return unsafe
       .replaceAll("&", "&amp;")
