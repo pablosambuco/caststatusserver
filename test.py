@@ -5,9 +5,7 @@ import time
 import caststatusserver
 
 cast = caststatusserver.instance
-time.sleep(1)
 cast.init()
-time.sleep(1)
 print(cast.casts)
 
 for cast_name in cast.casts:

@@ -4,13 +4,13 @@
 import contextlib
 import datetime
 import json
+from abc import ABC
 from geventwebsocket import WebSocketError, WebSocketServer
 from pychromecast.controllers.media import MediaStatus
 from pychromecast import (
     Chromecast,
     get_chromecasts,
 )
-from abc import ABC
 
 
 # TODO Convertir el GenericListener en abstracto con ABC
@@ -52,16 +52,19 @@ class AbstractListener(ABC):
 
 
 class MediaListener(AbstractListener):
+    """Media"""
     def __init__(self, server, cast: Chromecast):
         super().__init__(server, cast, "media")
 
 
 class StatusListener(AbstractListener):
+    """Status"""
     def __init__(self, server, cast: Chromecast):
         super().__init__(server, cast, "status")
 
 
 class ConnectionListener(AbstractListener):
+    """Connection"""
     def __init__(self, server, cast: Chromecast):
         super().__init__(server, cast, "connection")
 
