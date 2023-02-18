@@ -1,5 +1,5 @@
 [Unit]
-Description=CastStatusServer
+Description=caststatusserver
 After=multi-user.target
 Conflicts=getty@tty1.service
 
@@ -7,8 +7,8 @@ Conflicts=getty@tty1.service
 Type=simple
 Restart=always
 RestartSec=1
-#ExecStart=/usr/bin/python3 /home/pi/CastStatusServer/web.py
-ExecStart=/usr/local/bin/gunicorn --reload --chdir /home/pi/CastStatusServer --timeout 1000 web:SERVER
+#ExecStart=/usr/bin/python3 /home/pi/caststatusserver/web.py
+ExecStart=/usr/local/bin/gunicorn --reload --chdir /home/pi/caststatusserver --timeout 1000 web:SERVER
 StandardInput=tty-force
 
 [Install]
