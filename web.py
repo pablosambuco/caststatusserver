@@ -135,9 +135,14 @@ def get_port():
     return port
 
 
-SERVER = WSGIServer(
-    (get_interface(), get_port()),
-    DebuggedApplication(APP),
-    handler_class=WebSocketHandler,
-)
-SERVER.serve_forever()
+def run():
+    server = WSGIServer(
+        (get_interface(), get_port()),
+        DebuggedApplication(APP),
+        handler_class=WebSocketHandler,
+    )
+    server.serve_forever()
+
+
+if __name__ == "__main__":
+    run()

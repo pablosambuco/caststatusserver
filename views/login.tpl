@@ -12,8 +12,7 @@
     <link rel="stylesheet" type="text/css" href="/static/login.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vibrant.js/1.0.0/Vibrant.js"></script>
-    <script src="static/common.js"></script>
-    <script src="static/visuals.js"></script>
+    <script src="static/main.js"></script>
 </head>
 
 <body>

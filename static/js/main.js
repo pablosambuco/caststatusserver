@@ -1,7 +1,6 @@
 //Common.js
 function escapeHTML(unsafe) {
-  if (typeof unsafe === "string" || unsafe instanceof String)
-  {
+  if (typeof unsafe === "string" || unsafe instanceof String) {
     return unsafe
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
@@ -12,7 +11,7 @@ function escapeHTML(unsafe) {
   return unsafe;
 }
 
-function encode(value){
+function encode(value) {
   return $("<textarea/>").text(value).html();
 }
 
@@ -38,7 +37,12 @@ function randomgb() {
     for (var swatch in swatches) {
       if (swatches.hasOwnProperty(swatch) && swatches[swatch]) {
         var rgb = swatches[swatch].getRgb();
-        var variable = Math.floor(rgb[0]) + "," + Math.floor(rgb[1]) + "," + Math.floor(rgb[2]);
+        var variable =
+          Math.floor(rgb[0]) +
+          "," +
+          Math.floor(rgb[1]) +
+          "," +
+          Math.floor(rgb[2]);
         switch (swatch) {
           case "Vibrant":
             document.documentElement.style.setProperty("--acento", variable);
