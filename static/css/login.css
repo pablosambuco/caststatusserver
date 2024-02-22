@@ -266,7 +266,7 @@ h3,
   line-height: 1.5;
   background-color: rgba(255, 255, 255, 0.1);
   background-clip: padding-box;
-  border: 0px solid #ced4da;
+  border: 0 solid #ced4da;
   border-radius: 5px;
   -webkit-transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
   -o-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
