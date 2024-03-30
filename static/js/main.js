@@ -15,17 +15,18 @@ function encode(value) {
   return $("<textarea/>").text(value).html();
 }
 
-Number.prototype.pad = function (size) {
-  var s = String(this);
+function padNumber(num, size) {
+  if (num === undefined) return "00"; // Valor predeterminado si num es undefined
+  var s = String(num);
   while (s.length < (size || 2)) {
     s = "0" + s;
   }
   return s;
-};
+}
 
 //Visuals.js
 function randomgb() {
-  var number = Math.floor(Math.random() * 449 + 1).pad(3);
+  var number = padNumber(Math.floor(Math.random() * 449 + 1),3);
   var image = "/images/image_" + number + ".jpg";
 
   var img = document.createElement("img");
