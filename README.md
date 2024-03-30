@@ -12,7 +12,7 @@
 [![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/caststatusserver/pychromecast/master?logo=google-chrome&logoColor=white)](https://github.com/home-assistant-libs/pychromecast)
 [![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/caststatusserver/gevent-websocket/master)](https://gitlab.com/noppo/gevent-websocket)
 [![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/caststatusserver/gevent/master)](http://www.gevent.org/)
-[![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/caststatusserver/websockets/master)](https://github.com/aaugustin/websockets)
+[![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/caststatusserver/werkzeug/master)](https://github.com/pallets/werkzeug)
 
 [![Raspberry Pi](https://img.shields.io/badge/gadget-Raspberry%20Pi-red.svg?logo=raspberry-pi&logoColor=white)](https://www.raspberrypi.org)
 
