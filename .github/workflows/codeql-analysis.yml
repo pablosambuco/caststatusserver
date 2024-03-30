@@ -19,7 +19,17 @@ on:
     branches: [ main ]
   schedule:
     - cron: '40 16 * * 5'
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
 
 jobs:
   analyze:
