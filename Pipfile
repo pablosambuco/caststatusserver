@@ -4,11 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-gevent-websocket = "==0.10.1"
-bottle = "==0.12.23"
-websockets = "==10.4"
-PyChromecast = "==13.0.1"
-Werkzeug = "==3.0.3"
+gevent-websocket = ">=0.10.1"
+bottle = ">=0.12.23"
+websockets = ">=10.4"
+PyChromecast = ">=13.0.1"
+Werkzeug = ">=3.0.3"
 
 [dev-packages]
 
