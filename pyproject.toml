@@ -1,0 +1,23 @@
+[project]
+name = "caststatusserver"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+readme = "README.md"
+dependencies = [
+    "bottle>=0.12.23",
+    "gevent-websocket>=0.10.1",
+    "pychromecast>=13.0.1",
+    "websockets>=10.4",
+    "werkzeug>=3.0.3",
+]
+
+[dependency-groups]
+dev = []
+
+[tool.uv]
+package = false
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
