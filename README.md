@@ -8,7 +8,7 @@
 [![Codacy grade](https://img.shields.io/codacy/grade/544303f117224475bbc92364a2d389c9?style=flat-square&logo=codacy)
 ](https://www.codacy.com/gh/pablosambuco/caststatusserver/dashboard)
 
-[![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/pablosambuco/caststatusserver?logo=python&style=flat-square&logoColor=white)](https://www.python.org/)
+[![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fpablosambuco%2Fcaststatusserver%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)](https://www.python.org/)
 [![GitHub Pipenv locked dependency version (branch)](https://custom-icon-badges.demolab.com/github/pipenv/locked/dependency-version/pablosambuco/caststatusserver/bottle/master?logo=bottle&style=flat-square)](https://bottlepy.org/) 
 [![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/caststatusserver/pychromecast/master?logo=chromecast&logoColor=white&style=flat-square)](https://github.com/home-assistant-libs/pychromecast)
 [![GitHub Pipenv locked dependency version (branch)](https://img.shields.io/github/pipenv/locked/dependency-version/pablosambuco/caststatusserver/gevent-websocket/master?style=flat-square)](https://gitlab.com/noppo/gevent-websocket)
